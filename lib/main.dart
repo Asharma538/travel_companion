@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
 
   final pages = [
     const Homepage(),
-    const Requests(),
+    const requests(),
     const Search(),
     const Profile(),
   ];
