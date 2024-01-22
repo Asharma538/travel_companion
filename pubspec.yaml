@@ -31,6 +31,8 @@ dependencies:
   flutter:
     sdk: flutter
   google_nav_bar: ^5.0.6
+  intl: ^0.17.0
+
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -63,6 +65,7 @@ flutter:
   assets:
       - lib\assets\images\logo.png
       - lib\data\requests.json
+      - lib\data\posts.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

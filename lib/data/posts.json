@@ -6,39 +6,31 @@
             "destination":"Jodhpur",
             "date":"2023-01-30",
             "time":"13:40",
-            "description":"I'm open to change of 1-2 days in the date, right now I'm planning to travel by XYZ SF Express"
+            "modeOfTransport":"Bus"
         },
         {
             "username":"ArunCStop",
             "source":"Jaipur",
             "destination":"Jodhpur",
             "date":"2023-01-31",
-            "companions":[
-                "Someone1",
-                "Someone2"
-            ]
+            "time":"13:40",
+            "modeOfTransport":"Bus"
         },
         {
             "username":"Divya",
             "source":"Delhi",
             "destination":"Bombay",
             "date":"2023-01-29",
-            "modeOfTransport":"Bus",
-            "companions":[
-                "Ash538"
-            ]
+            "time":"13:40",
+            "modeOfTransport":"Bus"
         },
         {
             "username":"Radhika",
             "source":"Jodhpur",
             "destination":"Jaipur",
             "date":"2023-01-26",
-            "modeOfTransport":"Train",
-            "companions":[
-                "Lakshya",
-                "Divya",
-                "Arun"
-            ]
+            "time":"13:40",
+            "modeOfTransport":"Train"
         },
         {
             "username":"Lakshya",

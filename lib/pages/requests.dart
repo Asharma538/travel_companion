@@ -1,5 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../components/request_tile.dart';
+
+
 
 class Request {
   final String username;
@@ -21,28 +24,26 @@ class Request {
   });
 }
 
-
-
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: const requests(),
+      home: const Requests(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class requests extends StatefulWidget {
-  const requests({Key? key}) : super(key: key);
+class Requests extends StatefulWidget {
+  const Requests({Key? key}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _RequestsState createState() => _RequestsState();
 }
 
-class _MyHomePageState extends State<requests> {
+class _RequestsState extends State<Requests> {
   String dropdownValue = 'All Requests';
   List<Request> allRequests = [];
 
@@ -96,103 +97,21 @@ class _MyHomePageState extends State<requests> {
   }
 
   Widget buildRequestTile(Request request) {
-    double screenWidth = MediaQuery.of(context).size.width;
-
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: screenWidth * 0.05),
-      child: Column(
-        children: [
-          ListTile(
-            title: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    request.username,
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.06,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                if (request.status != 'sent')
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          print('Accepted');
-                        },
-                        icon: const Icon(Icons.check, color: Colors.white),
-                        style: ButtonStyle(
-                          backgroundColor:
-                          MaterialStateProperty.all(Colors.green),
-                          shape: MaterialStateProperty.all(CircleBorder()),
-                          padding: MaterialStateProperty.all(
-                            EdgeInsets.all(screenWidth * 0.02),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: screenWidth * 0.01),
-                      IconButton(
-                        onPressed: () {
-                          print('rejected');
-                        },
-                        icon: const Icon(Icons.clear, color: Colors.white),
-                        style: ButtonStyle(
-                          backgroundColor:
-                          MaterialStateProperty.all(Colors.red),
-                          shape: MaterialStateProperty.all(CircleBorder()),
-                          padding: MaterialStateProperty.all(
-                            EdgeInsets.all(screenWidth * 0.02),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-              ],
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (request.status != 'sent')
-                  Text('From: ${request.source}',
-                      style: TextStyle(fontSize: screenWidth * 0.06)),
-                if (request.status != 'sent')
-                  Text('To: ${request.destination}',
-                      style: TextStyle(fontSize: screenWidth * 0.06)),
-                Text('Date: ${request.date.toString()}',
-                    style: TextStyle(fontSize: screenWidth * 0.06)),
-                if (request.status != 'sent')
-                  Text('Time: ${request.time}',
-                      style: TextStyle(fontSize: screenWidth * 0.06)),
-                if (request.description != null)
-                  Text(
-                    isExpanded
-                        ? 'Description: ${request.description!}'
-                        : 'Description: ${request.description!.substring(0, request.description!.length ~/ 2)}...',
-                    style: TextStyle(fontSize: screenWidth * 0.06),
-                  ),
-              ],
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    // Toggle the isExpanded flag
-                    isExpanded = !isExpanded;
-                  });
-                },
-                child: Text(
-                  isExpanded ? 'Show Less' : 'Show More',
-                  style: TextStyle(color: Colors.blue),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+    return RequestTile(
+      request: request,
+      isExpanded: isExpanded,
+      onAccept: () {
+        print('Accepted');
+      },
+      onReject: () {
+        print('Rejected');
+      },
+      onToggleExpansion: () {
+        setState(() {
+          // Toggle the isExpanded flag
+          isExpanded = !isExpanded;
+        });
+      },
     );
   }
 
