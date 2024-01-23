@@ -27,6 +27,7 @@ class _HomepageState extends State<Homepage> {
     List<PostData> loadedPosts = (jsonData['posts'] as List<dynamic>?)
         ?.map((json) => PostData(
       userName: json['username'],
+      userImage: json['userImage'],
       source: json['source'],
       destination: json['destination'],
       date: json['date'],
@@ -49,6 +50,7 @@ class _HomepageState extends State<Homepage> {
         itemBuilder: (context, index) {
           return PostTile(
             userName: posts[index].userName,
+            userImage: posts[index].userImage,
             source: posts[index].source,
             destination: posts[index].destination,
             date: posts[index].date,
@@ -66,6 +68,7 @@ class _HomepageState extends State<Homepage> {
 
 class PostData {
   final String userName;
+  final String userImage;
   final String source;
   final String destination;
   final String date;
@@ -74,6 +77,7 @@ class PostData {
 
   PostData({
     required this.userName,
+    required this.userImage,
     required this.source,
     required this.destination,
     required this.date,

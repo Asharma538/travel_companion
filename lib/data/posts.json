@@ -6,6 +6,7 @@
             "destination":"Jodhpur",
             "date":"2023-01-30",
             "time":"13:40",
+            "userImage": "lib/assets/images/Image.jpeg",
             "modeOfTransport":"Bus"
         },
         {
@@ -14,6 +15,7 @@
             "destination":"Jodhpur",
             "date":"2023-01-31",
             "time":"13:40",
+            "userImage": "lib/assets/images/Image.jpeg",
             "modeOfTransport":"Bus"
         },
         {
@@ -22,6 +24,7 @@
             "destination":"Bombay",
             "date":"2023-01-29",
             "time":"13:40",
+            "userImage": "lib/assets/images/Image.jpeg",
             "modeOfTransport":"Bus"
         },
         {
@@ -30,6 +33,7 @@
             "destination":"Jaipur",
             "date":"2023-01-26",
             "time":"13:40",
+            "userImage": "lib/assets/images/Image.jpeg",
             "modeOfTransport":"Train"
         },
         {
@@ -38,6 +42,7 @@
             "destination":"Jodhpur",
             "date":"2023-01-26",
             "time":"15:40",
+            "userImage": "lib/assets/images/Image.jpeg",
             "modeOfTransport":"Bus"
         }
     ]
