@@ -14,10 +14,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Travel Companion!',
-      debugShowCheckedModeBanner: false,
-      home: const HomePage(),
+    return const MaterialApp(
+      home: HomePage(),
     );
   }
 }
@@ -39,12 +37,13 @@ class _HomePageState extends State<HomePage> {
     const Profile(),
   ];
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffC4DFCB),
       appBar: AppBar(
-        backgroundColor: Colors.grey[800],
+        backgroundColor: Colors.black,
         title: Row(
           children: [
             Image.asset(
@@ -53,8 +52,12 @@ class _HomePageState extends State<HomePage> {
               height: 50.0,
             ),
             Container(
-              padding: EdgeInsets.all(8.0),
-              child: Text('  Travel Companion'),
+              padding: const EdgeInsets.all(8.0),
+              child: const Text('  Travel Companion',
+              style: TextStyle(
+                color: Colors.white
+              ),
+              ),
             )
           ],
         ),
@@ -68,18 +71,18 @@ class _HomePageState extends State<HomePage> {
     return Container(
         color: Colors.black,
         child: Padding(
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: 15.0,
             vertical: 20.0,
           ),
           child: GNav(
             gap: 8.0,
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(10),
             backgroundColor: Colors.black,
             color: Colors.white,
             activeColor: Colors.white,
             tabBackgroundColor: Colors.grey,
-            tabs: [
+            tabs: const [
               GButton(
                 icon: Icons.home,
                 text: 'Home',
