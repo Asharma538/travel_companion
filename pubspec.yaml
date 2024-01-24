@@ -33,7 +33,7 @@ dependencies:
 
   firebase_auth: ^4.16.0
   firebase_core:
-
+  pinput: ^3.0.1
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
