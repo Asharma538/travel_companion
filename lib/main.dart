@@ -15,10 +15,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Travel Companion!',
-      debugShowCheckedModeBanner: false,
-      home: const HomePage(),
+    return const MaterialApp(
+      home: HomePage(),
     );
   }
 }
@@ -47,7 +45,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: const Color(0xffC4DFCB),
       appBar: AppBar(
-        backgroundColor: Colors.grey[800],
+        backgroundColor: Colors.black,
         title: Row(
           children: [
             Image.asset(
@@ -56,8 +54,12 @@ class _HomePageState extends State<HomePage> {
               height: 50.0,
             ),
             Container(
-              padding: EdgeInsets.all(8.0),
-              child: Text('  Travel Companion'),
+              padding: const EdgeInsets.all(8.0),
+              child: const Text('  Travel Companion',
+              style: TextStyle(
+                color: Colors.white
+              ),
+              ),
             )
           ],
         ),
