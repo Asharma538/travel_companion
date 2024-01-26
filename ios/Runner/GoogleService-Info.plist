@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyDsmjKpng7jixC_wXBQWUHc_4-PmvTnE5g</string>
+	<key>GCM_SENDER_ID</key>
+	<string>332213306586</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.devluplabs.travelCompaniion</string>
+	<key>PROJECT_ID</key>
+	<string>travel-companion-374f9</string>
+	<key>STORAGE_BUCKET</key>
+	<string>travel-companion-374f9.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:332213306586:ios:0dd1b6bb8850e5b8b651e3</string>
+</dict>
+</plist>
