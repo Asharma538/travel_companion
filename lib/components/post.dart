@@ -10,7 +10,7 @@ class PostTile extends StatelessWidget {
   final String modeOfTransport;
   final Function() onPressed;
 
-  PostTile({
+  const PostTile({super.key,
     required this.userName,
     required this.userImage,
     required this.source,
@@ -35,17 +35,28 @@ class PostTile extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  Container(
+                  if (userImage!='') ...[
+                  SizedBox(
                     width: 40.0,
                     height: 40.0,
                     child: CircleAvatar(
                       backgroundImage: AssetImage(userImage),
                     ),
                   ),
-                  SizedBox(width: 12.0),
+                  ] else ...[
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.lightBlue,
+                        ),
+                        width: 40.0,
+                        height: 40.0,
+                      ),
+                  ],
+                  const SizedBox(width: 12.0),
                   Text(
                     userName,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 18.0,
                     ),
@@ -58,7 +69,7 @@ class PostTile extends StatelessWidget {
               child: Row(
                 children: [
                   _buildElevatedBox(source),
-                  Icon(Icons.arrow_forward, color: Colors.black),
+                  const Icon(Icons.arrow_forward, color: Colors.black),
                   _buildElevatedBox(destination),
                 ],
               ),
@@ -70,11 +81,11 @@ class PostTile extends StatelessWidget {
                 children: [
                   Text(
                     'Date: $date',
-                    style: TextStyle(fontSize: 16.0),
+                    style: const TextStyle(fontSize: 16.0),
                   ),
                   Text(
                     'Time: $time',
-                    style: TextStyle(fontSize: 16.0),
+                    style: const TextStyle(fontSize: 16.0),
                   ),
                 ],
               ),
@@ -83,7 +94,7 @@ class PostTile extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: Text(
                 'Mode: $modeOfTransport',
-                style: TextStyle(fontSize: 16.0),
+                style: const TextStyle(fontSize: 16.0),
               ),
             ),
           ],
@@ -104,7 +115,7 @@ class PostTile extends StatelessWidget {
         child: Center(
           child: Text(
             text,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 16.0,
             ),

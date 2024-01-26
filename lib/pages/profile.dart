@@ -2,30 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
 
-class Profiledata {
+import '../components/post.dart';
+
+class ProfileData {
   String username;
   String? imageUrl;
   String? about;
   String email;
 
-  Profiledata({
+  ProfileData({
     required this.username,
     this.imageUrl,
     this.about,
     required this.email,
   });
-
-
 }
 
 class AboutTextField extends StatefulWidget {
   final String initialText;
   final Function(String) onSave;
 
-  AboutTextField({required this.initialText, required this.onSave});
+  const AboutTextField({super.key, required this.initialText, required this.onSave});
 
   @override
-  _AboutTextFieldState createState() => _AboutTextFieldState();
+  State<AboutTextField> createState() => _AboutTextFieldState();
 }
 
 class _AboutTextFieldState extends State<AboutTextField> {
@@ -43,7 +43,7 @@ class _AboutTextFieldState extends State<AboutTextField> {
     return _isEditing
         ? TextField(
             controller: _textEditingController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               border: OutlineInputBorder(),
               hintText: 'Add your bio here!!',
             ),
@@ -62,7 +62,7 @@ class _AboutTextFieldState extends State<AboutTextField> {
             },
             child: Text(
               widget.initialText,
-              style: TextStyle(fontSize: 15),
+              style: const TextStyle(fontSize: 15),
             ),
           );
   }
@@ -76,22 +76,22 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  Future<Profiledata> loadData(BuildContext context) async {
+  Future<ProfileData> loadData(BuildContext context) async {
     try {
       String data = await DefaultAssetBundle.of(context)
           .loadString('lib/data/profile_data.json');
 
       dynamic jsonData = jsonDecode(data)['profile'];
 
-      Profiledata profiledata = Profiledata(
+      ProfileData profileData = ProfileData(
           username: jsonData['username'],
           email: jsonData['email'],
           imageUrl: jsonData['imageUrl'],
           about: jsonData['about']);
-      return profiledata;
+      return profileData;
     } catch (e) {
-      print(e);
-      return Profiledata(username: "", email: "", imageUrl: "", about: "");
+      // print(e);
+      return ProfileData(username: "", email: "", imageUrl: "", about: "");
     }
   }
 
@@ -117,40 +117,39 @@ class _ProfileState extends State<Profile> {
                     ),
                   );
                 } else {
-                  Profiledata profiledata = snapshot.data!;
+                  ProfileData profileData = snapshot.data!;
                   return Padding(
                     padding: const EdgeInsets.all(10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Container(
-                            child: IconButton(
-                                onPressed: () {},
-                                icon: const Icon(Icons.logout))),
-                        Center(
-                          child: CircleAvatar(
-                              radius: 100.0,
-                              backgroundImage:
-                                  NetworkImage(profiledata.imageUrl ?? "")),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 75, 0),
-                          child: Positioned(
-                            bottom: 0.0,
-                            right: 0.0,
-                            child: FloatingActionButton(
-                              shape: const CircleBorder(eccentricity: 0.9),
-                              onPressed: () {},
-                              backgroundColor: Colors.white,
-                              child: Icon(Icons.edit),
+                        IconButton(
+                            onPressed: () {}, icon: const Icon(Icons.logout)),
+                        Stack(
+                          children: [
+                            Center(
+                              child: CircleAvatar(
+                                  radius: 100.0,
+                                  backgroundImage:
+                                      NetworkImage(profileData.imageUrl ?? "")),
                             ),
-                          ),
+                            Positioned(
+                                bottom: 0.0,
+                                right: MediaQuery.of(context).size.width*0.5 - 110,
+                                child: FloatingActionButton(
+                                  shape: const CircleBorder(eccentricity: 0.9),
+                                  onPressed: () {},
+                                  backgroundColor: Colors.white,
+                                  child: const Icon(Icons.edit),
+                                ),
+                            ),
+                          ],
                         ),
                         Center(
                           child: ListTile(
                             title: Center(
                               child: Text(
-                                profiledata.username,
+                                profileData.username,
                                 style: const TextStyle(fontSize: 30),
                               ),
                             ),
@@ -160,58 +159,60 @@ class _ProfileState extends State<Profile> {
                           height: 10,
                         ),
                         ListTile(
-                          title: Text(
+                          title: const Text(
                             "About",
                             style: TextStyle(
                               fontSize: 25,
                             ),
                           ),
                           subtitle: AboutTextField(
-                            initialText: profiledata.about ?? "",
+                            initialText: profileData.about ?? "",
                             onSave: (newAbout) {
                               // Handle saving the new about information
-                              print('New About: $newAbout');
-
+                              // print('New About: $newAbout');
                               // Assuming you want to update the UI with the new about information
                               setState(() {
-                                profiledata.about = newAbout;
-                                    // profiledata.copyWith(about: newAbout);
+                                profileData.about = newAbout;
                               });
                             },
                           ),
                         ),
-                        //trailing: IconButton(onPressed: () {}, icon: const Icon(Icons.edit))),
-                        //itemprofile("About", profiledata.about ?? "", Icons.info),
                         const Divider(
                           color: Colors.black,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            padding:
-                                const EdgeInsets.fromLTRB(170, 70, 170, 70),
-                            color: Colors.grey,
-                            child: const Text('Post'),
-                          ),
+                        PostTile(
+                          userName: 'userName',
+                          userImage: '',
+                          source: 'source',
+                          destination: 'destination',
+                          date: 'date',
+                          time: 'time',
+                          modeOfTransport: 'modeOfTransport',
+                          onPressed: () {
+                            },
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            padding:
-                                const EdgeInsets.fromLTRB(170, 70, 170, 70),
-                            color: Colors.grey,
-                            child: const Text('Post'),
-                          ),
+                        PostTile(
+                          userName: 'userName',
+                          userImage: '',
+                          source: 'source',
+                          destination: 'destination',
+                          date: 'date',
+                          time: 'time',
+                          modeOfTransport: 'modeOfTransport',
+                          onPressed: () {
+                          },
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            padding:
-                                const EdgeInsets.fromLTRB(170, 70, 170, 70),
-                            color: Colors.grey,
-                            child: const Text('Post'),
-                          ),
-                        ),
+                        PostTile(
+                          userName: 'userName',
+                          userImage: '',
+                          source: 'source',
+                          destination: 'destination',
+                          date: 'date',
+                          time: 'time',
+                          modeOfTransport: 'modeOfTransport',
+                          onPressed: () {
+                          },
+                        )
                       ],
                     ),
                   );
@@ -219,20 +220,4 @@ class _ProfileState extends State<Profile> {
               }),
         ));
   }
-}
-
-itemprofile(String title, String subtitle, IconData iconData) {
-  return ListTile(
-      title: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 25,
-        ),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: const TextStyle(fontSize: 15),
-      ),
-      leading: Icon(iconData),
-      trailing: IconButton(onPressed: () {}, icon: const Icon(Icons.edit)));
 }

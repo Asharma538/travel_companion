@@ -16,7 +16,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
   String transportationMode = '';
   String description = '';
 
-  void _showDatePicker(BuildContext context, Function(DateTime) onDateSelected) {
+  void _showDatePicker(
+      BuildContext context, Function(DateTime) onDateSelected) {
     showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -74,11 +75,15 @@ class _CreatePostPageState extends State<CreatePostPage> {
             SizedBox(height: _mediaQuery.size.height * 0.02),
             _buildDateTimeRow(),
             SizedBox(height: _mediaQuery.size.height * 0.02),
-            _buildTextField("MODE OF TRANSPORTATION", "Ex: Flight/Train/Taxi/Auto etc.", (value) {
+            _buildTextField(
+                "MODE OF TRANSPORTATION", "Ex: Flight/Train/Taxi/Auto etc.",
+                (value) {
               transportationMode = value;
             }),
             SizedBox(height: _mediaQuery.size.height * 0.02),
-            _buildTextField("DESCRIPTION", "Ex: Flight name or no./Train name or no.", (value) {
+            _buildTextField(
+                "DESCRIPTION", "Ex: Flight name or no./Train name or no.",
+                (value) {
               description = value;
             }, maxLines: 2),
             SizedBox(height: _mediaQuery.size.height * 0.02),
@@ -111,7 +116,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
     );
   }
 
-  Widget _buildTextField(String label, String hint, Function(String) onChanged, {int? maxLines}) {
+  Widget _buildTextField(String label, String hint, Function(String) onChanged,
+      {int? maxLines}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -168,7 +174,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
     );
   }
 
-  Widget _buildDateTimeButton(String label, IconData icon, VoidCallback onPressed) {
+  Widget _buildDateTimeButton(
+      String label, IconData icon, VoidCallback onPressed) {
     return MaterialButton(
       minWidth: MediaQuery.of(context).size.width * 0.45,
       height: MediaQuery.of(context).size.height * 0.076,
@@ -186,8 +193,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
             selectedDate != null && label == "DATE"
                 ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
                 : selectedTime != null && label == "TIME"
-                ? "${selectedTime!.hour}:${selectedTime!.minute}"
-                : label,
+                    ? "${selectedTime!.hour}:${selectedTime!.minute}"
+                    : label,
             style: TextStyle(
               color: Colors.white,
               fontSize: 15.0,

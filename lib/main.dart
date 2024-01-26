@@ -55,10 +55,9 @@ class _HomePageState extends State<HomePage> {
             ),
             Container(
               padding: const EdgeInsets.all(8.0),
-              child: const Text('  Travel Companion',
-              style: TextStyle(
-                color: Colors.white
-              ),
+              child: const Text(
+                '  Travel Companion',
+                style: TextStyle(color: Colors.white),
               ),
             )
           ],
@@ -68,15 +67,15 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: buildMyNavBar(context),
       floatingActionButton: showFabOnHomePage
           ? FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CreatePostPage()),
-          );
-        },
-        backgroundColor: Colors.green,
-        child: Icon(Icons.add),
-      )
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CreatePostPage()),
+                );
+              },
+              backgroundColor: Colors.green,
+              child: const Icon(Icons.add),
+            )
           : null,
     );
   }

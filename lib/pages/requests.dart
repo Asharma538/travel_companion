@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../components/request_tile.dart';
 
-
-
 class Request {
   final String username;
   final String? description;
@@ -29,8 +27,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const Requests(),
+    return const MaterialApp(
+      home: Requests(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -40,7 +38,7 @@ class Requests extends StatefulWidget {
   const Requests({Key? key}) : super(key: key);
 
   @override
-  _RequestsState createState() => _RequestsState();
+  State<Requests> createState() => _RequestsState();
 }
 
 class _RequestsState extends State<Requests> {
@@ -64,22 +62,21 @@ class _RequestsState extends State<Requests> {
 
       List<Request> requests = requestsData
           .map((json) => Request(
-        username: json['username'] ?? '',
-        description: json['description'] ?? 'Not decided',
-        date: json['date'],
-        status: json['status'] ?? '',
-        source: json['source'] ?? '',
-        destination: json['destination'] ?? '',
-        time: json['time'] ?? '',
-      ))
+                username: json['username'] ?? '',
+                description: json['description'] ?? 'Not decided',
+                date: json['date'],
+                status: json['status'] ?? '',
+                source: json['source'] ?? '',
+                destination: json['destination'] ?? '',
+                time: json['time'] ?? '',
+              ))
           .toList();
 
       setState(() {
         allRequests = requests;
       });
     } else {
-      print(
-          'Invalid JSON structure. Expected a "requests" property of type List.');
+      print('Invalid JSON structure. Expected a "requests" property of type List.');
     }
   }
 
@@ -89,9 +86,7 @@ class _RequestsState extends State<Requests> {
     } else if (dropdownValue == 'Sent') {
       return allRequests.where((request) => request.status == 'sent').toList();
     } else if (dropdownValue == 'Received') {
-      return allRequests
-          .where((request) => request.status != 'sent')
-          .toList();
+      return allRequests.where((request) => request.status != 'sent').toList();
     }
     return [];
   }
@@ -161,7 +156,6 @@ class _RequestsState extends State<Requests> {
                     });
                   },
                   dropdownColor: Colors.lightBlue,
-                  underline: SizedBox(height: 0),
                 ),
               ),
               Flexible(
