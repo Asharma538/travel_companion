@@ -1,0 +1,49 @@
+{
+    "posts":[
+        {
+            "username":"Ash538",
+            "source":"Bhopal",
+            "destination":"Jodhpur",
+            "date":"2023-01-30",
+            "time":"13:40",
+            "userImage": "lib/assets/images/Image.jpeg",
+            "modeOfTransport":"Bus"
+        },
+        {
+            "username":"ArunCStop",
+            "source":"Jaipur",
+            "destination":"Jodhpur",
+            "date":"2023-01-31",
+            "time":"13:40",
+            "userImage": "lib/assets/images/Image.jpeg",
+            "modeOfTransport":"Bus"
+        },
+        {
+            "username":"Divya",
+            "source":"Delhi",
+            "destination":"Bombay",
+            "date":"2023-01-29",
+            "time":"13:40",
+            "userImage": "lib/assets/images/Image.jpeg",
+            "modeOfTransport":"Bus"
+        },
+        {
+            "username":"Radhika",
+            "source":"Jodhpur",
+            "destination":"Jaipur",
+            "date":"2023-01-26",
+            "time":"13:40",
+            "userImage": "lib/assets/images/Image.jpeg",
+            "modeOfTransport":"Train"
+        },
+        {
+            "username":"Lakshya",
+            "source":"Jaipur",
+            "destination":"Jodhpur",
+            "date":"2023-01-26",
+            "time":"15:40",
+            "userImage": "lib/assets/images/Image.jpeg",
+            "modeOfTransport":"Bus"
+        }
+    ]
+}
