@@ -45,6 +45,7 @@ class ViewPost extends StatefulWidget {
 
 class _ViewPostState extends State<ViewPost> {
   List<Post> requests = [];
+  String loggedInUser = 'Ash538';
 
   @override
   void initState() {
@@ -57,6 +58,10 @@ class _ViewPostState extends State<ViewPost> {
     setState(() {
       requests = parsePosts(data);
     });
+  }
+
+  bool isOwnPost(){
+    return requests.isNotEmpty && requests[0].username == loggedInUser;
   }
 
   @override
@@ -156,24 +161,68 @@ class _ViewPostState extends State<ViewPost> {
               ),
             ),
             SizedBox(height: mediaQuery.height * 0.1),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff302360),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                child: const Text(
-                  "REQUEST",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20.0,
-                  ),
-                ),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (!isOwnPost()) ...[
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xff302360),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      child: const Text(
+                        "REQUEST",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20.0,
+                        ),
+                      ),
+                    ),
+                  ]
+                  else ...[
+                    ElevatedButton(
+                        onPressed: (){
+                          print('User requested Edit');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xff302360),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        child: const Text(
+                          "Edit",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20.0,
+                          ),
+                        ),
+                    ),
+                    const SizedBox(width: 40,),
+                    ElevatedButton(
+                      onPressed: (){
+                        print('User requested Delete');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xff302360),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      child: const Text(
+                        "Delete",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20.0,
+                        ),
+                      ),
+                    ),
+                  ]
+                ],
               ),
-            ),
           ],
         ),
       ),
