@@ -2,25 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../components/post.dart';
 
-class ProfileData {
-  String username;
-  String? imageUrl;
-  String? about;
-  String email;
 
-  ProfileData({
-    required this.username,
-    this.imageUrl,
-    this.about,
-    required this.email,
-  });
-
-  ProfileData.fromFirestore(Map<String, dynamic> data, String documentId)
-      : username = data['username'] ?? "",
-        email = documentId,
-        imageUrl = data['profilePhoto'] ?? "",
-        about = data['about'] ?? "";
-}
 
 class AboutTextField extends StatefulWidget {
   final String initialText;

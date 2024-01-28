@@ -40,7 +40,7 @@ class PostTile extends StatelessWidget {
                     width: 40.0,
                     height: 40.0,
                     child: CircleAvatar(
-                      backgroundImage: AssetImage(userImage),
+                      backgroundImage: NetworkImage(userImage),
                     ),
                   ),
                   ] else ...[
