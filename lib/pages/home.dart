@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:travel_companiion/pages/view_post.dart';
-import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../components/post.dart';
+import 'package:travel_companiion/pages/view_post.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
@@ -11,83 +11,68 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  List<PostData> posts = [];
+  late Future<List<Map<String, dynamic>>> postsFuture;
 
   @override
   void initState() {
     super.initState();
-    loadData();
+    postsFuture = fetchPosts();
   }
 
-  Future<void> loadData() async {
-    String data =
-        await DefaultAssetBundle.of(context).loadString('lib/data/posts.json');
+  Future<List<Map<String, dynamic>>> fetchPosts() async {
+    QuerySnapshot<Map<String, dynamic>> querySnapshot =
+    await FirebaseFirestore.instance.collection('Trips').get();
 
-    Map<String, dynamic> jsonData = jsonDecode(data);
+    List<Map<String, dynamic>> posts = querySnapshot.docs.map((doc) {
+      return doc.data();
+    }).toList();
 
-    List<PostData> loadedPosts = (jsonData['posts'] as List<dynamic>?)
-            ?.map((json) => PostData(
-                  userName: json['username'],
-                  userImage: json['userImage'],
-                  source: json['source'],
-                  destination: json['destination'],
-                  date: json['date'],
-                  time: json['time'],
-                  modeOfTransport: json['modeOfTransport'],
-                ))
-            .toList() ??
-        [];
-
-    setState(() {
-      posts = loadedPosts;
-    });
+    return posts;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: ListView.builder(
-        itemCount: posts.length,
-        itemBuilder: (context, index) {
-          return PostTile(
-            userName: posts[index].userName,
-            userImage: posts[index].userImage,
-            source: posts[index].source,
-            destination: posts[index].destination,
-            date: posts[index].date,
-            time: posts[index].time,
-            modeOfTransport: posts[index].modeOfTransport,
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(
-                      builder: (context) => const ViewPost()
-                  )
-              );
-            },
-          );
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: postsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          } else {
+            List<Map<String, dynamic>> posts = snapshot.data ?? [];
+            return ListView.builder(
+              itemCount: posts.length,
+              itemBuilder: (context, index) {
+                final post = posts[index];
+                return PostTile(
+                  userName: post['username'],
+                  userImage: post['userImage'],
+                  source: post['source'],
+                  destination: post['destination'],
+                  date: post['date'],
+                  time: post['time'],
+                  modeOfTransport: post['modeOfTransport'],
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ViewPost(),
+                      ),
+                    );
+                  },
+                );
+              },
+            );
+          }
         },
       ),
     );
   }
-}
-
-class PostData {
-  final String userName;
-  final String userImage;
-  final String source;
-  final String destination;
-  final String date;
-  final String time;
-  final String modeOfTransport;
-
-  PostData({
-    required this.userName,
-    required this.userImage,
-    required this.source,
-    required this.destination,
-    required this.date,
-    required this.time,
-    required this.modeOfTransport,
-  });
 }
