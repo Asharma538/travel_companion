@@ -5,6 +5,9 @@ import 'package:travel_companiion/pages/view_post.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
+  
+  static List<Map<String, dynamic>> posts = [];
+  
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -26,7 +29,7 @@ class _HomepageState extends State<Homepage> {
     List<Map<String, dynamic>> posts = querySnapshot.docs.map((doc) {
       return doc.data();
     }).toList();
-
+    Homepage.posts = posts;
     return posts;
   }
 

@@ -22,19 +22,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: HomePage(),
+      home: Base(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class Base extends StatefulWidget {
+  const Base({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _BaseState createState() => _BaseState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _BaseState extends State<Base> {
   int pageIndex = 0;
 
   final pages = [
@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
     const Profile(),
   ];
 
-  bool get showFabOnHomePage => pageIndex == 0;
+  bool get showFabOnBase => pageIndex == 0;
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +71,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: pages[pageIndex],
       bottomNavigationBar: buildMyNavBar(context),
-      floatingActionButton: showFabOnHomePage
+      floatingActionButton: showFabOnBase
           ? FloatingActionButton(
               onPressed: () {
                 Navigator.push(

@@ -150,7 +150,7 @@ class SignupPage extends StatelessWidget {
                     email: email.text, password: password.text)
                     .then((_) {
                   Navigator.pushReplacement(
-                      context, MaterialPageRoute(builder: (_) => HomePage()));
+                      context, MaterialPageRoute(builder: (_) => Base()));
                 }).catchError((e) {
                   if (e.code == 'user-not-found') {
                     print('No user found for that email.');
