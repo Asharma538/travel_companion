@@ -131,7 +131,7 @@ class LoginPage extends StatelessWidget {
                       email: email.text, password: password.text)
                       .then((_) {
                     Navigator.pushReplacement(
-                        context, MaterialPageRoute(builder: (_) => HomePage()));
+                        context, MaterialPageRoute(builder: (_) => Base()));
                   });
                 } on FirebaseAuthException catch (e) {
                   if (e.code == 'user-not-found') {
