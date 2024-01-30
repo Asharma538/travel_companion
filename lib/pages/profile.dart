@@ -170,7 +170,7 @@ class _ProfileState extends State<Profile> {
                       color: Colors.black,
                     ),
                     for (var i = 0; i < Homepage.posts.length; i++) ...[
-                      if (Homepage.posts[i]['username'] ==userData['username']) ...[
+                      if (Homepage.posts[i]['username'] == userData['username']) ...[
                         PostTile(
                             userName: Homepage.posts[i]['username'],
                             userImage: Homepage.posts[i]['userImage'],
@@ -178,13 +178,14 @@ class _ProfileState extends State<Profile> {
                             destination: Homepage.posts[i]['destination'],
                             date: Homepage.posts[i]['date'],
                             time: Homepage.posts[i]['time'],
-                            modeOfTransport: Homepage.posts[i]
-                                ['modeOfTransport'],
+                            modeOfTransport: Homepage.posts[i]['modeOfTransport'],
                             onPressed: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const ViewPost(),
+                                  builder: (context) => ViewPost(
+                                    post: Homepage.posts[i],
+                                  ),
                                 ),
                               );
                             })

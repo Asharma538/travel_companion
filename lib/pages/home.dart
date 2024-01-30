@@ -23,12 +23,12 @@ class _HomepageState extends State<Homepage> {
   }
 
   Future<List<Map<String, dynamic>>> fetchPosts() async {
-    QuerySnapshot<Map<String, dynamic>> querySnapshot =
-    await FirebaseFirestore.instance.collection('Trips').get();
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance.collection('Trips').get();
 
     List<Map<String, dynamic>> posts = querySnapshot.docs.map((doc) {
       return doc.data();
     }).toList();
+
     Homepage.posts = posts;
     return posts;
   }
@@ -55,18 +55,18 @@ class _HomepageState extends State<Homepage> {
               itemBuilder: (context, index) {
                 final post = posts[index];
                 return PostTile(
-                  userName: post['username'],
-                  userImage: post['userImage'],
-                  source: post['source'],
-                  destination: post['destination'],
-                  date: post['date'],
-                  time: post['time'],
-                  modeOfTransport: post['modeOfTransport'],
+                  userName: post['username']?? 'Not Available',
+                  userImage: post['userImage']?? 'Not Available',
+                  source: post['source']?? 'Not Available',
+                  destination: post['destination']?? 'Not Available',
+                  date: post['date'] ?? 'Not Available',
+                  time: post['time']?? 'Not Available',
+                  modeOfTransport: post['modeOfTransport']?? 'Not Available',
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ViewPost(),
+                        builder: (context) => ViewPost(post: post),
                       ),
                     );
                   },
