@@ -49,7 +49,7 @@ class _ViewPostState extends State<ViewPost> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              post.isNotEmpty ? "Name: ${post['username']}" : "",
+              "Name: ${post['username']}",
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 20.0,
@@ -58,7 +58,7 @@ class _ViewPostState extends State<ViewPost> {
             ),
             SizedBox(height: mediaQuery.height * 0.05),
             Text(
-              post.isNotEmpty ? "About: ${post['about']}" :"",
+              "About: ${post['about']}",
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 20.0,
@@ -73,7 +73,7 @@ class _ViewPostState extends State<ViewPost> {
             ),
             SizedBox(height: mediaQuery.height * 0.05),
             Text(
-              post.isNotEmpty ? "From: ${post['source']}" : "",
+              "From: ${post['source']}",
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 16.0,
@@ -82,7 +82,7 @@ class _ViewPostState extends State<ViewPost> {
             ),
             SizedBox(height: mediaQuery.height * 0.05),
             Text(
-              post.isNotEmpty ? "To: ${post['destination']}" : "",
+              "To: ${post['destination']}",
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 16.0,
@@ -94,7 +94,7 @@ class _ViewPostState extends State<ViewPost> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  post.isNotEmpty ? "Date: ${post['date']}" : "",
+                  "Date: ${post['date']}",
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 16.0,
@@ -102,7 +102,7 @@ class _ViewPostState extends State<ViewPost> {
                   ),
                 ),
                 Text(
-                  post.isNotEmpty ? "Time: ${post['time']}" : "",
+                  "Time: ${post['time']}",
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 16.0,
@@ -113,7 +113,7 @@ class _ViewPostState extends State<ViewPost> {
             ),
             SizedBox(height: mediaQuery.height * 0.05),
             Text(
-              post.isNotEmpty ? "Mode Of Transportation: ${post['modeOfTransport']}" : "",
+              "Mode Of Transportation: ${post['modeOfTransport']}",
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 16.0,
@@ -121,79 +121,90 @@ class _ViewPostState extends State<ViewPost> {
               ),
             ),
             SizedBox(height: mediaQuery.height * 0.05),
-            Text(
-              post.isNotEmpty
-                  ? "Description: ${post['desc']}"
-                  : "",
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 16.0,
-                fontWeight: FontWeight.bold,
+            if (post['desc']!=null) ...[
+              Text(
+                "Description: ${post['desc']}",
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
+            ]
+            else ...[
+              const Text(
+                "Description: Not Specified",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
             SizedBox(height: mediaQuery.height * 0.1),
             Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (!isOwnPost()) ...[
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xff302360),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                      ),
-                      child: const Text(
-                        "REQUEST",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.0,
-                        ),
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (!isOwnPost()) ...[
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xff302360),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
-                  ]
-                  else ...[
-                    ElevatedButton(
-                        onPressed: (){
-                          print('User requested Edit');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff302360),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
-                        child: const Text(
-                          "Edit",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20.0,
-                          ),
-                        ),
-                    ),
-                    const SizedBox(width: 40,),
-                    ElevatedButton(
-                      onPressed: (){
-                        print('User requested Delete');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xff302360),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                      ),
-                      child: const Text(
-                        "Delete",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.0,
-                        ),
+                    child: const Text(
+                      "REQUEST",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.0,
                       ),
                     ),
-                  ]
-                ],
-              ),
+                  ),
+                ] else ...[
+                  ElevatedButton(
+                    onPressed: () {
+                      print('User requested Edit');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xff302360),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    child: const Text(
+                      "Edit",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.0,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 40,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      print('User requested Delete');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xff302360),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    child: const Text(
+                      "Delete",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.0,
+                      ),
+                    ),
+                  ),
+                ]
+              ],
+            ),
           ],
         ),
       ),

@@ -51,7 +51,7 @@ class RequestTile extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(width: screenWidth * 0.01),
+                      SizedBox(width: 5),
                       IconButton(
                         onPressed: onReject,
                         icon: const Icon(Icons.clear, color: Colors.white),
@@ -85,7 +85,7 @@ class RequestTile extends StatelessWidget {
                   Text(
                     isExpanded
                         ? 'Description: ${request.description!}'
-                        : 'Description: ${request.description!.substring(0, request.description!.length ~/ 2)}...',
+                        : 'Description: ${request.description!.substring(0, 10)}...',
                     style: TextStyle(fontSize: screenWidth * 0.06),
                   ),
               ],

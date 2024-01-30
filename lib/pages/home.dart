@@ -5,13 +5,16 @@ import 'package:travel_companiion/pages/view_post.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
+  
+  static List<Map<String, dynamic>> posts = [];
+  
 
   @override
   State<Homepage> createState() => _HomepageState();
 }
 
 class _HomepageState extends State<Homepage> {
-  late Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> postsFuture;
+  late Future<List<Map<String, dynamic>>> postsFuture;
 
   @override
   void initState() {
@@ -19,12 +22,14 @@ class _HomepageState extends State<Homepage> {
     postsFuture = fetchPosts();
   }
 
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> fetchPosts() async {
-    QuerySnapshot<Map<String, dynamic>> querySnapshot =
-        await FirebaseFirestore.instance.collection('Trips').get();
+  Future<List<Map<String, dynamic>>> fetchPosts() async {
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance.collection('Trips').get();
 
-    List<QueryDocumentSnapshot<Map<String, dynamic>>> posts = querySnapshot.docs;
+    List<Map<String, dynamic>> posts = querySnapshot.docs.map((doc) {
+      return doc.data();
+    }).toList();
 
+    Homepage.posts = posts;
     return posts;
   }
 
@@ -32,7 +37,7 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: FutureBuilder<List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
+      body: FutureBuilder<List<Map<String, dynamic>>>(
         future: postsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -44,11 +49,11 @@ class _HomepageState extends State<Homepage> {
               child: Text('Error: ${snapshot.error}'),
             );
           } else {
-            List<QueryDocumentSnapshot<Map<String, dynamic>>> posts = snapshot.data ?? [];
+            List<Map<String, dynamic>> posts = snapshot.data ?? [];
             return ListView.builder(
               itemCount: posts.length,
               itemBuilder: (context, index) {
-                final post = posts[index].data()!;
+                final post = posts[index];
                 return PostTile(
                   userName: post['username']?? 'Not Available',
                   userImage: post['userImage']?? 'Not Available',

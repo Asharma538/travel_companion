@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:travel_companiion/main.dart';
+import 'package:travel_companiion/pages/home.dart';
+import 'package:travel_companiion/pages/view_post.dart';
 import '../components/post.dart';
-
-
 
 class AboutTextField extends StatefulWidget {
   final String initialText;
@@ -28,29 +29,29 @@ class _AboutTextFieldState extends State<AboutTextField> {
   Widget build(BuildContext context) {
     return _isEditing
         ? TextField(
-      controller: _textEditingController,
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'Add your bio here!!',
-      ),
-      onEditingComplete: () {
-        setState(() {
-          _isEditing = false;
-          widget.onSave(_textEditingController.text);
-        });
-      },
-    )
+            controller: _textEditingController,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'Add your bio here!!',
+            ),
+            onEditingComplete: () {
+              setState(() {
+                _isEditing = false;
+                widget.onSave(_textEditingController.text);
+              });
+            },
+          )
         : InkWell(
-      onTap: () {
-        setState(() {
-          _isEditing = true;
-        });
-      },
-      child: Text(
-        widget.initialText,
-        style: const TextStyle(fontSize: 15),
-      ),
-    );
+            onTap: () {
+              setState(() {
+                _isEditing = true;
+              });
+            },
+            child: Text(
+              widget.initialText,
+              style: const TextStyle(fontSize: 15),
+            ),
+          );
   }
 }
 
@@ -68,7 +69,8 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
-    userFuture = FirebaseFirestore.instance.collection('Users').doc(userEmail).get();
+    userFuture =
+        FirebaseFirestore.instance.collection('Users').doc(userEmail).get();
   }
 
   @override
@@ -83,8 +85,7 @@ class _ProfileState extends State<Profile> {
               return const Center(
                 child: CircularProgressIndicator(),
               );
-            }
-            else if (snapshot.hasError) {
+            } else if (snapshot.hasError) {
               return const Center(
                 child: Text(
                   'Error',
@@ -93,10 +94,8 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
               );
-            }
-            else {
+            } else {
               Map<String, dynamic>? userData = snapshot.data?.data();
-              print(userData);
               if (userData == null) {
                 return const Center(
                   child: Text(
@@ -121,7 +120,9 @@ class _ProfileState extends State<Profile> {
                         Center(
                           child: CircleAvatar(
                             radius: 100.0,
-                            backgroundImage: NetworkImage(userData['profilePhoto'] ?? 'https://static.vecteezy.com/system/resources/previews/000/574/512/original/vector-sign-of-user-icon.jpg'),
+                            backgroundImage: NetworkImage(userData[
+                                    'profilePhoto'] ??
+                                'https://static.vecteezy.com/system/resources/previews/000/574/512/original/vector-sign-of-user-icon.jpg'),
                           ),
                         ),
                         Positioned(
@@ -168,36 +169,28 @@ class _ProfileState extends State<Profile> {
                     const Divider(
                       color: Colors.black,
                     ),
-                    PostTile(
-                      userName: 'userName',
-                      userImage: '',
-                      source: 'source',
-                      destination: 'destination',
-                      date: 'date',
-                      time: 'time',
-                      modeOfTransport: 'modeOfTransport',
-                      onPressed: () {},
-                    ),
-                    PostTile(
-                      userName: 'userName',
-                      userImage: '',
-                      source: 'source',
-                      destination: 'destination',
-                      date: 'date',
-                      time: 'time',
-                      modeOfTransport: 'modeOfTransport',
-                      onPressed: () {},
-                    ),
-                    PostTile(
-                      userName: 'userName',
-                      userImage: '',
-                      source: 'source',
-                      destination: 'destination',
-                      date: 'date',
-                      time: 'time',
-                      modeOfTransport: 'modeOfTransport',
-                      onPressed: () {},
-                    ),
+                    for (var i = 0; i < Homepage.posts.length; i++) ...[
+                      if (Homepage.posts[i]['username'] == userData['username']) ...[
+                        PostTile(
+                            userName: Homepage.posts[i]['username'],
+                            userImage: Homepage.posts[i]['userImage'],
+                            source: Homepage.posts[i]['source'],
+                            destination: Homepage.posts[i]['destination'],
+                            date: Homepage.posts[i]['date'],
+                            time: Homepage.posts[i]['time'],
+                            modeOfTransport: Homepage.posts[i]['modeOfTransport'],
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ViewPost(
+                                    post: Homepage.posts[i],
+                                  ),
+                                ),
+                              );
+                            })
+                      ]
+                    ]
                   ],
                 ),
               );
