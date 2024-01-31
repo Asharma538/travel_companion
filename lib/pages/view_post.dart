@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:travel_companiion/pages/home.dart';
 
 class ViewPost extends StatefulWidget {
   final Map<String, dynamic> post;
@@ -21,6 +23,53 @@ class _ViewPostState extends State<ViewPost> {
 
   bool isOwnPost() {
     return post.isNotEmpty && post['username'] == loggedInUser;
+  }
+
+  void storeRequest() async {
+    String userEmail = 'b23cs1005@iitj.ac.in';
+    var firestore = await FirebaseFirestore.instance;
+
+    DocumentSnapshot<Map<String, dynamic>> myRequestSnapshot = await firestore.collection('Requests').doc(userEmail).get();
+    DocumentSnapshot<Map<String, dynamic>> ownerRequestSnapshot = await firestore.collection('Requests').doc(post['createdBy']).get();
+
+    Map<String, dynamic> myRequestInfo = {
+      'tripId': post['id'],
+      'status': 'Pending',
+      'type': 'Sent',
+    };
+    Map<String, dynamic> ownerRequestInfo = {
+      'tripId': post['id'],
+      'status': 'Pending',
+      'type': 'Received',
+    };
+
+    if (myRequestSnapshot.exists) {
+      List<dynamic> myExistingRequests = myRequestSnapshot.data()?['requests'] ?? [];
+
+      myExistingRequests.add(myRequestInfo);
+
+      await firestore.collection('Requests').doc(userEmail).update({
+        'requests': myExistingRequests,
+      });
+    } else {
+      await firestore.collection('Requests').doc(userEmail).set({
+        'requests': [myRequestInfo],
+      });
+    }
+
+    if (ownerRequestSnapshot.exists) { 
+      List<dynamic> ownerExistingRequests = ownerRequestSnapshot.data()?['requests'] ?? [];
+
+      ownerExistingRequests.add(ownerRequestInfo);
+
+      await firestore.collection('Requests').doc(post['createdBy']).update({
+        'requests': ownerExistingRequests,
+      });
+    } else {
+      await firestore.collection('Requests').doc(post['createdBy']).set({
+        'requests': [ownerRequestInfo],
+      });
+    }
   }
 
   @override
@@ -121,7 +170,7 @@ class _ViewPostState extends State<ViewPost> {
               ),
             ),
             SizedBox(height: mediaQuery.height * 0.05),
-            if (post['desc']!=null) ...[
+            if (post['desc'] != null) ...[
               Text(
                 "Description: ${post['desc']}",
                 style: const TextStyle(
@@ -130,8 +179,7 @@ class _ViewPostState extends State<ViewPost> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            ]
-            else ...[
+            ] else ...[
               const Text(
                 "Description: Not Specified",
                 style: TextStyle(
@@ -147,7 +195,9 @@ class _ViewPostState extends State<ViewPost> {
               children: [
                 if (!isOwnPost()) ...[
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      storeRequest();
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xff302360),
                       shape: RoundedRectangleBorder(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class PostTile extends StatelessWidget {
+  final String tripId;
   final String userName;
   final String userImage;
   final String source;
@@ -10,7 +11,9 @@ class PostTile extends StatelessWidget {
   final String modeOfTransport;
   final Function() onPressed;
 
-  const PostTile({super.key,
+  const PostTile({
+    super.key,
+    required this.tripId,
     required this.userName,
     required this.userImage,
     required this.source,
@@ -35,23 +38,23 @@ class PostTile extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  if (userImage!='') ...[
-                  SizedBox(
-                    width: 40.0,
-                    height: 40.0,
-                    child: CircleAvatar(
-                      backgroundImage: NetworkImage(userImage),
-                    ),
-                  ),
-                  ] else ...[
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.lightBlue,
-                        ),
-                        width: 40.0,
-                        height: 40.0,
+                  if (userImage != '') ...[
+                    SizedBox(
+                      width: 40.0,
+                      height: 40.0,
+                      child: CircleAvatar(
+                        backgroundImage: NetworkImage(userImage),
                       ),
+                    ),
+                  ] else ...[
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.lightBlue,
+                      ),
+                      width: 40.0,
+                      height: 40.0,
+                    ),
                   ],
                   const SizedBox(width: 12.0),
                   Text(
