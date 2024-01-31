@@ -137,7 +137,7 @@ class _VerifyPageState extends State<VerifyPage> {
         TextButton(
             onPressed: () {
               Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (_) => LoginPage()));
+                  context, MaterialPageRoute(builder: (context) => LoginPage()));
             },
             child: const Text(
               "Login",
@@ -147,7 +147,7 @@ class _VerifyPageState extends State<VerifyPage> {
     );
   }
 
-  _fillOTP(context, TextEditingController email) {
+  _fillOTP(BuildContext context, TextEditingController email) {
     return Container(
       height: MediaQuery.of(context).size.height / 10 * 7.5,
       padding: EdgeInsets.all(20),
@@ -217,7 +217,7 @@ class _VerifyPageState extends State<VerifyPage> {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (_) => SignupPage()));
+                    context, MaterialPageRoute(builder: (context) => SignupPage()));
               },
               style: ElevatedButton.styleFrom(
                 shape: const StadiumBorder(),

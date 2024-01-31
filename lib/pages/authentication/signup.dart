@@ -75,7 +75,6 @@ class SignupPage extends StatelessWidget {
           ),
           Container(
             child: Column(children: [
-              // Container(alignment: Alignment.centerLeft, child: Text('Email')),
               SizedBox(
                 height: MediaQuery.of(context).size.height / 10,
                 child: TextField(
