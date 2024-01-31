@@ -172,6 +172,7 @@ class _ProfileState extends State<Profile> {
                     for (var i = 0; i < Homepage.posts.length; i++) ...[
                       if (Homepage.posts[i]['username'] == userData['username']) ...[
                         PostTile(
+                            tripId: Homepage.posts[i]['id'],
                             userName: Homepage.posts[i]['username'],
                             userImage: Homepage.posts[i]['userImage'],
                             source: Homepage.posts[i]['source'],
