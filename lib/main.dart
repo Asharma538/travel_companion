@@ -21,6 +21,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String userEmail = 'sharma.130@iitj.ac.in';
+    Profile.fetchUser(userEmail);
     return const MaterialApp(
       home: Base(),
     );

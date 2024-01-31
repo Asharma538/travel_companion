@@ -58,19 +58,35 @@ class _AboutTextFieldState extends State<AboutTextField> {
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
 
+  static Map<String, dynamic> userData = {};
+
+  static Future<Map<String, dynamic>> fetchUser(String userEmail) async {
+    DocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot =
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(userEmail)
+            .get();
+    var userData = queryDocumentSnapshot.data() ?? {};
+    if (queryDocumentSnapshot.exists) {
+      userData['id'] = queryDocumentSnapshot.id;
+    }
+    Profile.userData = userData;
+
+    return userData;
+  }
+
   @override
   State<Profile> createState() => _ProfileState();
 }
 
 class _ProfileState extends State<Profile> {
-  late Future<DocumentSnapshot<Map<String, dynamic>>> userFuture;
+  late Future<Map<String, dynamic>> userFuture;
   String userEmail = 'sharma.130@iitj.ac.in';
 
   @override
   void initState() {
     super.initState();
-    userFuture =
-        FirebaseFirestore.instance.collection('Users').doc(userEmail).get();
+    userFuture = Profile.fetchUser(userEmail);
   }
 
   @override
@@ -78,7 +94,7 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
-        child: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        child: FutureBuilder<Map<String, dynamic>>(
           future: userFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -95,7 +111,7 @@ class _ProfileState extends State<Profile> {
                 ),
               );
             } else {
-              Map<String, dynamic>? userData = snapshot.data?.data();
+              Map<String, dynamic>? userData = snapshot.data;
               if (userData == null) {
                 return const Center(
                   child: Text(
@@ -170,7 +186,8 @@ class _ProfileState extends State<Profile> {
                       color: Colors.black,
                     ),
                     for (var i = 0; i < Homepage.posts.length; i++) ...[
-                      if (Homepage.posts[i]['username'] ==userData['username']) ...[
+                      if (Homepage.posts[i]['username'] ==
+                          userData['username']) ...[
                         PostTile(
                             userName: Homepage.posts[i]['username'],
                             userImage: Homepage.posts[i]['userImage'],

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../components/post.dart';
 import 'package:travel_companiion/pages/view_post.dart';
+// import '../components/appbar.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
-  
+
   static List<Map<String, dynamic>> posts = [];
-  
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -24,7 +24,7 @@ class _HomepageState extends State<Homepage> {
 
   Future<List<Map<String, dynamic>>> fetchPosts() async {
     QuerySnapshot<Map<String, dynamic>> querySnapshot =
-    await FirebaseFirestore.instance.collection('Trips').get();
+        await FirebaseFirestore.instance.collection('Trips').get();
 
     List<Map<String, dynamic>> posts = querySnapshot.docs.map((doc) {
       return doc.data();
