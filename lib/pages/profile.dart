@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_companiion/pages/home.dart';
 import 'package:travel_companiion/pages/view_post.dart';
@@ -59,19 +60,32 @@ class _AboutTextFieldState extends State<AboutTextField> {
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
 
+  static Map<String, dynamic> userData = {};
+
+  static Future<Map<String, dynamic>> fetchUser(String userEmail) async {
+    DocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot = await FirebaseFirestore.instance.collection('Users').doc(userEmail).get();
+    var userData = queryDocumentSnapshot.data() ?? {};
+    if (queryDocumentSnapshot.exists) {
+      userData['id'] = queryDocumentSnapshot.id;
+    }
+    Profile.userData = userData;
+
+    return userData;
+  }
+
   @override
   State<Profile> createState() => _ProfileState();
 }
 
 class _ProfileState extends State<Profile> {
-  late Future<DocumentSnapshot<Map<String, dynamic>>> userFuture;
+  late Future<Map<String, dynamic>> userFuture;
   String userEmail = 'sharma.130@iitj.ac.in';
   String imgUrl = '';
 
   @override
   void initState() {
     super.initState();
-    userFuture = FirebaseFirestore.instance.collection('Users').doc(userEmail).get();
+    userFuture = Profile.fetchUser(userEmail);
   }
 
   @override
@@ -79,7 +93,7 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
-        child: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        child: FutureBuilder<Map<String, dynamic>>(
           future: userFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -96,7 +110,7 @@ class _ProfileState extends State<Profile> {
                 ),
               );
             } else {
-              Map<String, dynamic>? userData = snapshot.data?.data();
+              Map<String, dynamic>? userData = snapshot.data;
               if (userData == null) {
                 return const Center(
                   child: Text(
@@ -113,7 +127,16 @@ class _ProfileState extends State<Profile> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        try {
+                          await FirebaseAuth.instance.signOut();
+                          // Navigate to the login or home page after successful logout
+                          Navigator.pushReplacementNamed(context,
+                              '/login'); // Replace '/login' with your desired route
+                        } catch (e) {
+                          print('Error logging out: $e');
+                        }
+                      },
                       icon: const Icon(Icons.logout),
                     ),
                     Stack(
@@ -121,8 +144,7 @@ class _ProfileState extends State<Profile> {
                         Center(
                           child: CircleAvatar(
                             radius: 100.0,
-                            backgroundImage: NetworkImage(userData[
-                                    'profilePhoto'] ??
+                            backgroundImage: NetworkImage(userData['profilePhoto'] ??
                                 'https://static.vecteezy.com/system/resources/previews/000/574/512/original/vector-sign-of-user-icon.jpg'),
                           ),
                         ),
@@ -180,8 +202,7 @@ class _ProfileState extends State<Profile> {
                             destination: Homepage.posts[i]['destination'],
                             date: Homepage.posts[i]['date'],
                             time: Homepage.posts[i]['time'],
-                            modeOfTransport: Homepage.posts[i]
-                                ['modeOfTransport'],
+                            modeOfTransport: Homepage.posts[i]['modeOfTransport'],
                             onPressed: () {
                               Navigator.push(
                                 context,
