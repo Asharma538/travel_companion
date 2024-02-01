@@ -1,6 +1,6 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:travel_companiion/main.dart';
 import 'package:travel_companiion/pages/home.dart';
 import 'package:travel_companiion/pages/view_post.dart';
 import '../components/post.dart';
@@ -9,7 +9,8 @@ class AboutTextField extends StatefulWidget {
   final String initialText;
   final Function(String) onSave;
 
-  const AboutTextField({required this.initialText, required this.onSave});
+  const AboutTextField(
+      {super.key, required this.initialText, required this.onSave});
 
   @override
   State<AboutTextField> createState() => _AboutTextFieldState();
@@ -65,12 +66,12 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   late Future<DocumentSnapshot<Map<String, dynamic>>> userFuture;
   String userEmail = 'sharma.130@iitj.ac.in';
+  String imgUrl = '';
 
   @override
   void initState() {
     super.initState();
-    userFuture =
-        FirebaseFirestore.instance.collection('Users').doc(userEmail).get();
+    userFuture = FirebaseFirestore.instance.collection('Users').doc(userEmail).get();
   }
 
   @override
@@ -179,7 +180,8 @@ class _ProfileState extends State<Profile> {
                             destination: Homepage.posts[i]['destination'],
                             date: Homepage.posts[i]['date'],
                             time: Homepage.posts[i]['time'],
-                            modeOfTransport: Homepage.posts[i]['modeOfTransport'],
+                            modeOfTransport: Homepage.posts[i]
+                                ['modeOfTransport'],
                             onPressed: () {
                               Navigator.push(
                                 context,
