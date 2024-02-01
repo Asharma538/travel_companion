@@ -25,6 +25,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String userEmail = 'sharma.130@iitj.ac.in';
+    Profile.fetchUser(userEmail);
     if (FirebaseAuth.instance.currentUser?.uid != null) {
     return const MaterialApp(
       home: Base(),

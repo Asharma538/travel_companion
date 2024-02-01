@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../pages/search_results.dart';
 
 void _showDatePicker(BuildContext context, Function(DateTime) onDateSelected) {
   showDatePicker(
@@ -13,7 +14,8 @@ void _showDatePicker(BuildContext context, Function(DateTime) onDateSelected) {
   });
 }
 
-void _showTimePicker(BuildContext context, TimeOfDay? selectedTime,Function(TimeOfDay) onTimeSelected) async {
+void _showTimePicker(BuildContext context, TimeOfDay? selectedTime,
+    Function(TimeOfDay) onTimeSelected) async {
   TimeOfDay? pickedTime = await showTimePicker(
     context: context,
     initialTime: selectedTime ?? TimeOfDay.now(),
@@ -227,13 +229,25 @@ class _SearchPageState extends State<SearchPage> {
                   String modeOfTransport = modeOfTransportController.text;
                   String description = descriptionController.text;
 
-                  // Use these values as needed
-                  print("From: $fromLocation");
-                  print("To: $toLocation");
-                  print("Date: $selectedDate");
-                  print("Time: $selectedTime");
-                  print("Mode of Transport: $modeOfTransport");
-                  print("Description: $description");
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SearchResultsPage(
+                                fromLocation: fromLocation,
+                                toLocation: toLocation,
+                                selectedDate: selectedDate,
+                                selectedTime: selectedTime,
+                                modeOfTransport: modeOfTransport,
+                                // description: description,
+                              )));
+
+                  // // Use these values as needed
+                  // print("From: $fromLocation");
+                  // print("To: $toLocation");
+                  // print("Date: $selectedDate");
+                  // print("Time: $selectedTime");
+                  // print("Mode of Transport: $modeOfTransport");
+                  // print("Description: $description");
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xff302360),
