@@ -1,75 +1,95 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:flutter/services.dart';
-
-class Post {
-  final String username;
-  final String source;
-  final String destination;
-  final String date;
-  final String time;
-  final String description;
-
-  Post({
-    required this.username,
-    required this.source,
-    required this.destination,
-    required this.date,
-    required this.time,
-    this.description = "",
-  });
-
-  factory Post.fromJson(Map<String, dynamic> json) {
-    return Post(
-      username: json['username'],
-      source: json['source'],
-      destination: json['destination'],
-      date: json['date'],
-      time: json['time'],
-      description: json['description'] ?? "",
-    );
-  }
-}
-
-List<Post> parsePosts(String jsonStr) {
-  final List<dynamic> jsonList = json.decode(jsonStr)['requests'];
-  return jsonList.map((json) => Post.fromJson(json)).toList();
-}
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:travel_companiion/pages/home.dart';
 
 class ViewPost extends StatefulWidget {
-  const ViewPost({super.key});
+  final Map<String, dynamic> post;
+
+  const ViewPost({Key? key, required this.post}) : super(key: key);
 
   @override
   State<ViewPost> createState() => _ViewPostState();
 }
 
 class _ViewPostState extends State<ViewPost> {
-  List<Post> requests = [];
-  String loggedInUser = 'Ash538';
+  late Map<String, dynamic> post;
+  String loggedInUser = '';
 
   @override
   void initState() {
     super.initState();
-    loadPosts();
+    post = widget.post;
   }
 
-  Future<void> loadPosts() async {
-    final String data = await rootBundle.loadString('lib/data/requests.json');
-    setState(() {
-      requests = parsePosts(data);
-    });
+  bool isOwnPost() {
+    return post.isNotEmpty && post['username'] == loggedInUser;
   }
 
-  bool isOwnPost(){
-    return requests.isNotEmpty && requests[0].username == loggedInUser;
+  void storeRequest() async {
+    String userEmail = 'b23cs1005@iitj.ac.in';
+    var firestore = await FirebaseFirestore.instance;
+
+    DocumentSnapshot<Map<String, dynamic>> myRequestSnapshot = await firestore.collection('Requests').doc(userEmail).get();
+    DocumentSnapshot<Map<String, dynamic>> ownerRequestSnapshot = await firestore.collection('Requests').doc(post['createdBy']).get();
+
+    Map<String, dynamic> myRequestInfo = {
+      'tripId': post['id'],
+      'status': 'Pending',
+      'type': 'Sent',
+    };
+    Map<String, dynamic> ownerRequestInfo = {
+      'tripId': post['id'],
+      'status': 'Pending',
+      'type': 'Received',
+    };
+
+    if (myRequestSnapshot.exists) {
+      List<dynamic> myExistingRequests = myRequestSnapshot.data()?['requests'] ?? [];
+
+      myExistingRequests.add(myRequestInfo);
+
+      await firestore.collection('Requests').doc(userEmail).update({
+        'requests': myExistingRequests,
+      });
+    } else {
+      await firestore.collection('Requests').doc(userEmail).set({
+        'requests': [myRequestInfo],
+      });
+    }
+
+    if (ownerRequestSnapshot.exists) { 
+      List<dynamic> ownerExistingRequests = ownerRequestSnapshot.data()?['requests'] ?? [];
+
+      ownerExistingRequests.add(ownerRequestInfo);
+
+      await firestore.collection('Requests').doc(post['createdBy']).update({
+        'requests': ownerExistingRequests,
+      });
+    } else {
+      await firestore.collection('Requests').doc(post['createdBy']).set({
+        'requests': [ownerRequestInfo],
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
-    print(requests);
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xff302360),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: Text(
+          "View Post",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
       backgroundColor: const Color.fromARGB(255, 225, 224, 227),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
@@ -78,7 +98,7 @@ class _ViewPostState extends State<ViewPost> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              requests.isNotEmpty ? "Name: ${requests[0].username}" : "",
+              "Name: ${post['username']}",
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 20.0,
@@ -86,9 +106,9 @@ class _ViewPostState extends State<ViewPost> {
               ),
             ),
             SizedBox(height: mediaQuery.height * 0.05),
-            const Text(
-              "About:",
-              style: TextStyle(
+            Text(
+              "About: ${post['about']}",
+              style: const TextStyle(
                 color: Colors.black,
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold,
@@ -102,7 +122,7 @@ class _ViewPostState extends State<ViewPost> {
             ),
             SizedBox(height: mediaQuery.height * 0.05),
             Text(
-              requests.isNotEmpty ? "From: ${requests[0].source}" : "",
+              "From: ${post['source']}",
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 16.0,
@@ -111,7 +131,7 @@ class _ViewPostState extends State<ViewPost> {
             ),
             SizedBox(height: mediaQuery.height * 0.05),
             Text(
-              requests.isNotEmpty ? "To: ${requests[0].destination}" : "",
+              "To: ${post['destination']}",
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 16.0,
@@ -123,7 +143,7 @@ class _ViewPostState extends State<ViewPost> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  requests.isNotEmpty ? "Date: ${requests[0].date}" : "",
+                  "Date: ${post['date']}",
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 16.0,
@@ -131,7 +151,7 @@ class _ViewPostState extends State<ViewPost> {
                   ),
                 ),
                 Text(
-                  requests.isNotEmpty ? "Time: ${requests[0].time}" : "",
+                  "Time: ${post['time']}",
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 16.0,
@@ -141,88 +161,100 @@ class _ViewPostState extends State<ViewPost> {
               ],
             ),
             SizedBox(height: mediaQuery.height * 0.05),
-            const Text(
-              "Mode Of Transportation:",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: mediaQuery.height * 0.05),
             Text(
-              requests.isNotEmpty
-                  ? "Description: ${requests[0].description}"
-                  : "",
+              "Mode Of Transportation: ${post['modeOfTransport']}",
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
+            SizedBox(height: mediaQuery.height * 0.05),
+            if (post['desc'] != null) ...[
+              Text(
+                "Description: ${post['desc']}",
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ] else ...[
+              const Text(
+                "Description: Not Specified",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
             SizedBox(height: mediaQuery.height * 0.1),
             Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (!isOwnPost()) ...[
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xff302360),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                      ),
-                      child: const Text(
-                        "REQUEST",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.0,
-                        ),
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (!isOwnPost()) ...[
+                  ElevatedButton(
+                    onPressed: () {
+                      storeRequest();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xff302360),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
-                  ]
-                  else ...[
-                    ElevatedButton(
-                        onPressed: (){
-                          print('User requested Edit');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff302360),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
-                        child: const Text(
-                          "Edit",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20.0,
-                          ),
-                        ),
-                    ),
-                    const SizedBox(width: 40,),
-                    ElevatedButton(
-                      onPressed: (){
-                        print('User requested Delete');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xff302360),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                      ),
-                      child: const Text(
-                        "Delete",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.0,
-                        ),
+                    child: const Text(
+                      "REQUEST",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.0,
                       ),
                     ),
-                  ]
-                ],
-              ),
+                  ),
+                ] else ...[
+                  ElevatedButton(
+                    onPressed: () {
+                      print('User requested Edit');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xff302360),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    child: const Text(
+                      "Edit",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.0,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 40,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      print('User requested Delete');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xff302360),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    child: const Text(
+                      "Delete",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.0,
+                      ),
+                    ),
+                  ),
+                ]
+              ],
+            ),
           ],
         ),
       ),
