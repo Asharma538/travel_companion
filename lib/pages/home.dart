@@ -27,8 +27,11 @@ class _HomepageState extends State<Homepage> {
         await FirebaseFirestore.instance.collection('Trips').get();
 
     List<Map<String, dynamic>> posts = querySnapshot.docs.map((doc) {
-      return doc.data();
+      var post= doc.data();
+      post['id']=doc.id;
+      return post;
     }).toList();
+    
     Homepage.posts = posts;
     return posts;
   }
@@ -55,18 +58,19 @@ class _HomepageState extends State<Homepage> {
               itemBuilder: (context, index) {
                 final post = posts[index];
                 return PostTile(
-                  userName: post['username'],
-                  userImage: post['userImage'],
-                  source: post['source'],
-                  destination: post['destination'],
-                  date: post['date'],
-                  time: post['time'],
-                  modeOfTransport: post['modeOfTransport'],
+                  tripId: post['id']?? 'Not Available',
+                  userName: post['username'] ?? 'Not Available',
+                  userImage: post['userImage'] ?? 'Not Available',
+                  source: post['source'] ?? 'Not Available',
+                  destination: post['destination'] ?? 'Not Available',
+                  date: post['date'] ?? 'Not Available',
+                  time: post['time'] ?? 'Not Available',
+                  modeOfTransport: post['modeOfTransport'] ?? 'Not Available',
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ViewPost(),
+                        builder: (context) => ViewPost(post: post),
                       ),
                     );
                   },

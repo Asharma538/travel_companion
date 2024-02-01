@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_companiion/main.dart';
 import 'package:travel_companiion/pages/home.dart';
@@ -128,7 +129,16 @@ class _ProfileState extends State<Profile> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        try {
+                          await FirebaseAuth.instance.signOut();
+                          // Navigate to the login or home page after successful logout
+                          Navigator.pushReplacementNamed(context,
+                              '/login'); // Replace '/login' with your desired route
+                        } catch (e) {
+                          print('Error logging out: $e');
+                        }
+                      },
                       icon: const Icon(Icons.logout),
                     ),
                     Stack(
@@ -186,22 +196,23 @@ class _ProfileState extends State<Profile> {
                       color: Colors.black,
                     ),
                     for (var i = 0; i < Homepage.posts.length; i++) ...[
-                      if (Homepage.posts[i]['username'] ==
-                          userData['username']) ...[
+                      if (Homepage.posts[i]['username'] == userData['username']) ...[
                         PostTile(
+                            tripId: Homepage.posts[i]['id'],
                             userName: Homepage.posts[i]['username'],
                             userImage: Homepage.posts[i]['userImage'],
                             source: Homepage.posts[i]['source'],
                             destination: Homepage.posts[i]['destination'],
                             date: Homepage.posts[i]['date'],
                             time: Homepage.posts[i]['time'],
-                            modeOfTransport: Homepage.posts[i]
-                                ['modeOfTransport'],
+                            modeOfTransport: Homepage.posts[i]['modeOfTransport'],
                             onPressed: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const ViewPost(),
+                                  builder: (context) => ViewPost(
+                                    post: Homepage.posts[i],
+                                  ),
                                 ),
                               );
                             })
