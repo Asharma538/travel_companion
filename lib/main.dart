@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:travel_companiion/pages/authentication/email_verification.dart';
+import 'package:travel_companiion/pages/authentication/login.dart';
 import 'pages/profile.dart';
 import 'pages/search.dart';
 import 'pages/requests.dart';
@@ -7,6 +10,7 @@ import 'pages/home.dart';
 import 'pages/create_post_page.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'pages/authentication/signup.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,9 +25,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
     return const MaterialApp(
       home: Base(),
     );
+   }
+  else{
+    return const VerifyPage();
+  }
   }
 }
 

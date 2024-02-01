@@ -12,7 +12,14 @@ class VerifyPage extends StatefulWidget {
 
 class _VerifyPageState extends State<VerifyPage> {
   var state = 0;
-  var emailController = TextEditingController();
+  final emailController = TextEditingController();
+  bool _validate = false;
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,12 +97,12 @@ class _VerifyPageState extends State<VerifyPage> {
                   controller: email,
                   decoration: InputDecoration(
                     hintText: "Email",
+                     errorText: _validate ? "This feild is required" : null,
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(18),
                         borderSide: BorderSide.none),
                     fillColor: Colors.amber.withOpacity(0.1),
                     filled: true,
-                    // prefixIcon: const Icon(Icons.person)
                   ),
                 ),
               ),
@@ -107,8 +114,13 @@ class _VerifyPageState extends State<VerifyPage> {
             child: ElevatedButton(
               onPressed: () {
                 setState(() {
-                  state = 1;
+                  emailController.text.isEmpty ? _validate = true : _validate = false;
                 });
+                if(_validate != true) {
+                  setState(() {
+                    state = 1;
+                  });
+                }
               },
               style: ElevatedButton.styleFrom(
                 shape: const StadiumBorder(),
@@ -137,7 +149,7 @@ class _VerifyPageState extends State<VerifyPage> {
         TextButton(
             onPressed: () {
               Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (_) => LoginPage()));
+                  context, MaterialPageRoute(builder: (context) => LoginPage()));
             },
             child: const Text(
               "Login",
@@ -147,7 +159,7 @@ class _VerifyPageState extends State<VerifyPage> {
     );
   }
 
-  _fillOTP(context, TextEditingController email) {
+  _fillOTP(BuildContext context, TextEditingController email) {
     return Container(
       height: MediaQuery.of(context).size.height / 10 * 7.5,
       padding: EdgeInsets.all(20),
@@ -217,7 +229,7 @@ class _VerifyPageState extends State<VerifyPage> {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (_) => SignupPage()));
+                    context, MaterialPageRoute(builder: (context) => SignupPage()));
               },
               style: ElevatedButton.styleFrom(
                 shape: const StadiumBorder(),

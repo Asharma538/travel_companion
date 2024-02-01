@@ -131,7 +131,7 @@ class LoginPage extends StatelessWidget {
                       email: email.text, password: password.text)
                       .then((_) {
                     Navigator.pushReplacement(
-                        context, MaterialPageRoute(builder: (_) => Base()));
+                        context, MaterialPageRoute(builder: (context) => Base()));
                   });
                 } on FirebaseAuthException catch (e) {
                   if (e.code == 'user-not-found') {
@@ -168,7 +168,7 @@ class LoginPage extends StatelessWidget {
         TextButton(
             onPressed: () {
               Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (_) => VerifyPage()));
+                  context, MaterialPageRoute(builder: (context) => const VerifyPage()));
             },
             child: const Text(
               "Sign Up",
