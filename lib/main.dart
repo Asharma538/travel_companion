@@ -31,7 +31,7 @@ class Base extends StatefulWidget {
   const Base({Key? key}) : super(key: key);
 
   @override
-  _BaseState createState() => _BaseState();
+  State<Base> createState() => _BaseState();
 }
 
 class _BaseState extends State<Base> {
@@ -54,15 +54,22 @@ class _BaseState extends State<Base> {
         backgroundColor: Colors.black,
         title: Row(
           children: [
-            Image.asset(
-              'lib/assets/images/logo.png',
-              fit: BoxFit.contain,
-              height: 50.0,
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.blue,
+              ),
+              margin: const EdgeInsets.fromLTRB(10, 0, 20, 0),
+              clipBehavior: Clip.hardEdge,
+              child: Image.asset(
+                'lib/assets/images/logo.png',
+                height: 45.0,
+              ),
             ),
             Container(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.fromLTRB(24, 8, 8, 8),
               child: const Text(
-                '  Travel Companion',
+                'Travel Companion',
                 style: TextStyle(color: Colors.white),
               ),
             )
@@ -76,7 +83,7 @@ class _BaseState extends State<Base> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CreatePostPage()),
+                  MaterialPageRoute(builder: (context) => const CreatePostPage()),
                 );
               },
               backgroundColor: Colors.green,
@@ -90,18 +97,18 @@ class _BaseState extends State<Base> {
     return Container(
       color: Colors.black,
       child: Padding(
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           horizontal: 15.0,
           vertical: 20.0,
         ),
         child: GNav(
           gap: 8.0,
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           backgroundColor: Colors.black,
           color: Colors.white,
           activeColor: Colors.white,
           tabBackgroundColor: Colors.grey,
-          tabs: [
+          tabs: const [
             GButton(
               icon: Icons.home,
               text: 'Home',
