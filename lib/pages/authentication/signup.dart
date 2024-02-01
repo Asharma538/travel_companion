@@ -3,8 +3,18 @@ import '../../main.dart';
 import '../../pages/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class SignupPage extends StatelessWidget {
+class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
+
+  @override
+  State<SignupPage> createState() => Signup();
+}
+
+class Signup extends State<SignupPage> {
+  
+
+
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +22,8 @@ class SignupPage extends StatelessWidget {
     var emailController = TextEditingController();
     var passwordController = TextEditingController();
     var confirmPasswordController = TextEditingController();
+
+   
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -144,19 +156,20 @@ class SignupPage extends StatelessWidget {
             height: MediaQuery.of(context).size.height / 12,
             child: ElevatedButton(
               onPressed: () async {
-                final credential = await FirebaseAuth.instance
-                    .createUserWithEmailAndPassword(
-                    email: email.text, password: password.text)
-                    .then((_) {
-                  Navigator.pushReplacement(
-                      context, MaterialPageRoute(builder: (_) => Base()));
-                }).catchError((e) {
-                  if (e.code == 'user-not-found') {
-                    print('No user found for that email.');
-                  } else if (e.code == 'wrong-password') {
-                    print('Wrong password provided for that user.');
-                  }
-                });
+                  final credential = await FirebaseAuth.instance
+                      .createUserWithEmailAndPassword(
+                          email: email.text, password: password.text)
+                      .then((_) {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => Base()));
+                  }).catchError((e) {
+                    if (e.code == 'user-not-found') {
+                      print('No user found for that email.');
+                    } else if (e.code == 'wrong-password') {
+                      print('Wrong password provided for that user.');
+                    }
+                  });
+                
               },
               style: ElevatedButton.styleFrom(
                 shape: const StadiumBorder(),
