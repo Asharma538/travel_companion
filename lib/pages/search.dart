@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:travel_companion/utils/colors.dart';
 import '../pages/search_results.dart';
 
 void _showDatePicker(BuildContext context, Function(DateTime) onDateSelected) {
@@ -46,7 +47,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 225, 224, 227),
+      backgroundColor: primaryColor,
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
         child: Column(
@@ -68,14 +69,14 @@ class _SearchPageState extends State<SearchPage> {
               ),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: const Color(0xff302360),
+                fillColor: textFieldBackgroundColor,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                   borderSide: BorderSide.none,
                 ),
                 hintText: "Ex: Jodhpur",
                 hintStyle: const TextStyle(
-                  color: Color.fromARGB(255, 19, 201, 210),
+                  color: placeholderTextColor,
                 ),
               ),
             ),
@@ -95,14 +96,14 @@ class _SearchPageState extends State<SearchPage> {
               ),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: const Color(0xff302360),
+                fillColor: textFieldBackgroundColor,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                   borderSide: BorderSide.none,
                 ),
                 hintText: "Ex: Airport",
                 hintStyle: const TextStyle(
-                  color: Color.fromARGB(255, 19, 201, 210),
+                  color: placeholderTextColor,
                 ),
               ),
             ),
@@ -111,53 +112,51 @@ class _SearchPageState extends State<SearchPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 MaterialButton(
-                  minWidth: screenSize.width * 0.2,
-                  height: screenSize.height * 0.076,
+                  height: 45,
                   onPressed: () => _showDatePicker(context, (date) {
                     setState(() {
                       selectedDate = date;
                     });
                   }),
-                  color: const Color(0xff302360),
+                  color: textFieldBackgroundColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                     side: BorderSide.none,
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                     child: Text(
                       selectedDate != null
                           ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
                           : "DATE",
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: placeholderTextColor,
                         fontSize: 15.0,
                       ),
                     ),
                   ),
                 ),
                 MaterialButton(
-                  minWidth: screenSize.width * 0.2,
-                  height: screenSize.height * 0.076,
+                  height: 45,
                   onPressed: () =>
                       _showTimePicker(context, selectedTime, (time) {
                     setState(() {
                       selectedTime = time;
                     });
                   }),
-                  color: const Color(0xff302360),
+                  color: textFieldBackgroundColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                     side: BorderSide.none,
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                     child: Text(
                       selectedTime != null
                           ? "${selectedTime!.hour}:${selectedTime!.minute}"
                           : "TIME",
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: placeholderTextColor,
                         fontSize: 15.0,
                       ),
                     ),
@@ -181,14 +180,14 @@ class _SearchPageState extends State<SearchPage> {
               ),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: const Color(0xff302360),
+                fillColor: textFieldBackgroundColor,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                   borderSide: BorderSide.none,
                 ),
                 hintText: "Ex: Flight/Train/Taxi/Auto etc.",
                 hintStyle: const TextStyle(
-                  color: Color.fromARGB(255, 19, 201, 210),
+                  color: placeholderTextColor,
                 ),
               ),
             ),
@@ -209,57 +208,50 @@ class _SearchPageState extends State<SearchPage> {
               maxLines: 2,
               decoration: InputDecoration(
                 filled: true,
-                fillColor: const Color(0xff302360),
+                fillColor: textFieldBackgroundColor,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                   borderSide: BorderSide.none,
                 ),
                 hintText: "Ex: Fight name or no./Train name or no.",
                 hintStyle: const TextStyle(
-                  color: Color.fromARGB(255, 19, 201, 210),
+                  color: placeholderTextColor,
                 ),
               ),
             ),
             SizedBox(height: screenSize.height * 0.02),
-            Center(
+            Container(
+              alignment: Alignment.center,
               child: ElevatedButton(
                 onPressed: () {
                   String fromLocation = fromLocationController.text;
                   String toLocation = toLocationController.text;
                   String modeOfTransport = modeOfTransportController.text;
-                  String description = descriptionController.text;
-
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => SearchResultsPage(
-                                fromLocation: fromLocation,
-                                toLocation: toLocation,
-                                selectedDate: selectedDate,
-                                selectedTime: selectedTime,
-                                modeOfTransport: modeOfTransport,
-                                // description: description,
-                              )));
-
-                  // // Use these values as needed
-                  // print("From: $fromLocation");
-                  // print("To: $toLocation");
-                  // print("Date: $selectedDate");
-                  // print("Time: $selectedTime");
-                  // print("Mode of Transport: $modeOfTransport");
-                  // print("Description: $description");
+                        builder: (context) => SearchResultsPage(
+                          fromLocation: fromLocation,
+                          toLocation: toLocation,
+                          selectedDate: selectedDate,
+                          selectedTime: selectedTime,
+                          modeOfTransport: modeOfTransport
+                        )
+                      )
+                  );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff302360),
+                  padding: const EdgeInsets.fromLTRB(30, 6, 30, 6),
+                  backgroundColor: complementaryColor,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.0),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 child: const Text(
                   "GO",
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20.0,
+                    color: secondaryTextColor,
+                    fontSize: 25.0,
                   ),
                 ),
               ),

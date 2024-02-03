@@ -2,60 +2,10 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:travel_companiion/pages/home.dart';
-import 'package:travel_companiion/pages/view_post.dart';
+import 'package:travel_companion/pages/authentication/login.dart';
+import 'package:travel_companion/pages/home.dart';
+import 'package:travel_companion/pages/view_post.dart';
 import '../components/post.dart';
-
-class AboutTextField extends StatefulWidget {
-  final String initialText;
-  final Function(String) onSave;
-
-  const AboutTextField(
-      {super.key, required this.initialText, required this.onSave});
-
-  @override
-  State<AboutTextField> createState() => _AboutTextFieldState();
-}
-
-class _AboutTextFieldState extends State<AboutTextField> {
-  late TextEditingController _textEditingController;
-  bool _isEditing = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _textEditingController = TextEditingController(text: widget.initialText);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _isEditing
-        ? TextField(
-            controller: _textEditingController,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Add your bio here!!',
-            ),
-            onEditingComplete: () {
-              setState(() {
-                _isEditing = false;
-                widget.onSave(_textEditingController.text);
-              });
-            },
-          )
-        : InkWell(
-            onTap: () {
-              setState(() {
-                _isEditing = true;
-              });
-            },
-            child: Text(
-              widget.initialText,
-              style: const TextStyle(fontSize: 15),
-            ),
-          );
-  }
-}
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -127,12 +77,13 @@ class _ProfileState extends State<Profile> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     IconButton(
-                      onPressed: () async {
+                      onPressed: () {
                         try {
-                          await FirebaseAuth.instance.signOut();
-                          // Navigate to the login or home page after successful logout
-                          Navigator.pushReplacementNamed(context,
-                              '/login'); // Replace '/login' with your desired route
+                          FirebaseAuth.instance.signOut();
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => const LoginPage())
+                          );
                         } catch (e) {
                           print('Error logging out: $e');
                         }
@@ -221,6 +172,58 @@ class _ProfileState extends State<Profile> {
             }
           },
         ),
+      ),
+    );
+  }
+}
+
+
+class AboutTextField extends StatefulWidget {
+  final String initialText;
+  final Function(String) onSave;
+
+  const AboutTextField(
+      {super.key, required this.initialText, required this.onSave});
+
+  @override
+  State<AboutTextField> createState() => _AboutTextFieldState();
+}
+
+class _AboutTextFieldState extends State<AboutTextField> {
+  late TextEditingController _textEditingController;
+  bool _isEditing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _textEditingController = TextEditingController(text: widget.initialText);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _isEditing
+        ? TextField(
+      controller: _textEditingController,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Add your bio here!!',
+      ),
+      onEditingComplete: (){
+        setState(() {
+          _isEditing = false;
+          widget.onSave(_textEditingController.text);
+        });
+      },
+    )
+        : InkWell(
+      onTap: () {
+        setState(() {
+          _isEditing = true;
+        });
+      },
+      child: Text(
+        widget.initialText,
+        style: const TextStyle(fontSize: 15),
       ),
     );
   }

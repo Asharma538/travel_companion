@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:travel_companiion/pages/home.dart';
+import 'package:travel_companion/pages/home.dart';
 import '../pages/profile.dart';
 import '../main.dart';
 
