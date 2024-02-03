@@ -7,13 +7,74 @@ import 'package:travel_companion/pages/home.dart';
 import 'package:travel_companion/pages/view_post.dart';
 import '../components/post.dart';
 
+
+class AboutTextField extends StatefulWidget {
+  final String initialText;
+  final Function(String) onSave;
+  final String userEmail;
+
+  const AboutTextField({
+    super.key,
+    required this.initialText,
+    required this.onSave,
+    required this.userEmail,
+  });
+
+  @override
+  State<AboutTextField> createState() => _AboutTextFieldState();
+}
+
+class _AboutTextFieldState extends State<AboutTextField> {
+  late TextEditingController _textEditingController;
+  bool _isEditing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _textEditingController = TextEditingController(text: widget.initialText);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _isEditing
+        ? TextField(
+            controller: _textEditingController,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'Add your bio here!!',
+            ),
+            onEditingComplete: () {
+              setState(() {
+                _isEditing = false;
+                widget.onSave(_textEditingController.text);
+              });
+            },
+          )
+        : InkWell(
+            onTap: () {
+              setState(() {
+                _isEditing = true;
+              });
+            },
+            child: Text(
+              _textEditingController.text,
+              style: const TextStyle(fontSize: 15),
+            ),
+          );
+  }
+}
+
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
 
   static Map<String, dynamic> userData = {};
 
   static Future<Map<String, dynamic>> fetchUser(String userEmail) async {
-    DocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot = await FirebaseFirestore.instance.collection('Users').doc(userEmail).get();
+    DocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot =
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(userEmail)
+            .get();
     var userData = queryDocumentSnapshot.data() ?? {};
     if (queryDocumentSnapshot.exists) {
       userData['id'] = queryDocumentSnapshot.id;
@@ -30,7 +91,7 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   late Future<Map<String, dynamic>> userFuture;
   String userEmail = 'sharma.130@iitj.ac.in';
-  String imgUrl = '';
+  Map<String, dynamic>? userData;
 
   @override
   void initState() {
@@ -60,7 +121,7 @@ class _ProfileState extends State<Profile> {
                 ),
               );
             } else {
-              Map<String, dynamic>? userData = snapshot.data;
+              userData = snapshot.data;
               if (userData == null) {
                 return const Center(
                   child: Text(
@@ -95,7 +156,8 @@ class _ProfileState extends State<Profile> {
                         Center(
                           child: CircleAvatar(
                             radius: 100.0,
-                            backgroundImage: NetworkImage(userData['profilePhoto'] ??
+                            backgroundImage: NetworkImage(userData?[
+                                    'profilePhoto'] ??
                                 'https://static.vecteezy.com/system/resources/previews/000/574/512/original/vector-sign-of-user-icon.jpg'),
                           ),
                         ),
@@ -115,7 +177,7 @@ class _ProfileState extends State<Profile> {
                       child: ListTile(
                         title: Center(
                           child: Text(
-                            userData['username'],
+                            userData?['username'] ?? '',
                             style: const TextStyle(fontSize: 30),
                           ),
                         ),
@@ -132,19 +194,22 @@ class _ProfileState extends State<Profile> {
                         ),
                       ),
                       subtitle: AboutTextField(
-                        initialText: userData['about'] ?? "",
+                        initialText: userData?['about'] ?? '',
                         onSave: (newAbout) {
-                          setState(() {
-                            // update user's about
-                          });
+                          FirebaseFirestore.instance
+                              .collection('Users')
+                              .doc(userEmail)
+                              .update({'about': newAbout});
                         },
+                        userEmail: userEmail,
                       ),
                     ),
                     const Divider(
                       color: Colors.black,
                     ),
                     for (var i = 0; i < Homepage.posts.length; i++) ...[
-                      if (Homepage.posts[i]['username'] == userData['username']) ...[
+                      if (Homepage.posts[i]['username'] ==
+                          userData?['username']) ...[
                         PostTile(
                             tripId: Homepage.posts[i]['id'],
                             userName: Homepage.posts[i]['username'],
@@ -153,7 +218,8 @@ class _ProfileState extends State<Profile> {
                             destination: Homepage.posts[i]['destination'],
                             date: Homepage.posts[i]['date'],
                             time: Homepage.posts[i]['time'],
-                            modeOfTransport: Homepage.posts[i]['modeOfTransport'],
+                            modeOfTransport: Homepage.posts[i]
+                                ['modeOfTransport'],
                             onPressed: () {
                               Navigator.push(
                                 context,
@@ -172,58 +238,6 @@ class _ProfileState extends State<Profile> {
             }
           },
         ),
-      ),
-    );
-  }
-}
-
-
-class AboutTextField extends StatefulWidget {
-  final String initialText;
-  final Function(String) onSave;
-
-  const AboutTextField(
-      {super.key, required this.initialText, required this.onSave});
-
-  @override
-  State<AboutTextField> createState() => _AboutTextFieldState();
-}
-
-class _AboutTextFieldState extends State<AboutTextField> {
-  late TextEditingController _textEditingController;
-  bool _isEditing = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _textEditingController = TextEditingController(text: widget.initialText);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _isEditing
-        ? TextField(
-      controller: _textEditingController,
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'Add your bio here!!',
-      ),
-      onEditingComplete: (){
-        setState(() {
-          _isEditing = false;
-          widget.onSave(_textEditingController.text);
-        });
-      },
-    )
-        : InkWell(
-      onTap: () {
-        setState(() {
-          _isEditing = true;
-        });
-      },
-      child: Text(
-        widget.initialText,
-        style: const TextStyle(fontSize: 15),
       ),
     );
   }
