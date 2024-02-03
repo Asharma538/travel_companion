@@ -48,10 +48,9 @@ class _SearchPageState extends State<SearchPage> {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: primaryColor,
-      body: SingleChildScrollView(
+      body: Container(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
@@ -65,7 +64,7 @@ class _SearchPageState extends State<SearchPage> {
             TextField(
               controller: fromLocationController,
               style: const TextStyle(
-                color: Colors.white,
+                color: primaryTextColor,
               ),
               decoration: InputDecoration(
                 filled: true,
@@ -80,7 +79,7 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
             ),
-            SizedBox(width: screenSize.width * 0.5),
+            const SizedBox(height: 15),
             const Text(
               "TO",
               style: TextStyle(
@@ -92,7 +91,7 @@ class _SearchPageState extends State<SearchPage> {
             TextField(
               controller: toLocationController,
               style: const TextStyle(
-                color: Colors.white,
+                color: primaryTextColor,
               ),
               decoration: InputDecoration(
                 filled: true,
@@ -107,7 +106,7 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
             ),
-            SizedBox(height: screenSize.height * 0.02),
+            const SizedBox(height: 25),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -118,7 +117,7 @@ class _SearchPageState extends State<SearchPage> {
                       selectedDate = date;
                     });
                   }),
-                  color: textFieldBackgroundColor,
+                  color: secondaryColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                     side: BorderSide.none,
@@ -130,7 +129,7 @@ class _SearchPageState extends State<SearchPage> {
                           ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
                           : "DATE",
                       style: const TextStyle(
-                        color: placeholderTextColor,
+                        color: secondaryTextColor,
                         fontSize: 15.0,
                       ),
                     ),
@@ -144,7 +143,7 @@ class _SearchPageState extends State<SearchPage> {
                       selectedTime = time;
                     });
                   }),
-                  color: textFieldBackgroundColor,
+                  color: secondaryColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                     side: BorderSide.none,
@@ -156,7 +155,7 @@ class _SearchPageState extends State<SearchPage> {
                           ? "${selectedTime!.hour}:${selectedTime!.minute}"
                           : "TIME",
                       style: const TextStyle(
-                        color: placeholderTextColor,
+                        color: secondaryTextColor,
                         fontSize: 15.0,
                       ),
                     ),
@@ -164,7 +163,7 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ],
             ),
-            SizedBox(height: screenSize.height * 0.02),
+            const SizedBox(height: 20),
             const Text(
               "MODE OF TRANSPORTATION",
               style: TextStyle(
@@ -176,7 +175,7 @@ class _SearchPageState extends State<SearchPage> {
             TextField(
               controller: modeOfTransportController,
               style: const TextStyle(
-                color: Colors.white,
+                color: primaryTextColor,
               ),
               decoration: InputDecoration(
                 filled: true,
@@ -191,36 +190,9 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
             ),
-            SizedBox(height: screenSize.height * 0.02),
-            const Text(
-              "DESCRIPTION",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 15.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            TextField(
-              controller: descriptionController,
-              style: const TextStyle(
-                color: Colors.white,
-              ),
-              maxLines: 2,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: textFieldBackgroundColor,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide.none,
-                ),
-                hintText: "Ex: Fight name or no./Train name or no.",
-                hintStyle: const TextStyle(
-                  color: placeholderTextColor,
-                ),
-              ),
-            ),
-            SizedBox(height: screenSize.height * 0.02),
+            const Expanded(child: SizedBox()),
             Container(
+              margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
               alignment: Alignment.center,
               child: ElevatedButton(
                 onPressed: () {
@@ -241,7 +213,7 @@ class _SearchPageState extends State<SearchPage> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.fromLTRB(30, 6, 30, 6),
+                  padding: const EdgeInsets.fromLTRB(50, 6, 50, 6),
                   backgroundColor: complementaryColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -251,7 +223,7 @@ class _SearchPageState extends State<SearchPage> {
                   "GO",
                   style: TextStyle(
                     color: secondaryTextColor,
-                    fontSize: 25.0,
+                    fontSize: 25,
                   ),
                 ),
               ),

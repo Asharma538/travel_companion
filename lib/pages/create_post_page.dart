@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:travel_companion/pages/home.dart';
+import 'package:travel_companion/utils/colors.dart';
 import '../pages/profile.dart';
 import '../main.dart';
 
@@ -76,21 +77,24 @@ class _CreatePostPageState extends State<CreatePostPage> {
   Widget build(BuildContext context) {
     var _mediaQuery = MediaQuery.of(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: primaryColor,
       appBar: AppBar(
-        backgroundColor: Color(0xff302360),
+        backgroundColor: secondaryColor,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back,color: secondaryTextColor,),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: Text(
-          "New Post",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Container(
+          margin: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+          child: const Text(
+            "New Post",
+            style: TextStyle(fontWeight: FontWeight.bold,color: secondaryTextColor),
+          ),
         ),
       ),
-      body: SingleChildScrollView(
+      body: Container(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -98,46 +102,51 @@ class _CreatePostPageState extends State<CreatePostPage> {
             _buildTextField("FROM", "Ex: Jodhpur", (value) {
               fromLocation = value;
             }),
-            SizedBox(height: _mediaQuery.size.height * 0.02),
+            const SizedBox(height: 15),
             _buildTextField("TO", "Ex: Airport", (value) {
               toLocation = value;
             }),
-            SizedBox(height: _mediaQuery.size.height * 0.02),
+            const SizedBox(height: 20),
             _buildDateTimeRow(),
-            SizedBox(height: _mediaQuery.size.height * 0.02),
+            const SizedBox(height: 20),
             _buildTextField(
                 "MODE OF TRANSPORTATION", "Ex: Flight/Train/Taxi/Auto etc.",
                 (value) {
               transportationMode = value;
             }),
-            SizedBox(height: _mediaQuery.size.height * 0.02),
+            const SizedBox(height: 15),
             _buildTextField(
                 "DESCRIPTION", "Ex: Flight name or no./Train name or no.",
                 (value) {
               description = value;
               print(description);
             }, maxLines: 2),
-            SizedBox(height: _mediaQuery.size.height * 0.02),
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  await createNewTrip(context);
-                } catch (e) {
-                  print("Error creating post 1: $e");
-                  // Handle the error as needed
-                }
-              },
-              child: Text(
-                "Create Post",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20.0,
+            const Expanded(child: SizedBox()),
+            Container(
+              margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+              alignment: Alignment.center,
+              child: ElevatedButton(
+                onPressed: () async {
+                  try {
+                    await createNewTrip(context);
+                  } catch (e) {
+                    print("Error creating post 1: $e");
+                    // Handle the error as needed
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
+                  backgroundColor: complementaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-              ),
-              style: ElevatedButton.styleFrom(
-                primary: Color(0xff302360),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0),
+                child: const Text(
+                  "Create Post",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 25,
+                  ),
                 ),
               ),
             ),
@@ -147,14 +156,13 @@ class _CreatePostPageState extends State<CreatePostPage> {
     );
   }
 
-  Widget _buildTextField(String label, String hint, Function(String) onChanged,
-      {int? maxLines}) {
+  Widget _buildTextField(String label, String hint, Function(String) onChanged,{int? maxLines}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 15.0,
             fontWeight: FontWeight.bold,
@@ -162,20 +170,20 @@ class _CreatePostPageState extends State<CreatePostPage> {
         ),
         TextField(
           onChanged: onChanged,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
           ),
           maxLines: maxLines,
           decoration: InputDecoration(
             filled: true,
-            fillColor: Color(0xffF0F0F0),
+            fillColor: textFieldBackgroundColor,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
               borderSide: BorderSide.none,
             ),
             hintText: hint,
-            hintStyle: TextStyle(
-              color: Color(0xffA0A0A0),
+            hintStyle: const TextStyle(
+              color: placeholderTextColor,
             ),
           ),
         ),
@@ -185,7 +193,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
 
   Widget _buildDateTimeRow() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildDateTimeButton("DATE", Icons.calendar_today, () {
           _showDatePicker(context, (date) {
@@ -194,6 +202,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
             });
           });
         }),
+        SizedBox(width: MediaQuery.of(context).size.width*0.1 - 16,),
         _buildDateTimeButton("TIME", Icons.access_time, () {
           _showTimePicker(context, selectedTime, (time) {
             setState(() {
@@ -205,12 +214,16 @@ class _CreatePostPageState extends State<CreatePostPage> {
     );
   }
 
-  Widget _buildDateTimeButton(
-      String label, IconData icon, VoidCallback onPressed) {
+  Widget _buildDateTimeButton(String label, IconData icon, VoidCallback onPressed) {
     return MaterialButton(
-      minWidth: MediaQuery.of(context).size.width * 0.45,
-      height: MediaQuery.of(context).size.height * 0.076,
+      minWidth: MediaQuery.of(context).size.width * 0.4,
+      height: MediaQuery.of(context).size.height * 0.06,
       onPressed: onPressed,
+      color: secondaryColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0),
+        side: BorderSide.none,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -219,24 +232,19 @@ class _CreatePostPageState extends State<CreatePostPage> {
             color: Colors.white,
             size: 20.0,
           ),
-          SizedBox(width: 8.0),
+          const SizedBox(width: 8.0),
           Text(
             selectedDate != null && label == "DATE"
                 ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
                 : selectedTime != null && label == "TIME"
                     ? "${selectedTime!.hour}:${selectedTime!.minute}"
                     : label,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 15.0,
             ),
           ),
         ],
-      ),
-      color: Color(0xff302360),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-        side: BorderSide.none,
       ),
     );
   }
@@ -283,7 +291,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
       print("Post created successfully!");
 
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => MyApp()));
+          context, MaterialPageRoute(builder: (context) => const MyApp()));
     } catch (e) {
       print("Error creating post: $e");
       // Handle the error as needed
