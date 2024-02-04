@@ -66,13 +66,18 @@ class _HomepageState extends State<Homepage> {
                   date: post['date'] ?? 'Not Available',
                   time: post['time'] ?? 'Not Available',
                   modeOfTransport: post['modeOfTransport'] ?? 'Not Available',
-                  onPressed: () {
-                    Navigator.push(
+                  onPressed: () async {
+                    var result = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ViewPost(post: post),
                       ),
                     );
+                    if (result == true) {
+                      setState(() {
+                        posts.removeWhere((p) => p['id'] == post['id']);
+                      });
+                    }
                   },
                 );
               },

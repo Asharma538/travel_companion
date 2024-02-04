@@ -5,7 +5,9 @@ import 'package:travel_companion/pages/authentication/signup.dart';
 import 'package:travel_companion/utils/colors.dart';
 
 class VerifyPage extends StatefulWidget {
-  const VerifyPage({super.key});
+  final String? email;
+
+  const VerifyPage({Key? key, this.email}) : super(key: key);
 
   @override
   State<VerifyPage> createState() => _VerifyPageState();
@@ -103,10 +105,8 @@ class _VerifyPageState extends State<VerifyPage> {
               const Text("Already have an account?"),
               TextButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const LoginPage()));
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => LoginPage()));
                   },
                   child: const Text(
                     "Login",
@@ -237,7 +237,8 @@ class _VerifyPageState extends State<VerifyPage> {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const SignupPage()));
+                        builder: (context) =>
+                            SignupPage(signUpEmail: emailController.text)));
               },
               style: TextButton.styleFrom(
                   backgroundColor: secondaryColor,
