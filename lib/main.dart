@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     String userEmail = 'sharma.130@iitj.ac.in';
     Profile.fetchUser(userEmail);
-    if (FirebaseAuth.instance.currentUser?.uid == null) {
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Base(),

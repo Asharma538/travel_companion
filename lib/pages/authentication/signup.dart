@@ -32,6 +32,7 @@ class Signup extends State<SignupPage> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: primaryColor,
         body: _body(context, userNameController, emailController ,passwordController, confirmPasswordController,phoneNumberController),
       ),
@@ -149,11 +150,11 @@ class Signup extends State<SignupPage> {
             height: MediaQuery.of(context).size.height / 10,
             child: ElevatedButton(
               onPressed: () async {
-                  final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                  await FirebaseAuth.instance.createUserWithEmailAndPassword(
                           email: email.text, password: password.text
-                  ).then((_) {
+                  ).then((_) async {
                     Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => const Base()));
+                        MaterialPageRoute(builder: (context) => Base()));
                   }).catchError((e) {
                     if (e.code == 'user-not-found') {
                       print('No user found for that email.');

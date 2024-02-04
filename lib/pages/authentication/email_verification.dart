@@ -16,7 +16,7 @@ class VerifyPage extends StatefulWidget {
 class _VerifyPageState extends State<VerifyPage> {
   var state = 0;
   final emailController = TextEditingController();
-  RegExp emailRegExp = RegExp(r'^[a-zA-Z0-9_]+@iitj\.ac\.in$');
+  RegExp emailRegExp = RegExp(r'^[a-zA-Z0-9_.&|^$#]+@iitj\.ac\.in$');
   int _validate = 1;
 
   @override
@@ -28,6 +28,7 @@ class _VerifyPageState extends State<VerifyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: primaryColor,
       body: SingleChildScrollView(
         child: Container(
