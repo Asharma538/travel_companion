@@ -91,13 +91,13 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   late Future<Map<String, dynamic>> userFuture;
-  String userEmail = 'sharma.130@iitj.ac.in';
+  String? userEmail = FirebaseAuth.instance.currentUser?.email;
   Map<String, dynamic>? userData;
 
   @override
   void initState() {
     super.initState();
-    userFuture = Profile.fetchUser(userEmail);
+    userFuture = Profile.fetchUser(userEmail!);
   }
 
   @override
@@ -211,7 +211,7 @@ class _ProfileState extends State<Profile> {
                               .doc(userEmail)
                               .update({'about': newAbout});
                         },
-                        userEmail: userEmail,
+                        userEmail: userEmail!,
                       ),
                     ),
                     const Divider(

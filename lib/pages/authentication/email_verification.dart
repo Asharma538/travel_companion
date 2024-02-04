@@ -19,7 +19,7 @@ class _VerifyPageState extends State<VerifyPage> {
   var state = 0;
   final emailController = TextEditingController();
   RegExp emailRegExp = RegExp(r'^[a-zA-Z0-9_.&|^$#]+@iitj\.ac\.in$');
-  int _validate = 1;
+  bool _validate = false;
 
   @override
   void dispose() {
@@ -100,7 +100,7 @@ class _VerifyPageState extends State<VerifyPage> {
                   ),
                   validator: (email) {
                     if (email!
-                        .contains(RegExp(r'^[a-zA-z0-9]+@iitj\.ac\.in$'))) {
+                        .contains(RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
                       return null;
                     } else {
                       return "Enter a valid email";
@@ -116,14 +116,13 @@ class _VerifyPageState extends State<VerifyPage> {
             children: [
               const Text("Already have an account?"),
               TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => LoginPage()));
+                  onPressed: (){
+                    Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => LoginPage()));
                   },
                   child: const Text(
-                    "Login",
-                    style: TextStyle(color: linkTextColor),
-                  ))
+                    "Login",style: TextStyle(color: linkTextColor),
+                  )
+              )
             ],
           ),
           Container(
@@ -132,18 +131,14 @@ class _VerifyPageState extends State<VerifyPage> {
             height: 50,
             child: TextButton(
               onPressed: () {
+                formkey.currentState!.validate();
+
                 setState(() {
-                  if (emailController.text.isEmpty) {
-                    _validate = 1;
-                  } else {
-                    if (!emailRegExp.hasMatch(emailController.text)) {
-                      _validate = 2;
-                    } else {
-                      _validate = 0;
-                    }
-                  }
+                  emailController.text.isEmpty
+                      ? _validate = true
+                      : _validate = false;
                 });
-                if (_validate == 0) {
+                if (_validate != true) {
                   setState(() {
                     state = 1;
                   });
@@ -152,7 +147,9 @@ class _VerifyPageState extends State<VerifyPage> {
               style: TextButton.styleFrom(
                   backgroundColor: secondaryColor,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10))),
+                      borderRadius: BorderRadius.circular(10)
+                  )
+              ),
               child: const Text(
                 'Next',
                 style: TextStyle(fontSize: 22, color: buttonTextColor),
@@ -248,9 +245,10 @@ class _VerifyPageState extends State<VerifyPage> {
               onPressed: () {
                 Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            SignupPage(signUpEmail: emailController.text)));
+                    MaterialPageRoute(builder: (context) =>
+                            SignupPage(signUpEmail: emailController.text)
+                    )
+                );
               },
               style: TextButton.styleFrom(
                   backgroundColor: secondaryColor,
