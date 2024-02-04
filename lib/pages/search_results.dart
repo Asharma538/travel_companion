@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:travel_companion/pages/home.dart';
 import '../components/post.dart';
 import 'package:travel_companion/pages/view_post.dart';
-// import '../components/appbar.dart';
 
 class SearchResultsPage extends StatefulWidget {
   final String fromLocation;
@@ -61,7 +59,6 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                   children: [
                     _appBarBack(context),
                     for (var i = 0; i < Homepage.posts.length; i++) ...[
-
                       if ((widget.fromLocation == Homepage.posts[i]['source'] ||
                               widget.fromLocation == "") &&
                           (widget.toLocation ==
@@ -87,7 +84,9 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ViewPost(post: Homepage.posts[i],),
+                                  builder: (context) => ViewPost(
+                                    post: Homepage.posts[i],
+                                  ),
                                 ),
                               );
                             })
