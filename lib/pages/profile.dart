@@ -139,9 +139,8 @@ class _ProfileState extends State<Profile> {
                       onPressed: () async {
                         try {
                           await FirebaseAuth.instance.signOut();
-                          // Navigate to the login or home page after successful logout
                           Navigator.pushReplacementNamed(context,
-                              '/login'); // Replace '/login' with your desired route
+                              '/login');
                         } catch (e) {
                           print('Error logging out: $e');
                         }
