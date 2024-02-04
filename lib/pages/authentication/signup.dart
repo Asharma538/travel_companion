@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../main.dart';
 import '../../pages/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../utils/colors.dart';
 import 'package:flutter_pw_validator/flutter_pw_validator.dart';
 
 final formkey = GlobalKey<FormState>();
@@ -159,9 +160,9 @@ class Signup extends State<SignupPage> {
                                   if(confirmpass == null || confirmpass.isEmpty) {
                                     return "This feild is required";
                                   }
-                                  // else if(confirmpass != passwordController){
-                                  //   return "Confirm the same password";
-                                  // }
+                                  else if(confirmpass != passwordController){
+                                    return "Confirm the same password";
+                                  }
                                   else {
                                     return null;
                                   }

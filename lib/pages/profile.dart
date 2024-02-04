@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:travel_companiion/pages/home.dart';
-import 'package:travel_companiion/pages/view_post.dart';
+import 'package:travel_companion/pages/authentication/login.dart';
+import 'package:travel_companion/pages/home.dart';
+import 'package:travel_companion/pages/view_post.dart';
 import '../components/post.dart';
+
 
 class AboutTextField extends StatefulWidget {
   final String initialText;
@@ -136,11 +138,13 @@ class _ProfileState extends State<Profile> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     IconButton(
-                      onPressed: () async {
+                      onPressed: () {
                         try {
-                          await FirebaseAuth.instance.signOut();
-                          Navigator.pushReplacementNamed(context,
-                              '/login');
+                          FirebaseAuth.instance.signOut();
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => const LoginPage())
+                          );
                         } catch (e) {
                           print('Error logging out: $e');
                         }

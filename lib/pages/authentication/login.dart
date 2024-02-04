@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:travel_companiion/pages/authentication/email_verification.dart';
+import 'package:travel_companion/pages/authentication/email_verification.dart';
 import '../../main.dart';
-import '../../pages/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatelessWidget {
@@ -12,9 +11,7 @@ class LoginPage extends StatelessWidget {
     var emailController = TextEditingController();
     var passwordController = TextEditingController();
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
         backgroundColor: const Color.fromARGB(255, 251, 248, 239),
         body: SingleChildScrollView(
           child: Container(
@@ -30,8 +27,7 @@ class LoginPage extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 
   _appBar(context) {
@@ -56,7 +52,7 @@ class LoginPage extends StatelessWidget {
   _body(context, TextEditingController email, TextEditingController password) {
     return Container(
       height: MediaQuery.of(context).size.height / 10 * 7.5,
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -73,7 +69,7 @@ class LoginPage extends StatelessWidget {
           ),
           Container(
             child: Column(children: [
-              Container(alignment: Alignment.centerLeft, child: Text('Email')),
+              Container(alignment: Alignment.centerLeft, child: const Text('Email')),
               SizedBox(
                 height: MediaQuery.of(context).size.height / 10,
                 child: TextField(
@@ -131,7 +127,7 @@ class LoginPage extends StatelessWidget {
                       email: email.text, password: password.text)
                       .then((_) {
                     Navigator.pushReplacement(
-                        context, MaterialPageRoute(builder: (context) => Base()));
+                        context, MaterialPageRoute(builder: (context) => const Base()));
                   });
                 } on FirebaseAuthException catch (e) {
                   if (e.code == 'user-not-found') {
