@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:travel_companiion/pages/home.dart';
+import 'package:travel_companiion/pages/create_post_page.dart';
 
 class ViewPost extends StatefulWidget {
   final Map<String, dynamic> post;
@@ -13,7 +14,22 @@ class ViewPost extends StatefulWidget {
 
 class _ViewPostState extends State<ViewPost> {
   late Map<String, dynamic> post;
-  String loggedInUser = '';
+  String loggedInUser = 'Ash538';
+
+  Future<bool> deletePost() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('Trips')
+          .doc(widget.post['id'])
+          .delete();
+      print("Post deleted successfully!");
+      Navigator.pop(context, true);
+      return true;
+    } catch (e) {
+      print("Error deleting post: $e");
+      return false;
+    }
+  }
 
   @override
   void initState() {
@@ -26,25 +42,33 @@ class _ViewPostState extends State<ViewPost> {
   }
 
   void storeRequest() async {
-    String userEmail = 'b23cs1005@iitj.ac.in';
+    String userEmail = 'sharma.130@iitj.ac.in';
     var firestore = await FirebaseFirestore.instance;
 
-    DocumentSnapshot<Map<String, dynamic>> myRequestSnapshot = await firestore.collection('Requests').doc(userEmail).get();
-    DocumentSnapshot<Map<String, dynamic>> ownerRequestSnapshot = await firestore.collection('Requests').doc(post['createdBy']).get();
+    DocumentSnapshot<Map<String, dynamic>> myRequestSnapshot =
+        await firestore.collection('Requests').doc(userEmail).get();
+    DocumentSnapshot<Map<String, dynamic>> ownerRequestSnapshot =
+        await firestore.collection('Requests').doc(post['createdBy']).get();
 
     Map<String, dynamic> myRequestInfo = {
       'tripId': post['id'],
       'status': 'Pending',
       'type': 'Sent',
+      'sent by': userEmail,
+      'sent to': post['createdBy'],
     };
+
     Map<String, dynamic> ownerRequestInfo = {
       'tripId': post['id'],
       'status': 'Pending',
       'type': 'Received',
+      'sent by': userEmail,
+      'sent to': post['createdBy'],
     };
 
     if (myRequestSnapshot.exists) {
-      List<dynamic> myExistingRequests = myRequestSnapshot.data()?['requests'] ?? [];
+      List<dynamic> myExistingRequests =
+          myRequestSnapshot.data()?['requests'] ?? [];
 
       myExistingRequests.add(myRequestInfo);
 
@@ -57,8 +81,9 @@ class _ViewPostState extends State<ViewPost> {
       });
     }
 
-    if (ownerRequestSnapshot.exists) { 
-      List<dynamic> ownerExistingRequests = ownerRequestSnapshot.data()?['requests'] ?? [];
+    if (ownerRequestSnapshot.exists) {
+      List<dynamic> ownerExistingRequests =
+          ownerRequestSnapshot.data()?['requests'] ?? [];
 
       ownerExistingRequests.add(ownerRequestInfo);
 
@@ -215,7 +240,14 @@ class _ViewPostState extends State<ViewPost> {
                 ] else ...[
                   ElevatedButton(
                     onPressed: () {
-                      print('User requested Edit');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CreatePostPage(
+                            initialPost: post,
+                          ),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xff302360),
@@ -236,6 +268,7 @@ class _ViewPostState extends State<ViewPost> {
                   ),
                   ElevatedButton(
                     onPressed: () {
+                      deletePost();
                       print('User requested Delete');
                     },
                     style: ElevatedButton.styleFrom(

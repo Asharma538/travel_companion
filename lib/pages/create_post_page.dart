@@ -1,6 +1,7 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:travel_companiion/pages/home.dart';
 import '../pages/profile.dart';
 import '../main.dart';
 
@@ -31,7 +32,9 @@ class Trip {
 }
 
 class CreatePostPage extends StatefulWidget {
-  const CreatePostPage({Key? key});
+  final Map<String, dynamic>? initialPost;
+
+  const CreatePostPage({Key? key, this.initialPost}) : super(key: key);
 
   @override
   State<CreatePostPage> createState() => _CreatePostPageState();
@@ -73,108 +76,163 @@ class _CreatePostPageState extends State<CreatePostPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.initialPost != null) {
+
+      fromLocation = widget.initialPost!['source'] ?? '';
+      toLocation = widget.initialPost!['destination'] ?? '';
+
+      transportationMode = widget.initialPost!['modeOfTransport'] ?? '';
+      
+      description = widget.initialPost!['desc'] ?? '';
+
+      String dateString = widget.initialPost!['date'] ?? '';
+      List<String> dateParts = dateString.split('-');
+      int day = int.parse(dateParts[0]);
+      int month = int.parse(dateParts[1]);
+      int year = int.parse(dateParts[2]);
+      selectedDate = DateTime(year, month, day);
+
+      selectedTime = TimeOfDay(
+        hour: int.parse(widget.initialPost!['time'].split(':')[0]),
+        minute: int.parse(widget.initialPost!['time'].split(':')[1]),
+      );
+      
+      setState(() {});
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     var _mediaQuery = MediaQuery.of(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Color(0xff302360),
+        backgroundColor: const Color(0xff302360),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: Text(
-          "New Post",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: widget.initialPost != null
+            ? const Text(
+                "Edit Post",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              )
+            : const Text(
+                "New Post",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildTextField("FROM", "Ex: Jodhpur", (value) {
+            _buildTextField("FROM", fromLocation ,"Ex: Jodhpur", (value) {
               fromLocation = value;
             }),
             SizedBox(height: _mediaQuery.size.height * 0.02),
-            _buildTextField("TO", "Ex: Airport", (value) {
+            _buildTextField("TO", toLocation , "Ex: Airport", (value) {
               toLocation = value;
             }),
             SizedBox(height: _mediaQuery.size.height * 0.02),
             _buildDateTimeRow(),
             SizedBox(height: _mediaQuery.size.height * 0.02),
-            _buildTextField(
-                "MODE OF TRANSPORTATION", "Ex: Flight/Train/Taxi/Auto etc.",
-                (value) {
+            _buildTextField("MODE OF TRANSPORTATION" , transportationMode , "Ex: Flight/Train/Taxi/Auto etc.",(value) {
               transportationMode = value;
             }),
             SizedBox(height: _mediaQuery.size.height * 0.02),
             _buildTextField(
-                "DESCRIPTION", "Ex: Flight name or no./Train name or no.",
-                (value) {
+                "DESCRIPTION", description , "Ex: Flight name or no./Train name or no.",(value) {
               description = value;
-              print(description);
             }, maxLines: 2),
             SizedBox(height: _mediaQuery.size.height * 0.02),
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  await createNewTrip(context);
-                } catch (e) {
-                  print("Error creating post 1: $e");
-                  // Handle the error as needed
-                }
-              },
-              child: Text(
-                "Create Post",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20.0,
+
+            if (widget.initialPost == null) ...[
+              ElevatedButton(
+                onPressed: () async {
+                  try {
+                    await createNewTrip(context);
+                  } catch (e) {
+                    print("Error creating post 1: $e");
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xff302360),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                ),
+                child: const Text(
+                  "Create Post",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20.0,
+                  ),
                 ),
               ),
-              style: ElevatedButton.styleFrom(
-                primary: Color(0xff302360),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0),
+            ]
+            else...[
+              ElevatedButton(
+                onPressed: () async {
+                  try {
+                    await createNewTrip(context);
+                  } catch (e) {
+                    print("Error creating post 1: $e");
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xff302360),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                ),
+                child: const Text(
+                  "Edit Post",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20.0,
+                  ),
                 ),
               ),
-            ),
+            ]
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTextField(String label, String hint, Function(String) onChanged,
-      {int? maxLines}) {
+  Widget _buildTextField(String label,String initialText, String hint, Function(String) onChanged,{int? maxLines}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 15.0,
             fontWeight: FontWeight.bold,
           ),
         ),
         TextField(
+          controller: TextEditingController()..text = initialText,
           onChanged: onChanged,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
           ),
           maxLines: maxLines,
           decoration: InputDecoration(
             filled: true,
-            fillColor: Color(0xffF0F0F0),
+            fillColor: const Color(0xffF0F0F0),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
               borderSide: BorderSide.none,
             ),
             hintText: hint,
-            hintStyle: TextStyle(
+            hintStyle: const TextStyle(
               color: Color(0xffA0A0A0),
             ),
           ),
@@ -211,6 +269,11 @@ class _CreatePostPageState extends State<CreatePostPage> {
       minWidth: MediaQuery.of(context).size.width * 0.45,
       height: MediaQuery.of(context).size.height * 0.076,
       onPressed: onPressed,
+      color: const Color(0xff302360),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0),
+        side: BorderSide.none,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -219,24 +282,19 @@ class _CreatePostPageState extends State<CreatePostPage> {
             color: Colors.white,
             size: 20.0,
           ),
-          SizedBox(width: 8.0),
+          const SizedBox(width: 8.0),
           Text(
             selectedDate != null && label == "DATE"
                 ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
                 : selectedTime != null && label == "TIME"
                     ? "${selectedTime!.hour}:${selectedTime!.minute}"
                     : label,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 15.0,
             ),
           ),
         ],
-      ),
-      color: Color(0xff302360),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-        side: BorderSide.none,
       ),
     );
   }
@@ -268,6 +326,23 @@ class _CreatePostPageState extends State<CreatePostPage> {
     );
 
     try {
+    if (widget.initialPost != null) {
+      await FirebaseFirestore.instance.collection('Trips').doc(widget.initialPost!['id']).update({
+        'about': newTrip.about,
+        'createdBy': newTrip.createdBy,
+        'date': newTrip.date,
+        'desc': newTrip.desc,
+        'destination': newTrip.destination,
+        'modeOfTransport': newTrip.modeOfTransport,
+        'source': newTrip.source,
+        'time': newTrip.time,
+        'userImage': newTrip.userImage,
+        'username': newTrip.username,
+      });
+
+      print("Post updated successfully!");
+    } 
+    else {
       await FirebaseFirestore.instance.collection('Trips').add({
         'about': newTrip.about,
         'createdBy': newTrip.createdBy,
@@ -280,13 +355,14 @@ class _CreatePostPageState extends State<CreatePostPage> {
         'userImage': newTrip.userImage,
         'username': newTrip.username,
       });
+
       print("Post created successfully!");
+    }
 
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => MyApp()));
+          context, MaterialPageRoute(builder: (context) => const MyApp()));
     } catch (e) {
       print("Error creating post: $e");
-      // Handle the error as needed
     }
   }
 }
