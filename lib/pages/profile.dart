@@ -111,7 +111,8 @@ class _ProfileState extends State<Profile> {
               return const Center(
                 child: CircularProgressIndicator(),
               );
-            } else if (snapshot.hasError) {
+            }
+            else if (snapshot.hasError) {
               return const Center(
                 child: Text(
                   'Error',
@@ -156,8 +157,7 @@ class _ProfileState extends State<Profile> {
                         Center(
                           child: CircleAvatar(
                             radius: 100.0,
-                            backgroundImage: NetworkImage(userData?[
-                                    'profilePhoto'] ??
+                            backgroundImage: NetworkImage(userData?['profilePhoto'] ??
                                 'https://static.vecteezy.com/system/resources/previews/000/574/512/original/vector-sign-of-user-icon.jpg'),
                           ),
                         ),
@@ -212,14 +212,13 @@ class _ProfileState extends State<Profile> {
                           userData?['username']) ...[
                         PostTile(
                             tripId: Homepage.posts[i]['id'],
-                            userName: Homepage.posts[i]['username'],
-                            userImage: Homepage.posts[i]['userImage'],
-                            source: Homepage.posts[i]['source'],
-                            destination: Homepage.posts[i]['destination'],
-                            date: Homepage.posts[i]['date'],
-                            time: Homepage.posts[i]['time'],
-                            modeOfTransport: Homepage.posts[i]
-                                ['modeOfTransport'],
+                            userName: Homepage.posts[i]['username']??'',
+                            userImage: Homepage.posts[i]['userImage']??'',
+                            source: Homepage.posts[i]['source']??'',
+                            destination: Homepage.posts[i]['destination']??'',
+                            date: Homepage.posts[i]['date']??'',
+                            time: Homepage.posts[i]['time']??'',
+                            modeOfTransport: Homepage.posts[i]['modeOfTransport']??'',
                             onPressed: () {
                               Navigator.push(
                                 context,

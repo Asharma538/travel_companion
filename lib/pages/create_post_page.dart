@@ -77,6 +77,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
   Widget build(BuildContext context) {
     var _mediaQuery = MediaQuery.of(context);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: primaryColor,
       appBar: AppBar(
         backgroundColor: secondaryColor,
@@ -250,17 +251,12 @@ class _CreatePostPageState extends State<CreatePostPage> {
   }
 
   Future<void> createNewTrip(BuildContext context) async {
-    if (fromLocation.isEmpty ||
-        toLocation.isEmpty ||
-        selectedDate == null ||
-        selectedTime == null ||
-        transportationMode.isEmpty) {
+    if (fromLocation.isEmpty || toLocation.isEmpty) {
       print("Please fill all the fields");
       return;
     }
-    String formattedDate =
-        "${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year}";
-    String formattedTime = "${selectedTime!.hour}:${selectedTime!.minute}";
+    String formattedDate = selectedDate!=null? "${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year}" : "";
+    String formattedTime = selectedTime!=null? "${selectedTime!.hour}:${selectedTime!.minute}" : "";
 
     Trip newTrip = Trip(
       about: Profile.userData['about'] ?? '',
@@ -268,7 +264,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
       date: formattedDate,
       desc: description != "" ? description : 'Not Available',
       destination: toLocation,
-      modeOfTransport: transportationMode,
+      modeOfTransport: transportationMode ?? 'Not decided',
       source: fromLocation,
       time: formattedTime,
       userImage: Profile.userData['profilePhoto'] ?? '',
