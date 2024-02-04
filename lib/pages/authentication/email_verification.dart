@@ -7,7 +7,9 @@ import 'package:travel_companion/utils/colors.dart';
 final formkey = GlobalKey<FormState>();
 
 class VerifyPage extends StatefulWidget {
-  const VerifyPage({super.key});
+  final String? email;
+
+  const VerifyPage({Key? key, this.email}) : super(key: key);
 
   @override
   State<VerifyPage> createState() => _VerifyPageState();
@@ -16,7 +18,8 @@ class VerifyPage extends StatefulWidget {
 class _VerifyPageState extends State<VerifyPage> {
   var state = 0;
   final emailController = TextEditingController();
-  bool _validate = false;
+  RegExp emailRegExp = RegExp(r'^[a-zA-Z0-9_.&|^$#]+@iitj\.ac\.in$');
+  int _validate = 1;
 
   @override
   void dispose() {
@@ -27,6 +30,7 @@ class _VerifyPageState extends State<VerifyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: primaryColor,
       body: SingleChildScrollView(
         child: Container(
@@ -113,10 +117,8 @@ class _VerifyPageState extends State<VerifyPage> {
               const Text("Already have an account?"),
               TextButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const LoginPage()));
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => LoginPage()));
                   },
                   child: const Text(
                     "Login",
@@ -131,11 +133,17 @@ class _VerifyPageState extends State<VerifyPage> {
             child: TextButton(
               onPressed: () {
                 setState(() {
-                  emailController.text.isEmpty
-                      ? _validate = true
-                      : _validate = false;
+                  if (emailController.text.isEmpty) {
+                    _validate = 1;
+                  } else {
+                    if (!emailRegExp.hasMatch(emailController.text)) {
+                      _validate = 2;
+                    } else {
+                      _validate = 0;
+                    }
+                  }
                 });
-                if (_validate != true) {
+                if (_validate == 0) {
                   setState(() {
                     state = 1;
                   });
@@ -241,7 +249,8 @@ class _VerifyPageState extends State<VerifyPage> {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const SignupPage()));
+                        builder: (context) =>
+                            SignupPage(signUpEmail: emailController.text)));
               },
               style: TextButton.styleFrom(
                   backgroundColor: secondaryColor,

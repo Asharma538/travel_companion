@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import '../../main.dart';
 import '../../pages/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import '../../utils/colors.dart';
 import 'package:flutter_pw_validator/flutter_pw_validator.dart';
 
 final formkey = GlobalKey<FormState>();
 
 class SignupPage extends StatefulWidget {
-  const SignupPage({super.key});
+ final String? signUpEmail;
+
+  const SignupPage({Key? key, this.signUpEmail}) : super(key: key);
 
 
 
@@ -17,32 +20,75 @@ class SignupPage extends StatefulWidget {
 }
 
 class Signup extends State<SignupPage> {
-  final userNameController = TextEditingController();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
+  var userNameController = TextEditingController();
+  var emailController = TextEditingController();
+  var passwordController = TextEditingController();
+  var confirmPasswordController = TextEditingController();
+  var phoneNumberController= TextEditingController();
 
   @override
+    void initState() {
+      super.initState();
+      emailController.text = widget.signUpEmail ?? '';
+    }
+  
+  
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 251, 248, 239),
-        appBar: AppBar(
-            backgroundColor: const Color.fromARGB(255, 251, 248, 239),
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CircleAvatar(
-                  backgroundImage:
-                      const AssetImage('lib/assets/images/logo.png'),
-                  radius: MediaQuery.of(context).size.height / 25,
+        resizeToAvoidBottomInset: false,
+        backgroundColor: primaryColor,
+        body: _body(context, userNameController, emailController ,passwordController, confirmPasswordController,phoneNumberController),
+      ),
+    );
+  }
+
+  _body (context, TextEditingController username, TextEditingController email,
+      TextEditingController password, TextEditingController confirm_password, TextEditingController phoneNumber,) {
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            child: Container(
+              margin: const EdgeInsets.only(top: 50),
+              alignment: Alignment.center,
+              child: const Text(
+                "SIGN UP",
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          Column(children: [
+            SizedBox(
+              height: 80,
+              child: TextField(
+                controller: username,
+                decoration: InputDecoration(
+                  hintText: "Username",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none
+                  ),
+                  fillColor: textFieldBackgroundColor,
+                  filled: true,
                 ),
-                const Text(
-                  'Travel Companion App',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25,
+              ),
+            ),
+            SizedBox(
+              height: 80,
+              child: TextField(
+                controller: email,
+                enabled: false,
+                decoration: InputDecoration(
+                  hintText: "Email",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none
                   ),
                 ),
               ],
@@ -206,9 +252,79 @@ class Signup extends State<SignupPage> {
                       )
                     ],
                   ),
+                  fillColor: textFieldBackgroundColor,
+                  filled: true,
+                  // prefixIcon: const Icon(Icons.person)
                 ),
-              )),
-        ),
-      );
+              ),
+            ),
+            SizedBox(
+              height: 80,
+              child: TextField(
+                controller: confirm_password,
+                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: "Confirm Password",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none),
+                  fillColor: textFieldBackgroundColor,
+                  filled: true,
+                  // prefixIcon: const Icon(Icons.person)
+                ),
+              ),
+            ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height / 10,
+                child: InternationalPhoneNumberInput(
+                  onInputChanged: (PhoneNumber number) {
+                    print(number.phoneNumber); 
+                  },
+                  onInputValidated: (bool value) {
+                    print(value);
+                  },
+                  selectorConfig: SelectorConfig(
+                    selectorType: PhoneInputSelectorType.DIALOG,
+                  ),
+                  ignoreBlank: false,
+                  autoValidateMode: AutovalidateMode.onUserInteraction,
+                  selectorTextStyle: const TextStyle(color: Colors.black),
+                  initialValue: PhoneNumber(isoCode: 'IN'),
+                  textFieldController: phoneNumber,
+                  formatInput: false,
+                ),
+              ),
+            ]),
+          const SizedBox(height: 15),
+          SizedBox(
+            height: MediaQuery.of(context).size.height / 10,
+            child: ElevatedButton(
+              onPressed: () async {
+                  await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                          email: email.text, password: password.text
+                  ).then((_) async {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => Base()));
+                  }).catchError((e) {
+                    if (e.code == 'user-not-found') {
+                      print('No user found for that email.');
+                    } else if (e.code == 'wrong-password') {
+                      print('Wrong password provided for that user.');
+                    }
+                  });
+              },
+              style: TextButton.styleFrom(
+                  backgroundColor: secondaryColor,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10))),
+              child: const Text(
+                'Next',
+                style: TextStyle(fontSize: 22, color: buttonTextColor),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
