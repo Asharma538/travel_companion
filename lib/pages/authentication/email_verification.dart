@@ -16,7 +16,8 @@ class VerifyPage extends StatefulWidget {
 class _VerifyPageState extends State<VerifyPage> {
   var state = 0;
   final emailController = TextEditingController();
-  bool _validate = false;
+  RegExp emailRegExp = RegExp(r'^[a-zA-Z0-9_]+@iitj\.ac\.in$');
+  int _validate = 1;
 
   @override
   void dispose() {
@@ -83,8 +84,11 @@ class _VerifyPageState extends State<VerifyPage> {
                 controller: email,
                 decoration: InputDecoration(
                   hintText: "Email",
-                  hintStyle: const TextStyle(color: placeholderTextColor),
-                  errorText: _validate ? "This field is required" : null,
+                  errorText: (_validate != 0)
+                      ? (_validate == 1)
+                          ? "This field is required"
+                          : "Please enter a valid email"
+                      : null,
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(6),
                       borderSide: BorderSide.none),
@@ -117,11 +121,17 @@ class _VerifyPageState extends State<VerifyPage> {
             child: TextButton(
               onPressed: () {
                 setState(() {
-                  emailController.text.isEmpty
-                      ? _validate = true
-                      : _validate = false;
+                  if (emailController.text.isEmpty) {
+                    _validate = 1;
+                  } else {
+                    if (!emailRegExp.hasMatch(emailController.text)) {
+                      _validate = 2;
+                    } else {
+                      _validate = 0;
+                    }
+                  }
                 });
-                if (_validate != true) {
+                if (_validate == 0) {
                   setState(() {
                     state = 1;
                   });
