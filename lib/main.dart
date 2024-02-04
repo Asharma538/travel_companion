@@ -95,12 +95,20 @@ class _BaseState extends State<Base> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const CreatePostPage()),
+                  MaterialPageRoute(
+                      builder: (context) => const CreatePostPage()),
                 );
               },
-              shape: RoundedRectangleBorder(side: const BorderSide(width: 4.5,color: Color(0xFF939898)),borderRadius: BorderRadius.circular(23)),
+              shape: RoundedRectangleBorder(
+                  side: const BorderSide(width: 4.5, color: Color(0xFF939898)),
+                  borderRadius: BorderRadius.circular(23)),
               backgroundColor: Colors.black,
-              child: const Icon(Icons.add,size: 30,color: Colors.white,weight: 50,),
+              child: const Icon(
+                Icons.add,
+                size: 30,
+                color: Colors.white,
+                weight: 50,
+              ),
             )
           : null,
     );

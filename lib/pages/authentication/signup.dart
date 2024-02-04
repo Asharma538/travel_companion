@@ -2,34 +2,44 @@ import 'package:flutter/material.dart';
 import '../../main.dart';
 import '../../pages/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import '../../utils/colors.dart';
 
 class SignupPage extends StatefulWidget {
-  const SignupPage({super.key});
+ final String? signUpEmail;
+
+  const SignupPage({Key? key, this.signUpEmail}) : super(key: key);
 
   @override
   State<SignupPage> createState() => Signup();
 }
 
 class Signup extends State<SignupPage> {
-  @override
-  Widget build(BuildContext context) {
-    var userNameController = TextEditingController();
-    var emailController = TextEditingController();
-    var passwordController = TextEditingController();
-    var confirmPasswordController = TextEditingController();
+  var userNameController = TextEditingController();
+  var emailController = TextEditingController();
+  var passwordController = TextEditingController();
+  var confirmPasswordController = TextEditingController();
+  var phoneNumberController= TextEditingController();
 
+  @override
+    void initState() {
+      super.initState();
+      emailController.text = widget.signUpEmail ?? '';
+    }
+  
+  
+  Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: primaryColor,
-        body: _body(context, userNameController, emailController,passwordController, confirmPasswordController),
+        body: _body(context, userNameController, emailController ,passwordController, confirmPasswordController,phoneNumberController),
       ),
     );
   }
 
-  _body(context, TextEditingController username, TextEditingController email,
-      TextEditingController password, TextEditingController confirmPassword) {
+  _body (context, TextEditingController username, TextEditingController email,
+      TextEditingController password, TextEditingController confirm_password, TextEditingController phoneNumber,) {
     return Container(
       height: MediaQuery.of(context).size.height,
       padding: const EdgeInsets.all(20),
@@ -67,6 +77,7 @@ class Signup extends State<SignupPage> {
               height: 80,
               child: TextField(
                 controller: email,
+                enabled: false,
                 decoration: InputDecoration(
                   hintText: "Email",
                   border: OutlineInputBorder(
@@ -99,7 +110,7 @@ class Signup extends State<SignupPage> {
             SizedBox(
               height: 80,
               child: TextField(
-                controller: confirmPassword,
+                controller: confirm_password,
                 obscureText: true,
                 decoration: InputDecoration(
                   hintText: "Confirm Password",
@@ -112,10 +123,30 @@ class Signup extends State<SignupPage> {
                 ),
               ),
             ),
-          ]),
+              SizedBox(
+                height: MediaQuery.of(context).size.height / 10,
+                child: InternationalPhoneNumberInput(
+                  onInputChanged: (PhoneNumber number) {
+                    print(number.phoneNumber); 
+                  },
+                  onInputValidated: (bool value) {
+                    print(value);
+                  },
+                  selectorConfig: SelectorConfig(
+                    selectorType: PhoneInputSelectorType.DIALOG,
+                  ),
+                  ignoreBlank: false,
+                  autoValidateMode: AutovalidateMode.onUserInteraction,
+                  selectorTextStyle: const TextStyle(color: Colors.black),
+                  initialValue: PhoneNumber(isoCode: 'IN'),
+                  textFieldController: phoneNumber,
+                  formatInput: false,
+                ),
+              ),
+            ]),
           const SizedBox(height: 15),
           SizedBox(
-            height: MediaQuery.of(context).size.height / 12,
+            height: MediaQuery.of(context).size.height / 10,
             child: ElevatedButton(
               onPressed: () async {
                   final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(

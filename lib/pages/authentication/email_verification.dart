@@ -5,7 +5,9 @@ import 'package:travel_companion/pages/authentication/signup.dart';
 import 'package:travel_companion/utils/colors.dart';
 
 class VerifyPage extends StatefulWidget {
-  const VerifyPage({super.key});
+  final String? email;
+
+  const VerifyPage({Key? key, this.email}) : super(key: key);
 
   @override
   State<VerifyPage> createState() => _VerifyPageState();
@@ -99,10 +101,8 @@ class _VerifyPageState extends State<VerifyPage> {
               const Text("Already have an account?"),
               TextButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const LoginPage()));
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => LoginPage()));
                   },
                   child: const Text(
                     "Login",
@@ -111,7 +111,7 @@ class _VerifyPageState extends State<VerifyPage> {
             ],
           ),
           Container(
-            margin: const EdgeInsets.only(bottom: 30,top: 10),
+            margin: const EdgeInsets.only(bottom: 30, top: 10),
             width: MediaQuery.of(context).size.width - 80,
             height: 50,
             child: TextButton(
@@ -169,8 +169,7 @@ class _VerifyPageState extends State<VerifyPage> {
               style: TextStyle(
                   color: primaryTextColor,
                   fontWeight: FontWeight.w400,
-                  fontSize: 16
-              ),
+                  fontSize: 16),
             ),
             Container(
               margin: const EdgeInsets.fromLTRB(0, 0, 0, 50),
@@ -185,18 +184,17 @@ class _VerifyPageState extends State<VerifyPage> {
             Container(
                 alignment: Alignment.centerLeft,
                 child: TextButton(
-                    onPressed: () {
-                      setState(() {
-                        state = 0;
-                      });
-                      email.clear();
-                    },
-                    child: const Text(
-                      "Change email",
-                      style: TextStyle(color: linkTextColor, fontSize: 15),
-                    ),
-                )
-            ),
+                  onPressed: () {
+                    setState(() {
+                      state = 0;
+                    });
+                    email.clear();
+                  },
+                  child: const Text(
+                    "Change email",
+                    style: TextStyle(color: linkTextColor, fontSize: 15),
+                  ),
+                )),
             const SizedBox(
               height: 10,
             ),
@@ -221,7 +219,7 @@ class _VerifyPageState extends State<VerifyPage> {
           ]),
           const SizedBox(height: 15),
           Container(
-            margin: const EdgeInsets.only(bottom: 30,top: 80),
+            margin: const EdgeInsets.only(bottom: 30, top: 80),
             width: MediaQuery.of(context).size.width - 80,
             height: 50,
             child: TextButton(
@@ -229,16 +227,13 @@ class _VerifyPageState extends State<VerifyPage> {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const SignupPage()
-                    )
-                );
+                        builder: (context) =>
+                            SignupPage(signUpEmail: emailController.text)));
               },
               style: TextButton.styleFrom(
                   backgroundColor: secondaryColor,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)
-                  )
-              ),
+                      borderRadius: BorderRadius.circular(10))),
               child: const Text(
                 'Next',
                 style: TextStyle(fontSize: 22, color: buttonTextColor),

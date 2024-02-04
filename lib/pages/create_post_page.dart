@@ -1,3 +1,5 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:travel_companion/pages/home.dart';
@@ -32,7 +34,9 @@ class Trip {
 }
 
 class CreatePostPage extends StatefulWidget {
-  const CreatePostPage({Key? key});
+  final Map<String, dynamic>? initialPost;
+
+  const CreatePostPage({Key? key, this.initialPost}) : super(key: key);
 
   @override
   State<CreatePostPage> createState() => _CreatePostPageState();
@@ -74,89 +78,145 @@ class _CreatePostPageState extends State<CreatePostPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.initialPost != null) {
+      fromLocation = widget.initialPost!['source'] ?? '';
+      toLocation = widget.initialPost!['destination'] ?? '';
+
+      transportationMode = widget.initialPost!['modeOfTransport'] ?? '';
+
+      description = widget.initialPost!['desc'] ?? '';
+
+      String dateString = widget.initialPost!['date'] ?? '';
+      List<String> dateParts = dateString.split('-');
+      int day = int.parse(dateParts[0]);
+      int month = int.parse(dateParts[1]);
+      int year = int.parse(dateParts[2]);
+      selectedDate = DateTime(year, month, day);
+
+      selectedTime = TimeOfDay(
+        hour: int.parse(widget.initialPost!['time'].split(':')[0]),
+        minute: int.parse(widget.initialPost!['time'].split(':')[1]),
+      );
+
+      setState(() {});
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     var _mediaQuery = MediaQuery.of(context);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: primaryColor,
       appBar: AppBar(
         backgroundColor: secondaryColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back,color: secondaryTextColor,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: secondaryTextColor,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: Container(
-          margin: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-          child: const Text(
-            "New Post",
-            style: TextStyle(fontWeight: FontWeight.bold,color: secondaryTextColor),
-          ),
-        ),
+        title: widget.initialPost != null
+            ? const Text(
+                "Edit Post",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              )
+            : const Text(
+                "New Post",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
       ),
       body: Container(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildTextField("FROM", "Ex: Jodhpur", (value) {
+            _buildTextField("FROM", fromLocation, "Ex: Jodhpur", (value) {
               fromLocation = value;
             }),
-            const SizedBox(height: 15),
-            _buildTextField("TO", "Ex: Airport", (value) {
+            SizedBox(height: _mediaQuery.size.height * 0.02),
+            _buildTextField("TO", toLocation, "Ex: Airport", (value) {
               toLocation = value;
             }),
             const SizedBox(height: 20),
             _buildDateTimeRow(),
-            const SizedBox(height: 20),
-            _buildTextField(
-                "MODE OF TRANSPORTATION", "Ex: Flight/Train/Taxi/Auto etc.",
-                (value) {
+            SizedBox(height: _mediaQuery.size.height * 0.02),
+            _buildTextField("MODE OF TRANSPORTATION", transportationMode,
+                "Ex: Flight/Train/Taxi/Auto etc.", (value) {
               transportationMode = value;
             }),
             const SizedBox(height: 15),
-            _buildTextField(
-                "DESCRIPTION", "Ex: Flight name or no./Train name or no.",
-                (value) {
+            _buildTextField("DESCRIPTION", description,
+                "Ex: Flight name or no./Train name or no.", (value) {
               description = value;
-              print(description);
             }, maxLines: 2),
-            const Expanded(child: SizedBox()),
-            Container(
-              margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-              alignment: Alignment.center,
-              child: ElevatedButton(
+            SizedBox(height: _mediaQuery.size.height * 0.02),
+            if (widget.initialPost == null) ...[
+              const Expanded(child: SizedBox()),
+              Container(
+                margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      await createNewTrip(context);
+                    } catch (e) {
+                      print("Error creating post 1: $e");
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xff302360),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                  ),
+                  child: const Text(
+                    "Create Post",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.0,
+                    ),
+                  ),
+                ),
+              )
+            ] else ...[
+              ElevatedButton(
                 onPressed: () async {
                   try {
                     await createNewTrip(context);
                   } catch (e) {
                     print("Error creating post 1: $e");
-                    // Handle the error as needed
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
-                  backgroundColor: complementaryColor,
+                  backgroundColor: const Color(0xff302360),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(16.0),
                   ),
                 ),
                 child: const Text(
-                  "Create Post",
+                  "Edit Post",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 25,
+                    fontSize: 20.0,
                   ),
                 ),
               ),
-            ),
+            ]
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTextField(String label, String hint, Function(String) onChanged,{int? maxLines}) {
+  Widget _buildTextField(
+      String label, String initialText, String hint, Function(String) onChanged,
+      {int? maxLines}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -169,6 +229,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
           ),
         ),
         TextField(
+          controller: TextEditingController()..text = initialText,
           onChanged: onChanged,
           style: const TextStyle(
             color: Colors.black,
@@ -202,7 +263,9 @@ class _CreatePostPageState extends State<CreatePostPage> {
             });
           });
         }),
-        SizedBox(width: MediaQuery.of(context).size.width*0.1 - 16,),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.1 - 16,
+        ),
         _buildDateTimeButton("TIME", Icons.access_time, () {
           _showTimePicker(context, selectedTime, (time) {
             setState(() {
@@ -214,7 +277,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
     );
   }
 
-  Widget _buildDateTimeButton(String label, IconData icon, VoidCallback onPressed) {
+  Widget _buildDateTimeButton(
+      String label, IconData icon, VoidCallback onPressed) {
     return MaterialButton(
       minWidth: MediaQuery.of(context).size.width * 0.4,
       height: MediaQuery.of(context).size.height * 0.06,
@@ -276,25 +340,44 @@ class _CreatePostPageState extends State<CreatePostPage> {
     );
 
     try {
-      await FirebaseFirestore.instance.collection('Trips').add({
-        'about': newTrip.about,
-        'createdBy': newTrip.createdBy,
-        'date': newTrip.date,
-        'desc': newTrip.desc,
-        'destination': newTrip.destination,
-        'modeOfTransport': newTrip.modeOfTransport,
-        'source': newTrip.source,
-        'time': newTrip.time,
-        'userImage': newTrip.userImage,
-        'username': newTrip.username,
-      });
-      print("Post created successfully!");
+      if (widget.initialPost != null) {
+        await FirebaseFirestore.instance
+            .collection('Trips')
+            .doc(widget.initialPost!['id'])
+            .update({
+          'about': newTrip.about,
+          'createdBy': newTrip.createdBy,
+          'date': newTrip.date,
+          'desc': newTrip.desc,
+          'destination': newTrip.destination,
+          'modeOfTransport': newTrip.modeOfTransport,
+          'source': newTrip.source,
+          'time': newTrip.time,
+          'userImage': newTrip.userImage,
+          'username': newTrip.username,
+        });
 
+        print("Post updated successfully!");
+      } else {
+        await FirebaseFirestore.instance.collection('Trips').add({
+          'about': newTrip.about,
+          'createdBy': newTrip.createdBy,
+          'date': newTrip.date,
+          'desc': newTrip.desc,
+          'destination': newTrip.destination,
+          'modeOfTransport': newTrip.modeOfTransport,
+          'source': newTrip.source,
+          'time': newTrip.time,
+          'userImage': newTrip.userImage,
+          'username': newTrip.username,
+        });
+
+        print("Post created successfully!");
+      }
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => const MyApp()));
     } catch (e) {
       print("Error creating post: $e");
-      // Handle the error as needed
     }
   }
 }
