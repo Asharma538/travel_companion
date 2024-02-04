@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:travel_companion/pages/home.dart';
+import 'package:travel_companion/utils/colors.dart';
 import '../pages/profile.dart';
 import '../main.dart';
 
@@ -79,12 +81,11 @@ class _CreatePostPageState extends State<CreatePostPage> {
   void initState() {
     super.initState();
     if (widget.initialPost != null) {
-
       fromLocation = widget.initialPost!['source'] ?? '';
       toLocation = widget.initialPost!['destination'] ?? '';
 
       transportationMode = widget.initialPost!['modeOfTransport'] ?? '';
-      
+
       description = widget.initialPost!['desc'] ?? '';
 
       String dateString = widget.initialPost!['date'] ?? '';
@@ -98,7 +99,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
         hour: int.parse(widget.initialPost!['time'].split(':')[0]),
         minute: int.parse(widget.initialPost!['time'].split(':')[1]),
       );
-      
+
       setState(() {});
     }
   }
@@ -107,11 +108,15 @@ class _CreatePostPageState extends State<CreatePostPage> {
   Widget build(BuildContext context) {
     var _mediaQuery = MediaQuery.of(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: false,
+      backgroundColor: primaryColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xff302360),
+        backgroundColor: secondaryColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: secondaryTextColor,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -126,56 +131,60 @@ class _CreatePostPageState extends State<CreatePostPage> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
       ),
-      body: SingleChildScrollView(
+      body: Container(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildTextField("FROM", fromLocation ,"Ex: Jodhpur", (value) {
+            _buildTextField("FROM", fromLocation, "Ex: Jodhpur", (value) {
               fromLocation = value;
             }),
             SizedBox(height: _mediaQuery.size.height * 0.02),
-            _buildTextField("TO", toLocation , "Ex: Airport", (value) {
+            _buildTextField("TO", toLocation, "Ex: Airport", (value) {
               toLocation = value;
             }),
-            SizedBox(height: _mediaQuery.size.height * 0.02),
+            const SizedBox(height: 20),
             _buildDateTimeRow(),
             SizedBox(height: _mediaQuery.size.height * 0.02),
-            _buildTextField("MODE OF TRANSPORTATION" , transportationMode , "Ex: Flight/Train/Taxi/Auto etc.",(value) {
+            _buildTextField("MODE OF TRANSPORTATION", transportationMode,
+                "Ex: Flight/Train/Taxi/Auto etc.", (value) {
               transportationMode = value;
             }),
-            SizedBox(height: _mediaQuery.size.height * 0.02),
-            _buildTextField(
-                "DESCRIPTION", description , "Ex: Flight name or no./Train name or no.",(value) {
+            const SizedBox(height: 15),
+            _buildTextField("DESCRIPTION", description,
+                "Ex: Flight name or no./Train name or no.", (value) {
               description = value;
             }, maxLines: 2),
             SizedBox(height: _mediaQuery.size.height * 0.02),
-
             if (widget.initialPost == null) ...[
-              ElevatedButton(
-                onPressed: () async {
-                  try {
-                    await createNewTrip(context);
-                  } catch (e) {
-                    print("Error creating post 1: $e");
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff302360),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.0),
+              const Expanded(child: SizedBox()),
+              Container(
+                margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      await createNewTrip(context);
+                    } catch (e) {
+                      print("Error creating post 1: $e");
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xff302360),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                  ),
+                  child: const Text(
+                    "Create Post",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.0,
+                    ),
                   ),
                 ),
-                child: const Text(
-                  "Create Post",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20.0,
-                  ),
-                ),
-              ),
-            ]
-            else...[
+              )
+            ] else ...[
               ElevatedButton(
                 onPressed: () async {
                   try {
@@ -205,7 +214,9 @@ class _CreatePostPageState extends State<CreatePostPage> {
     );
   }
 
-  Widget _buildTextField(String label,String initialText, String hint, Function(String) onChanged,{int? maxLines}) {
+  Widget _buildTextField(
+      String label, String initialText, String hint, Function(String) onChanged,
+      {int? maxLines}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -226,14 +237,14 @@ class _CreatePostPageState extends State<CreatePostPage> {
           maxLines: maxLines,
           decoration: InputDecoration(
             filled: true,
-            fillColor: const Color(0xffF0F0F0),
+            fillColor: textFieldBackgroundColor,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
               borderSide: BorderSide.none,
             ),
             hintText: hint,
             hintStyle: const TextStyle(
-              color: Color(0xffA0A0A0),
+              color: placeholderTextColor,
             ),
           ),
         ),
@@ -243,7 +254,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
 
   Widget _buildDateTimeRow() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildDateTimeButton("DATE", Icons.calendar_today, () {
           _showDatePicker(context, (date) {
@@ -252,6 +263,9 @@ class _CreatePostPageState extends State<CreatePostPage> {
             });
           });
         }),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.1 - 16,
+        ),
         _buildDateTimeButton("TIME", Icons.access_time, () {
           _showTimePicker(context, selectedTime, (time) {
             setState(() {
@@ -266,10 +280,10 @@ class _CreatePostPageState extends State<CreatePostPage> {
   Widget _buildDateTimeButton(
       String label, IconData icon, VoidCallback onPressed) {
     return MaterialButton(
-      minWidth: MediaQuery.of(context).size.width * 0.45,
-      height: MediaQuery.of(context).size.height * 0.076,
+      minWidth: MediaQuery.of(context).size.width * 0.4,
+      height: MediaQuery.of(context).size.height * 0.06,
       onPressed: onPressed,
-      color: const Color(0xff302360),
+      color: secondaryColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8.0),
         side: BorderSide.none,
@@ -326,39 +340,40 @@ class _CreatePostPageState extends State<CreatePostPage> {
     );
 
     try {
-    if (widget.initialPost != null) {
-      await FirebaseFirestore.instance.collection('Trips').doc(widget.initialPost!['id']).update({
-        'about': newTrip.about,
-        'createdBy': newTrip.createdBy,
-        'date': newTrip.date,
-        'desc': newTrip.desc,
-        'destination': newTrip.destination,
-        'modeOfTransport': newTrip.modeOfTransport,
-        'source': newTrip.source,
-        'time': newTrip.time,
-        'userImage': newTrip.userImage,
-        'username': newTrip.username,
-      });
+      if (widget.initialPost != null) {
+        await FirebaseFirestore.instance
+            .collection('Trips')
+            .doc(widget.initialPost!['id'])
+            .update({
+          'about': newTrip.about,
+          'createdBy': newTrip.createdBy,
+          'date': newTrip.date,
+          'desc': newTrip.desc,
+          'destination': newTrip.destination,
+          'modeOfTransport': newTrip.modeOfTransport,
+          'source': newTrip.source,
+          'time': newTrip.time,
+          'userImage': newTrip.userImage,
+          'username': newTrip.username,
+        });
 
-      print("Post updated successfully!");
-    } 
-    else {
-      await FirebaseFirestore.instance.collection('Trips').add({
-        'about': newTrip.about,
-        'createdBy': newTrip.createdBy,
-        'date': newTrip.date,
-        'desc': newTrip.desc,
-        'destination': newTrip.destination,
-        'modeOfTransport': newTrip.modeOfTransport,
-        'source': newTrip.source,
-        'time': newTrip.time,
-        'userImage': newTrip.userImage,
-        'username': newTrip.username,
-      });
+        print("Post updated successfully!");
+      } else {
+        await FirebaseFirestore.instance.collection('Trips').add({
+          'about': newTrip.about,
+          'createdBy': newTrip.createdBy,
+          'date': newTrip.date,
+          'desc': newTrip.desc,
+          'destination': newTrip.destination,
+          'modeOfTransport': newTrip.modeOfTransport,
+          'source': newTrip.source,
+          'time': newTrip.time,
+          'userImage': newTrip.userImage,
+          'username': newTrip.username,
+        });
 
-      print("Post created successfully!");
-    }
-
+        print("Post created successfully!");
+      }
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => const MyApp()));
     } catch (e) {

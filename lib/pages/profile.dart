@@ -2,8 +2,9 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:travel_companiion/pages/home.dart';
-import 'package:travel_companiion/pages/view_post.dart';
+import 'package:travel_companion/pages/authentication/login.dart';
+import 'package:travel_companion/pages/home.dart';
+import 'package:travel_companion/pages/view_post.dart';
 import '../components/post.dart';
 
 class AboutTextField extends StatefulWidget {
@@ -130,18 +131,20 @@ class _ProfileState extends State<Profile> {
                   ),
                 );
               }
+              print(userData);
               return Padding(
                 padding: const EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     IconButton(
-                      onPressed: () async {
+                      onPressed: () {
                         try {
-                          await FirebaseAuth.instance.signOut();
-                          // Navigate to the login or home page after successful logout
-                          Navigator.pushReplacementNamed(context,
-                              '/login'); // Replace '/login' with your desired route
+                          FirebaseAuth.instance.signOut();
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginPage()));
                         } catch (e) {
                           print('Error logging out: $e');
                         }
@@ -153,9 +156,7 @@ class _ProfileState extends State<Profile> {
                         Center(
                           child: CircleAvatar(
                             radius: 100.0,
-                            backgroundImage: NetworkImage(userData?[
-                                    'profilePhoto'] ??
-                                'https://static.vecteezy.com/system/resources/previews/000/574/512/original/vector-sign-of-user-icon.jpg'),
+                            backgroundImage: NetworkImage(userData!['profilePhoto'] ?? 'https://static.vecteezy.com/system/resources/previews/000/574/512/original/vector-sign-of-user-icon.jpg'),
                           ),
                         ),
                         Positioned(
@@ -205,18 +206,16 @@ class _ProfileState extends State<Profile> {
                       color: Colors.black,
                     ),
                     for (var i = 0; i < Homepage.posts.length; i++) ...[
-                      if (Homepage.posts[i]['username'] ==
-                          userData?['username']) ...[
+                      if (Homepage.posts[i]['username'] == userData?['username']) ...[
                         PostTile(
                             tripId: Homepage.posts[i]['id'],
                             userName: Homepage.posts[i]['username'],
                             userImage: Homepage.posts[i]['userImage'],
-                            source: Homepage.posts[i]['source'],
-                            destination: Homepage.posts[i]['destination'],
-                            date: Homepage.posts[i]['date'],
-                            time: Homepage.posts[i]['time'],
-                            modeOfTransport: Homepage.posts[i]
-                                ['modeOfTransport'],
+                            source: Homepage.posts[i]['source']?? 'Not Decided',
+                            destination: Homepage.posts[i]['destination']?? 'Not Decided',
+                            date: Homepage.posts[i]['date']?? 'Not Decided',
+                            time: Homepage.posts[i]['time']?? 'Not Decided',
+                            modeOfTransport: Homepage.posts[i]['modeOfTransport']?? 'Not Decided',
                             onPressed: () {
                               Navigator.push(
                                 context,
@@ -226,7 +225,8 @@ class _ProfileState extends State<Profile> {
                                   ),
                                 ),
                               );
-                            })
+                            }
+                        )
                       ]
                     ]
                   ],

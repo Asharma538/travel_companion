@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:travel_companiion/pages/home.dart';
+import 'package:travel_companion/pages/home.dart';
 import '../components/post.dart';
-import 'package:travel_companiion/pages/view_post.dart';
+import 'package:travel_companion/pages/view_post.dart';
 // import '../components/appbar.dart';
 
 class SearchResultsPage extends StatefulWidget {
   final String fromLocation;
   final String toLocation;
   final String modeOfTransport;
-  // final String description;
   final DateTime? selectedDate;
   final TimeOfDay? selectedTime;
 
@@ -20,7 +19,6 @@ class SearchResultsPage extends StatefulWidget {
     required this.selectedDate,
     required this.selectedTime,
     required this.modeOfTransport,
-    // required this.description,
   }) : super(key: key);
 
   static List<Map<String, dynamic>> posts = [];
@@ -31,23 +29,6 @@ class SearchResultsPage extends StatefulWidget {
 
 class _SearchResultsPageState extends State<SearchResultsPage> {
   late Future<List<Map<String, dynamic>>> postsFuture;
-
-  @override
-  // void initState() {
-  //   super.initState();
-  //   postsFuture = fetchPosts();
-  // }
-
-  // Future<List<Map<String, dynamic>>> fetchPosts() async {
-  //   QuerySnapshot<Map<String, dynamic>> querySnapshot =
-  //       await FirebaseFirestore.instance.collection('Trips').get();
-
-  //   List<Map<String, dynamic>> posts = querySnapshot.docs.map((doc) {
-  //     return doc.data();
-  //   }).toList();
-  //   SearchResultsPage.posts = posts;
-  //   return posts;
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +61,6 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                   children: [
                     _appBarBack(context),
                     for (var i = 0; i < Homepage.posts.length; i++) ...[
-                      // final post =Homepage.posts[i];
                       if ((widget.fromLocation == Homepage.posts[i]['source'] ||
                               widget.fromLocation == "") &&
                           (widget.toLocation ==
@@ -94,7 +74,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                                   Homepage.posts[i]['modeOfTransport'] ||
                               widget.modeOfTransport == "")) ...[
                         PostTile(
-                            tripId: Homepage.posts[i]['tripId'],
+                            tripId: Homepage.posts[i]['id'],
                             userName: Homepage.posts[i]['username'],
                             userImage: Homepage.posts[i]['userImage'],
                             source: Homepage.posts[i]['source'],
@@ -107,7 +87,9 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ViewPost(post: Homepage.posts[i],),
+                                  builder: (context) => ViewPost(
+                                    post: Homepage.posts[i],
+                                  ),
                                 ),
                               );
                             })
