@@ -161,9 +161,9 @@ class _ProfileState extends State<Profile> {
                                   )
                                 : CircleAvatar(
                                     radius: 100.0,
-                                    backgroundImage: NetworkImage(
-                                        Base.profilePictures[
-                                            userData!['profilePhotoState']]),
+                                    backgroundImage: NetworkImage(Base
+                                            .profilePictures[
+                                        userData!['profilePhotoState'] - 1]),
                                   )),
                         Positioned(
                           bottom: 0.0,
@@ -274,7 +274,7 @@ class _ProfileState extends State<Profile> {
                     return GestureDetector(
                       onTap: () async {
                         await FirebaseFirestore.instance
-                            .collection('users')
+                            .collection('Users')
                             .doc(userData?['id'])
                             .update({'profilePhotoState': index});
 
