@@ -10,13 +10,7 @@ final formkey = GlobalKey<FormState>();
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
-  String? validateEmail(String? value) {
-  final regex = RegExp(r'^[a-zA-z0-9]+@iitj\.ac\.in$');
 
-  return value!.isNotEmpty && !regex.hasMatch(value)
-      ? 'Enter a valid email address'
-      : null;
-}
 
   @override
   State<SignupPage> createState() => Signup();
@@ -160,7 +154,7 @@ class Signup extends State<SignupPage> {
                                   if(confirmpass == null || confirmpass.isEmpty) {
                                     return "This feild is required";
                                   }
-                                  else if(confirmpass != passwordController){
+                                  else if(confirmpass != passwordController.text){
                                     return "Confirm the same password";
                                   }
                                   else {

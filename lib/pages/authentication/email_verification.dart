@@ -4,6 +4,8 @@ import 'package:travel_companion/pages/authentication/login.dart';
 import 'package:travel_companion/pages/authentication/signup.dart';
 import 'package:travel_companion/utils/colors.dart';
 
+final formkey = GlobalKey<FormState>();
+
 class VerifyPage extends StatefulWidget {
   const VerifyPage({super.key});
 
@@ -75,19 +77,31 @@ class _VerifyPageState extends State<VerifyPage> {
                   style: TextStyle(
                       color: primaryTextColor, fontWeight: FontWeight.w400),
                 )),
-            SizedBox(
-              height: 80,
-              child: TextField(
-                controller: email,
-                decoration: InputDecoration(
-                  hintText: "Email",
-                  hintStyle: const TextStyle(color: placeholderTextColor),
-                  errorText: _validate ? "This field is required" : null,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(6),
-                      borderSide: BorderSide.none),
-                  fillColor: textFieldBackgroundColor,
-                  filled: true,
+            Form(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              key: formkey,
+              child: SizedBox(
+                height: 80,
+                child: TextFormField(
+                  controller: email,
+                  decoration: InputDecoration(
+                    hintText: "Email",
+                    hintStyle: const TextStyle(color: placeholderTextColor),
+                    errorText: _validate ? "This field is required" : null,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(6),
+                        borderSide: BorderSide.none),
+                    fillColor: textFieldBackgroundColor,
+                    filled: true,
+                  ),
+                  validator: (email) {
+                    if (email!
+                        .contains(RegExp(r'^[a-zA-z0-9]+@iitj\.ac\.in$'))) {
+                      return null;
+                    } else {
+                      return "Enter a valid email";
+                    }
+                  },
                 ),
               ),
             ),
@@ -111,7 +125,7 @@ class _VerifyPageState extends State<VerifyPage> {
             ],
           ),
           Container(
-            margin: const EdgeInsets.only(bottom: 30,top: 10),
+            margin: const EdgeInsets.only(bottom: 30, top: 10),
             width: MediaQuery.of(context).size.width - 80,
             height: 50,
             child: TextButton(
@@ -169,8 +183,7 @@ class _VerifyPageState extends State<VerifyPage> {
               style: TextStyle(
                   color: primaryTextColor,
                   fontWeight: FontWeight.w400,
-                  fontSize: 16
-              ),
+                  fontSize: 16),
             ),
             Container(
               margin: const EdgeInsets.fromLTRB(0, 0, 0, 50),
@@ -185,18 +198,17 @@ class _VerifyPageState extends State<VerifyPage> {
             Container(
                 alignment: Alignment.centerLeft,
                 child: TextButton(
-                    onPressed: () {
-                      setState(() {
-                        state = 0;
-                      });
-                      email.clear();
-                    },
-                    child: const Text(
-                      "Change email",
-                      style: TextStyle(color: linkTextColor, fontSize: 15),
-                    ),
-                )
-            ),
+                  onPressed: () {
+                    setState(() {
+                      state = 0;
+                    });
+                    email.clear();
+                  },
+                  child: const Text(
+                    "Change email",
+                    style: TextStyle(color: linkTextColor, fontSize: 15),
+                  ),
+                )),
             const SizedBox(
               height: 10,
             ),
@@ -221,7 +233,7 @@ class _VerifyPageState extends State<VerifyPage> {
           ]),
           const SizedBox(height: 15),
           Container(
-            margin: const EdgeInsets.only(bottom: 30,top: 80),
+            margin: const EdgeInsets.only(bottom: 30, top: 80),
             width: MediaQuery.of(context).size.width - 80,
             height: 50,
             child: TextButton(
@@ -229,16 +241,12 @@ class _VerifyPageState extends State<VerifyPage> {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const SignupPage()
-                    )
-                );
+                        builder: (context) => const SignupPage()));
               },
               style: TextButton.styleFrom(
                   backgroundColor: secondaryColor,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)
-                  )
-              ),
+                      borderRadius: BorderRadius.circular(10))),
               child: const Text(
                 'Next',
                 style: TextStyle(fontSize: 22, color: buttonTextColor),
