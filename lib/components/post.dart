@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:travel_companion/utils/colors.dart';
 
 class PostTile extends StatelessWidget {
   final String tripId;
@@ -28,20 +29,32 @@ class PostTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onPressed,
-      child: Card(
-        margin: const EdgeInsets.all(8.0),
-        elevation: 4.0,
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(10, 12, 10, 8),
+        decoration:  BoxDecoration(
+          border: Border.all(color: const Color(0xFF000000),width: 1.5),
+          borderRadius: BorderRadius.circular(12),
+          color: cardBackgroundColor,
+          boxShadow: const [
+            BoxShadow(
+              offset: Offset(0, 4),
+              color: Color(0xFFC5C5C5),
+              spreadRadius: 2,
+              blurRadius: 4
+            )
+          ]
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.fromLTRB(14, 12, 14, 5),
               child: Row(
                 children: [
                   if (userImage != '') ...[
                     SizedBox(
-                      width: 40.0,
-                      height: 40.0,
+                      width: 35,
+                      height: 35,
                       child: CircleAvatar(
                         backgroundImage: NetworkImage(userImage),
                       ),
@@ -61,14 +74,14 @@ class PostTile extends StatelessWidget {
                     userName,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 18.0,
+                      fontSize: 14.0,
                     ),
                   ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.fromLTRB(6, 5, 6, 5),
               child: Row(
                 children: [
                   _buildElevatedBox(source),
@@ -78,26 +91,26 @@ class PostTile extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(12.0, 0.0, 12.0, 8.0),
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     'Date: $date',
-                    style: const TextStyle(fontSize: 16.0),
+                    style: const TextStyle(fontSize: 13.5,fontWeight: FontWeight.w500),
                   ),
                   Text(
                     'Time: $time',
-                    style: const TextStyle(fontSize: 16.0),
+                    style: const TextStyle(fontSize: 13.5,fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
               child: Text(
                 'Mode: $modeOfTransport',
-                style: const TextStyle(fontSize: 16.0),
+                style: const TextStyle(fontSize: 13.5,fontWeight: FontWeight.w500),
               ),
             ),
           ],
@@ -109,10 +122,10 @@ class PostTile extends StatelessWidget {
   Widget _buildElevatedBox(String text) {
     return Expanded(
       child: Container(
-        margin: const EdgeInsets.all(4.0),
-        padding: const EdgeInsets.all(8.0),
+        margin: const EdgeInsets.all(4),
+        padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
         decoration: BoxDecoration(
-          color: Colors.green,
+          color: complementaryColor,
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Center(
@@ -120,7 +133,8 @@ class PostTile extends StatelessWidget {
             text,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 16.0,
+              fontWeight: FontWeight.w500,
+              fontSize: 17,
             ),
           ),
         ),

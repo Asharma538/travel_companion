@@ -3,10 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:travel_companiion/pages/home.dart';
-import 'package:travel_companiion/pages/view_post.dart';
+import 'package:travel_companion/pages/authentication/login.dart';
+import 'package:travel_companion/pages/home.dart';
+import 'package:travel_companion/pages/view_post.dart';
 import '../components/post.dart';
 import '../main.dart';
+
 
 class AboutTextField extends StatefulWidget {
   final String initialText;
@@ -138,12 +140,13 @@ class _ProfileState extends State<Profile> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     IconButton(
-                      onPressed: () async {
+                      onPressed: () {
                         try {
-                          await FirebaseAuth.instance.signOut();
-                          // Navigate to the login or home page after successful logout
-                          Navigator.pushReplacementNamed(context,
-                              '/login'); // Replace '/login' with your desired route
+                          FirebaseAuth.instance.signOut();
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => const LoginPage())
+                          );
                         } catch (e) {
                           print('Error logging out: $e');
                         }
