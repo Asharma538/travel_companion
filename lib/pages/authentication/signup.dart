@@ -5,6 +5,7 @@ import '../../pages/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import '../../utils/colors.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 final formkey = GlobalKey<FormState>();
 
@@ -22,7 +23,7 @@ class Signup extends State<SignupPage> {
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
   var confirmPasswordController = TextEditingController();
-  var phoneNumberController= TextEditingController();
+  var phoneNumberController = TextEditingController();
 
   @override
   void initState() {
@@ -38,7 +39,13 @@ class Signup extends State<SignupPage> {
       home: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: primaryColor,
-        body: _body(context, userNameController, emailController ,passwordController, confirmPasswordController,phoneNumberController),
+        body: _body(
+            context,
+            userNameController,
+            emailController,
+            passwordController,
+            confirmPasswordController,
+            phoneNumberController),
       ),
     );
   }
@@ -172,6 +179,14 @@ class Signup extends State<SignupPage> {
                   initialValue: PhoneNumber(isoCode: 'IN'),
                   textFieldController: phoneNumber,
                   formatInput: false,
+                  validator: (String? val) {
+                    if (val == "" || val == null) {
+                      return "Phone Number is needed";
+                    } else if (val.length < 10) {
+                      return "Please enter a valid phone number";
+                    }
+                    return null;
+                  },
                 ),
               ),
             ]),
@@ -182,10 +197,20 @@ class Signup extends State<SignupPage> {
             child: ElevatedButton(
               onPressed: () async {
                 formkey.currentState!.validate();
+                final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email.text, password: password.text);
 
                 await FirebaseAuth.instance.createUserWithEmailAndPassword(
                     email: email.text, password: password.text
                 ).then((_) async {
+                  await FirebaseFirestore.instance
+                      .collection('Users')
+                      .doc(credential.user?.email) 
+                      .set({
+                    'username': username.text,
+                    'phoneNumber': phoneNumber.text,
+                    'profilePhotoState':0, 
+                    'about':"Not Available"
+                  });
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => Base()));
                 }).catchError((e) {
