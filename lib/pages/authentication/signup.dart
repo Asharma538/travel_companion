@@ -195,7 +195,6 @@ class Signup extends State<SignupPage> {
             child: ElevatedButton(
               onPressed: () async {
                 formkey.currentState!.validate();
-                // final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email.text, password: password.text);
 
                 await FirebaseAuth.instance
                     .createUserWithEmailAndPassword(
