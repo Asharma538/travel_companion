@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_companion/pages/authentication/login.dart';
 import 'package:travel_companion/pages/home.dart';
 import 'package:travel_companion/pages/view_post.dart';
 import '../components/post.dart';
+import '../main.dart';
 
 class AboutTextField extends StatefulWidget {
   final String initialText;
@@ -89,13 +91,13 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   late Future<Map<String, dynamic>> userFuture;
-  String userEmail = 'sharma.130@iitj.ac.in';
+  String? userEmail = FirebaseAuth.instance.currentUser?.email;
   Map<String, dynamic>? userData;
 
   @override
   void initState() {
     super.initState();
-    userFuture = Profile.fetchUser(userEmail);
+    userFuture = Profile.fetchUser(userEmail!);
   }
 
   @override
@@ -110,7 +112,8 @@ class _ProfileState extends State<Profile> {
               return const Center(
                 child: CircularProgressIndicator(),
               );
-            } else if (snapshot.hasError) {
+            }
+            else if (snapshot.hasError) {
               return const Center(
                 child: Text(
                   'Error',
@@ -154,17 +157,26 @@ class _ProfileState extends State<Profile> {
                     Stack(
                       children: [
                         Center(
-                          child: CircleAvatar(
-                            radius: 100.0,
-                            backgroundImage: NetworkImage(userData!['profilePhoto'] ?? 'https://static.vecteezy.com/system/resources/previews/000/574/512/original/vector-sign-of-user-icon.jpg'),
-                          ),
-                        ),
+                            child: (userData!['profilePhotoState'] == 0)
+                                ? ProfilePicture(
+                                    name: userData!['username'],
+                                    radius: 100,
+                                    fontsize: 60,
+                                  )
+                                : CircleAvatar(
+                                    radius: 100.0,
+                                    backgroundImage: NetworkImage(Base
+                                            .profilePictures[
+                                        userData!['profilePhotoState'] - 1]),
+                                  )),
                         Positioned(
                           bottom: 0.0,
                           right: MediaQuery.of(context).size.width * 0.5 - 110,
                           child: FloatingActionButton(
                             shape: const CircleBorder(eccentricity: 0.9),
-                            onPressed: () {},
+                            onPressed: () {
+                              _openProfilePictureDrawer(context);
+                            },
                             backgroundColor: Colors.white,
                             child: const Icon(Icons.edit),
                           ),
@@ -199,7 +211,7 @@ class _ProfileState extends State<Profile> {
                               .doc(userEmail)
                               .update({'about': newAbout});
                         },
-                        userEmail: userEmail,
+                        userEmail: userEmail!,
                       ),
                     ),
                     const Divider(
@@ -236,6 +248,66 @@ class _ProfileState extends State<Profile> {
           },
         ),
       ),
+    );
+  }
+
+  void _openProfilePictureDrawer(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 600,
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'Select Profile Picture',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                  ),
+                  itemCount: 9,
+                  itemBuilder: (BuildContext context, int index) {
+                    // Replace the below placeholder image with your actual images
+                    return GestureDetector(
+                      onTap: () async {
+                        await FirebaseFirestore.instance
+                            .collection('Users')
+                            .doc(userData?['id'])
+                            .update({'profilePhotoState': index});
+
+                        setState(() {
+                          userData?['profilePhotoState'] = index;
+                        });
+
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                          margin: EdgeInsets.all(8),
+                          child: (index == 0)
+                              ? ProfilePicture(
+                                  name: userData!['username'],
+                                  radius: 8,
+                                  fontsize: 30,
+                                )
+                              : CircleAvatar(
+                                  radius: 8.0,
+                                  backgroundImage: NetworkImage(
+                                      Base.profilePictures[index - 1]),
+                                )),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

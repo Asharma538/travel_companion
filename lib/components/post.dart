@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:travel_companion/utils/colors.dart';
 
+
 class PostTile extends StatelessWidget {
   final String tripId;
   final String userName;

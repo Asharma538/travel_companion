@@ -1,8 +1,5 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:travel_companion/pages/home.dart';
 import 'package:travel_companion/utils/colors.dart';
 import '../pages/profile.dart';
 import '../main.dart';
@@ -314,17 +311,12 @@ class _CreatePostPageState extends State<CreatePostPage> {
   }
 
   Future<void> createNewTrip(BuildContext context) async {
-    if (fromLocation.isEmpty ||
-        toLocation.isEmpty ||
-        selectedDate == null ||
-        selectedTime == null ||
-        transportationMode.isEmpty) {
+    if (fromLocation.isEmpty || toLocation.isEmpty) {
       print("Please fill all the fields");
       return;
     }
-    String formattedDate =
-        "${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year}";
-    String formattedTime = "${selectedTime!.hour}:${selectedTime!.minute}";
+    String formattedDate = selectedDate!=null? "${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year}" : "";
+    String formattedTime = selectedTime!=null? "${selectedTime!.hour}:${selectedTime!.minute}" : "";
 
     Trip newTrip = Trip(
       about: Profile.userData['about'] ?? '',
@@ -332,7 +324,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
       date: formattedDate,
       desc: description != "" ? description : 'Not Available',
       destination: toLocation,
-      modeOfTransport: transportationMode,
+      modeOfTransport: transportationMode ?? 'Not decided',
       source: fromLocation,
       time: formattedTime,
       userImage: Profile.userData['profilePhoto'] ?? '',

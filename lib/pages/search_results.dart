@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:travel_companion/pages/home.dart';
 import '../components/post.dart';
 import 'package:travel_companion/pages/view_post.dart';
-// import '../components/appbar.dart';
 
 class SearchResultsPage extends StatefulWidget {
   final String fromLocation;
@@ -67,9 +65,9 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                                   Homepage.posts[i]['destination'] ||
                               widget.toLocation == "") &&
                           (formattedDate == Homepage.posts[i]['date'] ||
-                              formattedDate == '') &&
+                              formattedDate == "") &&
                           (formattedTime == Homepage.posts[i]['time'] ||
-                              formattedTime == '') &&
+                              formattedTime == "") &&
                           (widget.modeOfTransport ==
                                   Homepage.posts[i]['modeOfTransport'] ||
                               widget.modeOfTransport == "")) ...[
@@ -79,10 +77,9 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                             userImage: Homepage.posts[i]['userImage'],
                             source: Homepage.posts[i]['source'],
                             destination: Homepage.posts[i]['destination'],
-                            date: Homepage.posts[i]['date'],
-                            time: Homepage.posts[i]['time'],
-                            modeOfTransport: Homepage.posts[i]
-                                ['modeOfTransport'],
+                            date: Homepage.posts[i]['date'] ?? 'Not Available',
+                            time: Homepage.posts[i]['time'] ?? 'Not Available',
+                            modeOfTransport: Homepage.posts[i]['modeOfTransport'] ?? 'Not Available',
                             onPressed: () {
                               Navigator.push(
                                 context,

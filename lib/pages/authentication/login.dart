@@ -6,10 +6,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 class LoginPage extends StatelessWidget {
   
 
+  var emailController = TextEditingController();
+  var passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    var emailController = TextEditingController();
-    var passwordController = TextEditingController();
 
     return Scaffold(
         backgroundColor: const Color.fromARGB(255, 251, 248, 239),
@@ -122,12 +123,12 @@ class LoginPage extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () async {
                 try {
-                  final credential = await FirebaseAuth.instance
+                  await FirebaseAuth.instance
                       .signInWithEmailAndPassword(
                       email: email.text, password: password.text)
                       .then((_) {
                     Navigator.pushReplacement(
-                        context, MaterialPageRoute(builder: (context) => const Base()));
+                        context, MaterialPageRoute(builder: (context) => Base()));
                   });
                 } on FirebaseAuthException catch (e) {
                   if (e.code == 'user-not-found') {

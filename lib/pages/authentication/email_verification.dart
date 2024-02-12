@@ -4,6 +4,8 @@ import 'package:travel_companion/pages/authentication/login.dart';
 import 'package:travel_companion/pages/authentication/signup.dart';
 import 'package:travel_companion/utils/colors.dart';
 
+final formkey = GlobalKey<FormState>();
+
 class VerifyPage extends StatefulWidget {
   final String? email;
 
@@ -16,6 +18,7 @@ class VerifyPage extends StatefulWidget {
 class _VerifyPageState extends State<VerifyPage> {
   var state = 0;
   final emailController = TextEditingController();
+  RegExp emailRegExp = RegExp(r'^[a-zA-Z0-9_.&|^$#]+@iitj\.ac\.in$');
   bool _validate = false;
 
   @override
@@ -27,6 +30,7 @@ class _VerifyPageState extends State<VerifyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: primaryColor,
       body: SingleChildScrollView(
         child: Container(
@@ -77,19 +81,30 @@ class _VerifyPageState extends State<VerifyPage> {
                   style: TextStyle(
                       color: primaryTextColor, fontWeight: FontWeight.w400),
                 )),
-            SizedBox(
-              height: 80,
-              child: TextField(
-                controller: email,
-                decoration: InputDecoration(
-                  hintText: "Email",
-                  hintStyle: const TextStyle(color: placeholderTextColor),
-                  errorText: _validate ? "This field is required" : null,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(6),
-                      borderSide: BorderSide.none),
-                  fillColor: textFieldBackgroundColor,
-                  filled: true,
+            Form(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              key: formkey,
+              child: SizedBox(
+                height: 80,
+                child: TextFormField(
+                  controller: email,
+                  decoration: InputDecoration(
+                    hintText: "Email",
+                    hintStyle: const TextStyle(color: placeholderTextColor),
+                    errorText: _validate ? "This field is required" : null,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(6),
+                        borderSide: BorderSide.none),
+                    fillColor: textFieldBackgroundColor,
+                    filled: true,
+                  ),
+                  validator: (email) {
+                    if (email!.contains(RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
+                      return null;
+                    } else {
+                      return "Enter a valid email";
+                    }
+                  },
                 ),
               ),
             ),
@@ -116,21 +131,14 @@ class _VerifyPageState extends State<VerifyPage> {
             height: 50,
             child: TextButton(
               onPressed: () {
-                setState(() {
-                  emailController.text.isEmpty
-                      ? _validate = true
-                      : _validate = false;
-                });
-                if (_validate != true) {
+                formkey.currentState!.validate();
+                if (email.text.contains(RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))){
                   setState(() {
                     state = 1;
                   });
                 }
               },
-              style: TextButton.styleFrom(
-                  backgroundColor: secondaryColor,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10))),
+              style: TextButton.styleFrom(backgroundColor: secondaryColor,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
               child: const Text(
                 'Next',
                 style: TextStyle(fontSize: 22, color: buttonTextColor),

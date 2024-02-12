@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:travel_companion/pages/authentication/email_verification.dart';
+import 'package:travel_companion/pages/authentication/login.dart';
 import 'pages/profile.dart';
 import 'pages/search.dart';
 import 'pages/requests.dart';
@@ -15,6 +16,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   runApp(const MyApp());
 }
 
@@ -26,7 +28,7 @@ class MyApp extends StatelessWidget {
     String userEmail = 'sharma.130@iitj.ac.in';
     Profile.fetchUser(userEmail);
     if (FirebaseAuth.instance.currentUser?.uid != null) {
-      return const MaterialApp(
+      return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Base(),
       );
@@ -40,7 +42,18 @@ class MyApp extends StatelessWidget {
 }
 
 class Base extends StatefulWidget {
-  const Base({Key? key}) : super(key: key);
+  Base({Key? key}) : super(key: key);
+
+  static List<String> profilePictures = [
+    "https://t4.ftcdn.net/jpg/00/99/53/31/360_F_99533164_fpE2O6vEjnXgYhonMyYBGtGUFCLqfTWA.jpg",
+    "https://png.pngtree.com/png-clipart/20200401/original/pngtree-gold-number-2-png-image_5330866.jpg",
+    "https://media.istockphoto.com/id/520661859/photo/golden-number-three-on-white.jpg?s=612x612&w=0&k=20&c=KN_2x0FhwlExacClUwZ5A5JDEW0j71Jt4xEB4L7yy-M=",
+    "https://media.istockphoto.com/id/520661263/photo/golden-number-four-on-white.jpg?s=612x612&w=0&k=20&c=RkYTTNQpnVy7d2UK9niOKpAG95kT8AkI27TwF9q4LnI=",
+    "https://media.istockphoto.com/id/475237371/vector/3d-shiny-golden-number-5.jpg?s=612x612&w=0&k=20&c=T9ziU71hG6YWwYHbhOafi82EWKg5vYzpKvHCJerHeAU=",
+    "https://media.istockphoto.com/id/618634702/photo/gold-number-6.jpg?s=612x612&w=0&k=20&c=OX7rnOS6fY9J27bHKmZ62Djdg5JpIPiMaGbxO8gszXQ=",
+    "https://png.pngtree.com/png-clipart/20200401/original/pngtree-gold-number-7-png-image_5330848.jpg",
+    "https://media.istockphoto.com/id/520661499/photo/golden-number-eight-on-white.jpg?s=612x612&w=0&k=20&c=sCyAJIx5m2gmVAmJiPwudvh8zOGhhDDjPcxbzyL9lAE="
+  ];
 
   @override
   State<Base> createState() => _BaseState();

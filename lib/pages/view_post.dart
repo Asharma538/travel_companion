@@ -100,7 +100,7 @@ class _ViewPostState extends State<ViewPost> {
   @override
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
-
+    final messageController = TextEditingController();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xff302360),
@@ -133,6 +133,15 @@ class _ViewPostState extends State<ViewPost> {
             SizedBox(height: mediaQuery.height * 0.05),
             Text(
               "About: ${post['about']}",
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: mediaQuery.height * 0.05),
+            Text(
+              "Email: ${post['createdBy']}",
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 20.0,
@@ -214,6 +223,16 @@ class _ViewPostState extends State<ViewPost> {
                 ),
               ),
             ],
+            SizedBox(height: mediaQuery.height * 0.05),
+            Text(
+              "Companions: ${getCompanions(post['companions'])}",
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            
             SizedBox(height: mediaQuery.height * 0.1),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -221,7 +240,27 @@ class _ViewPostState extends State<ViewPost> {
                 if (!isOwnPost()) ...[
                   ElevatedButton(
                     onPressed: () {
-                      storeRequest();
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text('Your Message:-'),
+                          content: TextField(
+                            controller: messageController,
+                            decoration:
+                                InputDecoration(hintText: 'Enter your message'),
+                          ),
+                          actions: [
+                            TextButton(onPressed: () {
+                              FirebaseFirestore.instance.collection('Requests').doc(post['createdBy']).update({
+                                'message_req': 'message',
+                              });
+                              storeRequest();
+                              Navigator.of(context).pop();
+                            }, child: Text('Submit'))
+                          ],
+                        ),
+                      );
+                      
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xff302360),
@@ -292,5 +331,19 @@ class _ViewPostState extends State<ViewPost> {
         ),
       ),
     );
+  }
+}
+
+getCompanions (List<dynamic>? companions) {
+  print(companions);
+  if (companions==null) return '';
+
+  String res = "";
+  for(var i=0;i<companions.length;i++){
+    if (i==companions.length-1){
+      res+=companions[i].toString();
+      return res;
+    }
+    res += companions[i]+',';
   }
 }
