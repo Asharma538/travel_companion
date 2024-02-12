@@ -1,8 +1,5 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:travel_companion/pages/home.dart';
 import 'package:travel_companion/utils/colors.dart';
 import '../pages/profile.dart';
 import '../main.dart';

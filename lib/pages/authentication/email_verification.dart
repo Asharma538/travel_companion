@@ -99,8 +99,7 @@ class _VerifyPageState extends State<VerifyPage> {
                     filled: true,
                   ),
                   validator: (email) {
-                    if (email!
-                        .contains(RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
+                    if (email!.contains(RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
                       return null;
                     } else {
                       return "Enter a valid email";
@@ -116,13 +115,14 @@ class _VerifyPageState extends State<VerifyPage> {
             children: [
               const Text("Already have an account?"),
               TextButton(
-                  onPressed: (){
-                    Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => LoginPage()));
+                  onPressed: () {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => LoginPage()));
                   },
                   child: const Text(
-                    "Login",style: TextStyle(color: linkTextColor),
-                  )
-              )
+                    "Login",
+                    style: TextStyle(color: linkTextColor),
+                  ))
             ],
           ),
           Container(
@@ -132,24 +132,13 @@ class _VerifyPageState extends State<VerifyPage> {
             child: TextButton(
               onPressed: () {
                 formkey.currentState!.validate();
-
-                setState(() {
-                  emailController.text.isEmpty
-                      ? _validate = true
-                      : _validate = false;
-                });
-                if (_validate != true) {
+                if (email.text.contains(RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))){
                   setState(() {
                     state = 1;
                   });
                 }
               },
-              style: TextButton.styleFrom(
-                  backgroundColor: secondaryColor,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)
-                  )
-              ),
+              style: TextButton.styleFrom(backgroundColor: secondaryColor,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
               child: const Text(
                 'Next',
                 style: TextStyle(fontSize: 22, color: buttonTextColor),
@@ -245,10 +234,9 @@ class _VerifyPageState extends State<VerifyPage> {
               onPressed: () {
                 Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) =>
-                            SignupPage(signUpEmail: emailController.text)
-                    )
-                );
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            SignupPage(signUpEmail: emailController.text)));
               },
               style: TextButton.styleFrom(
                   backgroundColor: secondaryColor,
