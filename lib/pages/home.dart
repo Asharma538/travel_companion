@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:travel_companion/utils/colors.dart';
 import '../components/post.dart';
 import 'package:travel_companion/pages/view_post.dart';
+import '../main.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
@@ -14,8 +15,20 @@ class Homepage extends StatefulWidget {
         await FirebaseFirestore.instance.collection('Trips').get();
 
     List<Map<String, dynamic>> posts = querySnapshot.docs.map((doc) {
+      // DocumentReference userRef = doc.data()['userRef'];
+      DocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot =
+          doc.data()['userRef'].get() as DocumentSnapshot<Map<String, dynamic>>;
+
+      var userData = queryDocumentSnapshot.data() ?? {};
+      // if (queryDocumentSnapshot.exists) {
+      //   userData['email'] = queryDocumentSnapshot.id;
+      // }
+
       var post = doc.data();
       post['id'] = doc.id;
+      post['username'] = userData['username'];
+      post['about'] = userData['about'];
+      post['profilePhotoState'] = userData['prodilePhotState'];
       return post;
     }).toList();
 
@@ -60,7 +73,9 @@ class _HomepageState extends State<Homepage> {
                 return PostTile(
                   tripId: post['id'] ?? 'Not Available',
                   userName: post['username'] ?? 'Not Available',
-                  userImage: post['userImage'] ?? 'Not Available',
+                  userImage: (post['profilePhotoState'] == 0)
+                      ? ""
+                      : Base.profilePictures[post['profilePhotoState'] - 1],
                   source: post['source'] ?? 'Not Available',
                   destination: post['destination'] ?? 'Not Available',
                   date: post['date'] ?? 'Not Available',

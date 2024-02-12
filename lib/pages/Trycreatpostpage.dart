@@ -4,34 +4,32 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:travel_companion/pages/home.dart';
 import 'package:travel_companion/utils/colors.dart';
-import '../pages/profile.dart';
+import '../pages/Tryprofile.dart';
 import '../main.dart';
 
 class Trip {
-  // final String about;
-  // final String createdBy;
-  final DocumentReference userRef;
+  final String about;
+  final String createdBy;
   final String date;
   final String desc;
   final String destination;
   final String modeOfTransport;
   final String source;
   final String time;
-  // final String userImage;
-  // final String username;
+  final String userImage;
+  final String username;
 
   Trip({
-    // required this.about,
-    // required this.createdBy,
-    required this.userRef,
+    required this.about,
+    required this.createdBy,
     required this.date,
     required this.desc,
     required this.destination,
     required this.modeOfTransport,
     required this.source,
     required this.time,
-    // required this.userImage,
-    // required this.username,
+    required this.userImage,
+    required this.username,
   });
 }
 
@@ -320,7 +318,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
       print("Please fill all the fields");
       return;
     }
-    String userEmail = Profile.userData['id'];
     String formattedDate = selectedDate != null
         ? "${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year}"
         : "";
@@ -329,18 +326,16 @@ class _CreatePostPageState extends State<CreatePostPage> {
         : "";
 
     Trip newTrip = Trip(
-      // about: Profile.userData['about'] ?? '',
-      // createdBy: Profile.userData['id'] ?? '',
-      userRef:
-          await FirebaseFirestore.instance.collection('Users').doc(userEmail),
+      about: Profile.userData['about'] ?? '',
+      createdBy: Profile.userData['id'] ?? '',
       date: formattedDate,
       desc: description != "" ? description : 'Not Available',
       destination: toLocation,
       modeOfTransport: transportationMode ?? 'Not decided',
       source: fromLocation,
       time: formattedTime,
-      //   userImage: Profile.userData['profilePhoto'] ?? '',
-      //   username: Profile.userData['username'] ?? '',
+      userImage: Profile.userData['profilePhoto'] ?? '',
+      username: Profile.userData['username'] ?? '',
     );
 
     try {
@@ -349,25 +344,31 @@ class _CreatePostPageState extends State<CreatePostPage> {
             .collection('Trips')
             .doc(widget.initialPost!['id'])
             .update({
-          'userRef': newTrip.userRef,
+          'about': newTrip.about,
+          'createdBy': newTrip.createdBy,
           'date': newTrip.date,
           'desc': newTrip.desc,
           'destination': newTrip.destination,
           'modeOfTransport': newTrip.modeOfTransport,
           'source': newTrip.source,
           'time': newTrip.time,
+          'userImage': newTrip.userImage,
+          'username': newTrip.username,
         });
 
         print("Post updated successfully!");
       } else {
         await FirebaseFirestore.instance.collection('Trips').add({
-          'userRef': newTrip.userRef,
+          'about': newTrip.about,
+          'createdBy': newTrip.createdBy,
           'date': newTrip.date,
           'desc': newTrip.desc,
           'destination': newTrip.destination,
           'modeOfTransport': newTrip.modeOfTransport,
           'source': newTrip.source,
           'time': newTrip.time,
+          'userImage': newTrip.userImage,
+          'username': newTrip.username,
         });
 
         print("Post created successfully!");

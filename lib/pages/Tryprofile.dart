@@ -68,16 +68,33 @@ class _AboutTextFieldState extends State<AboutTextField> {
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
 
+  // static Map<String, dynamic> userData = {};
+
+  // static Future<Map<String, dynamic>> fetchUser(String userEmail) async {
+  //   DocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot =
+  //       await FirebaseFirestore.instance
+  //           .collection('Users')
+  //           .doc(userEmail)
+  //           .get();
+  //   var userData = queryDocumentSnapshot.data() ?? {};
+  //   if (queryDocumentSnapshot.exists) {
+  //     userData['id'] = queryDocumentSnapshot.id;
+  //   }
+  //   Profile.userData = userData;
+
+  //   return userData;
+
+  // }
+
   static Map<String, dynamic> userData = {};
 
   static Future<Map<String, dynamic>> fetchUser(
       DocumentReference userRef) async {
-    DocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot =
+    DocumentSnapshot<Map<String, dynamic>> userDocumentSnapshot =
         await userRef.get() as DocumentSnapshot<Map<String, dynamic>>;
-
-    var userData = queryDocumentSnapshot.data() ?? {};
-    if (queryDocumentSnapshot.exists) {
-      userData['id'] = queryDocumentSnapshot.id;
+    var userData = userDocumentSnapshot.data() ?? {};
+    if (userDocumentSnapshot.exists) {
+      userData['id'] = userDocumentSnapshot.id;
     }
     Profile.userData = userData;
 

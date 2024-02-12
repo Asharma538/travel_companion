@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:travel_companion/pages/create_post_page.dart';
@@ -42,7 +43,7 @@ class _ViewPostState extends State<ViewPost> {
   }
 
   void storeRequest() async {
-    String userEmail = 'sharma.130@iitj.ac.in';
+    String? userEmail = FirebaseAuth.instance.currentUser!.email;
     var firestore = await FirebaseFirestore.instance;
 
     DocumentSnapshot<Map<String, dynamic>> myRequestSnapshot =
@@ -232,7 +233,6 @@ class _ViewPostState extends State<ViewPost> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            
             SizedBox(height: mediaQuery.height * 0.1),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -250,17 +250,21 @@ class _ViewPostState extends State<ViewPost> {
                                 InputDecoration(hintText: 'Enter your message'),
                           ),
                           actions: [
-                            TextButton(onPressed: () {
-                              FirebaseFirestore.instance.collection('Requests').doc(post['createdBy']).update({
-                                'message_req': 'message',
-                              });
-                              storeRequest();
-                              Navigator.of(context).pop();
-                            }, child: Text('Submit'))
+                            TextButton(
+                                onPressed: () {
+                                  FirebaseFirestore.instance
+                                      .collection('Requests')
+                                      .doc(post['createdBy'])
+                                      .update({
+                                    'message_req': 'message',
+                                  });
+                                  storeRequest();
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Submit'))
                           ],
                         ),
                       );
-                      
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xff302360),
@@ -334,16 +338,16 @@ class _ViewPostState extends State<ViewPost> {
   }
 }
 
-getCompanions (List<dynamic>? companions) {
+getCompanions(List<dynamic>? companions) {
   print(companions);
-  if (companions==null) return '';
+  if (companions == null) return '';
 
   String res = "";
-  for(var i=0;i<companions.length;i++){
-    if (i==companions.length-1){
-      res+=companions[i].toString();
+  for (var i = 0; i < companions.length; i++) {
+    if (i == companions.length - 1) {
+      res += companions[i].toString();
       return res;
     }
-    res += companions[i]+',';
+    res += companions[i] + ',';
   }
 }

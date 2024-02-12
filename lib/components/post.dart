@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:travel_companion/utils/colors.dart';
-
 
 class PostTile extends StatelessWidget {
   final String tripId;
@@ -32,19 +32,17 @@ class PostTile extends StatelessWidget {
       onTap: onPressed,
       child: Container(
         margin: const EdgeInsets.fromLTRB(10, 12, 10, 8),
-        decoration:  BoxDecoration(
-          border: Border.all(color: const Color(0xFF000000),width: 1.5),
-          borderRadius: BorderRadius.circular(12),
-          color: cardBackgroundColor,
-          boxShadow: const [
-            BoxShadow(
-              offset: Offset(0, 4),
-              color: Color(0xFFC5C5C5),
-              spreadRadius: 2,
-              blurRadius: 4
-            )
-          ]
-        ),
+        decoration: BoxDecoration(
+            border: Border.all(color: const Color(0xFF000000), width: 1.5),
+            borderRadius: BorderRadius.circular(12),
+            color: cardBackgroundColor,
+            boxShadow: const [
+              BoxShadow(
+                  offset: Offset(0, 4),
+                  color: Color(0xFFC5C5C5),
+                  spreadRadius: 2,
+                  blurRadius: 4)
+            ]),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -61,13 +59,14 @@ class PostTile extends StatelessWidget {
                       ),
                     ),
                   ] else ...[
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.lightBlue,
+                    SizedBox(
+                      width: 35,
+                      height: 35,
+                      child: ProfilePicture(
+                        name: userName,
+                        fontsize: 30,
+                        radius: 17,
                       ),
-                      width: 40.0,
-                      height: 40.0,
                     ),
                   ],
                   const SizedBox(width: 12.0),
@@ -98,11 +97,13 @@ class PostTile extends StatelessWidget {
                 children: [
                   Text(
                     'Date: $date',
-                    style: const TextStyle(fontSize: 13.5,fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                        fontSize: 13.5, fontWeight: FontWeight.w500),
                   ),
                   Text(
                     'Time: $time',
-                    style: const TextStyle(fontSize: 13.5,fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                        fontSize: 13.5, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -111,7 +112,8 @@ class PostTile extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
               child: Text(
                 'Mode: $modeOfTransport',
-                style: const TextStyle(fontSize: 13.5,fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                    fontSize: 13.5, fontWeight: FontWeight.w500),
               ),
             ),
           ],
