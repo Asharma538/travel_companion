@@ -4,9 +4,10 @@ import '../../pages/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import '../../utils/colors.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignupPage extends StatefulWidget {
- final String? signUpEmail;
+  final String? signUpEmail;
 
   const SignupPage({Key? key, this.signUpEmail}) : super(key: key);
 
@@ -19,27 +20,38 @@ class Signup extends State<SignupPage> {
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
   var confirmPasswordController = TextEditingController();
-  var phoneNumberController= TextEditingController();
+  var phoneNumberController = TextEditingController();
 
   @override
-    void initState() {
-      super.initState();
-      emailController.text = widget.signUpEmail ?? '';
-    }
-  
-  
+  void initState() {
+    super.initState();
+    emailController.text = widget.signUpEmail ?? '';
+  }
+
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: primaryColor,
-        body: _body(context, userNameController, emailController ,passwordController, confirmPasswordController,phoneNumberController),
+        body: _body(
+            context,
+            userNameController,
+            emailController,
+            passwordController,
+            confirmPasswordController,
+            phoneNumberController),
       ),
     );
   }
 
-  _body (context, TextEditingController username, TextEditingController email,
-      TextEditingController password, TextEditingController confirm_password, TextEditingController phoneNumber,) {
+  _body(
+    context,
+    TextEditingController username,
+    TextEditingController email,
+    TextEditingController password,
+    TextEditingController confirm_password,
+    TextEditingController phoneNumber,
+  ) {
     return Container(
       height: MediaQuery.of(context).size.height,
       padding: const EdgeInsets.all(20),
@@ -66,8 +78,7 @@ class Signup extends State<SignupPage> {
                   hintText: "Username",
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none
-                  ),
+                      borderSide: BorderSide.none),
                   fillColor: textFieldBackgroundColor,
                   filled: true,
                 ),
@@ -82,8 +93,7 @@ class Signup extends State<SignupPage> {
                   hintText: "Email",
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none
-                  ),
+                      borderSide: BorderSide.none),
                   fillColor: textFieldBackgroundColor,
                   filled: true,
                   // prefixIcon: const Icon(Icons.person)
@@ -99,8 +109,7 @@ class Signup extends State<SignupPage> {
                   hintText: "Password",
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none
-                  ),
+                      borderSide: BorderSide.none),
                   fillColor: textFieldBackgroundColor,
                   filled: true,
                   // prefixIcon: const Icon(Icons.person)
@@ -123,44 +132,67 @@ class Signup extends State<SignupPage> {
                 ),
               ),
             ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height / 10,
-                child: InternationalPhoneNumberInput(
-                  onInputChanged: (PhoneNumber number) {
-                    print(number.phoneNumber); 
-                  },
-                  onInputValidated: (bool value) {
-                    print(value);
-                  },
-                  selectorConfig: SelectorConfig(
-                    selectorType: PhoneInputSelectorType.DIALOG,
-                  ),
-                  ignoreBlank: false,
-                  autoValidateMode: AutovalidateMode.onUserInteraction,
-                  selectorTextStyle: const TextStyle(color: Colors.black),
-                  initialValue: PhoneNumber(isoCode: 'IN'),
-                  textFieldController: phoneNumber,
-                  formatInput: false,
+            SizedBox(
+              height: MediaQuery.of(context).size.height / 10,
+              child: InternationalPhoneNumberInput(
+                onInputChanged: (PhoneNumber number) {
+                  print(number.phoneNumber);
+                },
+                onInputValidated: (bool value) {
+                  print(value);
+                },
+                selectorConfig: SelectorConfig(
+                  selectorType: PhoneInputSelectorType.DIALOG,
                 ),
+                ignoreBlank: false,
+                autoValidateMode: AutovalidateMode.onUserInteraction,
+                selectorTextStyle: const TextStyle(color: Colors.black),
+                initialValue: PhoneNumber(isoCode: 'IN'),
+                textFieldController: phoneNumber,
+                formatInput: false,
+                validator: (String? val) {
+                  if (val == "" || val == null) {
+                    return "Phone Number is needed";
+                  } else if (val.length < 10) {
+                    return "Please enter a valid phone number";
+                  }
+                  return null;
+                },
               ),
-            ]),
+            ),
+          ]),
           const SizedBox(height: 15),
           SizedBox(
             height: MediaQuery.of(context).size.height / 10,
             child: ElevatedButton(
               onPressed: () async {
-                  final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                          email: email.text, password: password.text
-                  ).then((_) {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => const Base()));
-                  }).catchError((e) {
-                    if (e.code == 'user-not-found') {
-                      print('No user found for that email.');
-                    } else if (e.code == 'wrong-password') {
-                      print('Wrong password provided for that user.');
-                    }
+                try {
+                  
+                  final credential = await FirebaseAuth.instance
+                      .createUserWithEmailAndPassword(
+                          email: email.text, password: password.text);
+
+                  
+                  await FirebaseFirestore.instance
+                      .collection('Users')
+                      .doc(credential.user?.email) 
+                      .set({
+                    'username': username.text,
+                    'phoneNumber': phoneNumber.text,
+                    'profilePhotoState':0, 
+                    'about':"Not Available"
                   });
+
+                  
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Base()));
+                } catch (e) {
+                  print('Error signing up: $e');
+                  
+                }
+              
               },
               style: TextButton.styleFrom(
                   backgroundColor: secondaryColor,
