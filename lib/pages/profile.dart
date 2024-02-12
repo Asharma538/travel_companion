@@ -109,6 +109,7 @@ class _ProfileState extends State<Profile> {
         child: FutureBuilder<Map<String, dynamic>>(
           future: userFuture,
           builder: (context, snapshot) {
+            print(userData);
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CircularProgressIndicator(),
@@ -223,7 +224,12 @@ class _ProfileState extends State<Profile> {
                         PostTile(
                             tripId: Homepage.posts[i]['id'],
                             userName: Homepage.posts[i]['username'],
-                            userImage: Homepage.posts[i]['userImage'],
+                            userImage: (Homepage.posts[i]
+                                        ['profilePhotoState'] ==
+                                    0)
+                                ? ""
+                                : Base.profilePictures[
+                                    Homepage.posts[i]['profilePhotoState'] - 1],
                             source:
                                 Homepage.posts[i]['source'] ?? 'Not Decided',
                             destination: Homepage.posts[i]['destination'] ??
@@ -297,7 +303,7 @@ class _ProfileState extends State<Profile> {
                               ? ProfilePicture(
                                   name: userData!['username'],
                                   radius: 8,
-                                  fontsize: 30,
+                                  fontsize: 20,
                                 )
                               : CircleAvatar(
                                   radius: 8.0,

@@ -10,27 +10,43 @@ class Homepage extends StatefulWidget {
 
   static List<Map<String, dynamic>> posts = [];
 
+  // static Future<List<Map<String, dynamic>>> fetchPosts() async {
+  //   QuerySnapshot<Map<String, dynamic>> querySnapshot =
+  //       await FirebaseFirestore.instance.collection('Trips').get();
+
+  //   List<Future<Map<String, dynamic>>> postFutures =
+  //       querySnapshot.docs.map<Future<Map<String, dynamic>>>((doc) {
+  //         return doc.data()['userRef'].get().then((queryDocumentSnapshot) {
+  //           var userData = queryDocumentSnapshot.data() ?? {};
+  //           var post = doc.data();
+  //           post['id'] = doc.id;
+  //           post['username'] = userData['username'];
+  //           post['about'] = userData['about'];
+  //           post['profilePhotoState'] = userData['prodilePhotState'];
+  //           return post;
+  //     });
+  //   }).toList();
+
+  //   List<Map<String, dynamic>> posts = await Future.wait(postFutures);
+  //   Homepage.posts = posts;
+  //   return posts;
+  // }
   static Future<List<Map<String, dynamic>>> fetchPosts() async {
     QuerySnapshot<Map<String, dynamic>> querySnapshot =
         await FirebaseFirestore.instance.collection('Trips').get();
 
-    List<Map<String, dynamic>> posts = querySnapshot.docs.map((doc) {
-      // DocumentReference userRef = doc.data()['userRef'];
-      DocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot =
-          doc.data()['userRef'].get() as DocumentSnapshot<Map<String, dynamic>>;
+    List<Map<String, dynamic>> posts = [];
 
+    for (var doc in querySnapshot.docs) {
+      var queryDocumentSnapshot = await doc.data()['userRef'].get();
       var userData = queryDocumentSnapshot.data() ?? {};
-      // if (queryDocumentSnapshot.exists) {
-      //   userData['email'] = queryDocumentSnapshot.id;
-      // }
-
       var post = doc.data();
       post['id'] = doc.id;
       post['username'] = userData['username'];
       post['about'] = userData['about'];
-      post['profilePhotoState'] = userData['prodilePhotState'];
-      return post;
-    }).toList();
+      post['profilePhotoState'] = userData['profilePhotoState'];
+      posts.add(post);
+    }
 
     Homepage.posts = posts;
     return posts;

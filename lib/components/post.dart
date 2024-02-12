@@ -64,7 +64,7 @@ class PostTile extends StatelessWidget {
                       height: 35,
                       child: ProfilePicture(
                         name: userName,
-                        fontsize: 30,
+                        fontsize: 20,
                         radius: 17,
                       ),
                     ),

@@ -31,7 +31,6 @@ class Signup extends State<SignupPage> {
     emailController.text = widget.signUpEmail ?? '';
   }
 
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -50,8 +49,14 @@ class Signup extends State<SignupPage> {
     );
   }
 
-  _body (context, TextEditingController username, TextEditingController email,
-      TextEditingController password, TextEditingController confirmPassword, TextEditingController phoneNumber,) {
+  _body(
+    context,
+    TextEditingController username,
+    TextEditingController email,
+    TextEditingController password,
+    TextEditingController confirmPassword,
+    TextEditingController phoneNumber,
+  ) {
     return Container(
       height: MediaQuery.of(context).size.height,
       padding: const EdgeInsets.all(20),
@@ -72,8 +77,7 @@ class Signup extends State<SignupPage> {
           Form(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             key: formkey,
-            child: Column(
-              children: [
+            child: Column(children: [
               SizedBox(
                 height: 80,
                 child: TextFormField(
@@ -82,12 +86,12 @@ class Signup extends State<SignupPage> {
                     hintText: "Username",
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none
-                    ),
+                        borderSide: BorderSide.none),
                     fillColor: textFieldBackgroundColor,
                     filled: true,
                   ),
-                  validator: (username) => username!.isEmpty ? 'This field is required' : null,
+                  validator: (username) =>
+                      username!.isEmpty ? 'This field is required' : null,
                 ),
               ),
               SizedBox(
@@ -99,8 +103,7 @@ class Signup extends State<SignupPage> {
                     hintText: "Email",
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none
-                    ),
+                        borderSide: BorderSide.none),
                     fillColor: textFieldBackgroundColor,
                     filled: true,
                   ),
@@ -115,20 +118,17 @@ class Signup extends State<SignupPage> {
                     hintText: "Password",
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none
-                    ),
+                        borderSide: BorderSide.none),
                     fillColor: textFieldBackgroundColor,
                     filled: true,
                     // prefixIcon: const Icon(Icons.person)
                   ),
                   validator: (password) {
-                    if(password == null || password.isEmpty) {
+                    if (password == null || password.isEmpty) {
                       return "This field is required";
-                    }
-                    else if(password.length < 6){
+                    } else if (password.length < 6) {
                       return "Password must be at least 6 characters long";
-                    }
-                    else {
+                    } else {
                       return null;
                     }
                   },
@@ -149,13 +149,11 @@ class Signup extends State<SignupPage> {
                     // prefixIcon: const Icon(Icons.person)
                   ),
                   validator: (confirmPassword) {
-                    if(confirmPassword == null || confirmPassword.isEmpty) {
+                    if (confirmPassword == null || confirmPassword.isEmpty) {
                       return "This feild is required";
-                    }
-                    else if(confirmPassword != passwordController.text){
+                    } else if (confirmPassword != passwordController.text) {
                       return "Confirm the same password";
-                    }
-                    else {
+                    } else {
                       return null;
                     }
                   },
@@ -197,22 +195,23 @@ class Signup extends State<SignupPage> {
             child: ElevatedButton(
               onPressed: () async {
                 formkey.currentState!.validate();
-                final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email.text, password: password.text);
+                // final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email.text, password: password.text);
 
-                await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                    email: email.text, password: password.text
-                ).then((_) async {
+                await FirebaseAuth.instance
+                    .createUserWithEmailAndPassword(
+                        email: email.text, password: password.text)
+                    .then((credential) async {
                   await FirebaseFirestore.instance
                       .collection('Users')
-                      .doc(credential.user?.email) 
+                      .doc(credential.user?.email)
                       .set({
                     'username': username.text,
                     'phoneNumber': phoneNumber.text,
-                    'profilePhotoState':0, 
-                    'about':"Not Available"
+                    'profilePhotoState': 0,
+                    'about': "Not Available"
                   });
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => Base()));
+                  Navigator.pushReplacement(
+                      context, MaterialPageRoute(builder: (context) => Base()));
                 }).catchError((e) {
                   if (e.code == 'user-not-found') {
                     print('No user found for that email.');
