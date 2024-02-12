@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:travel_companion/pages/home.dart';
 import '../components/post.dart';
 import 'package:travel_companion/pages/view_post.dart';
+import '../main.dart';
 
 class SearchResultsPage extends StatefulWidget {
   final String fromLocation;
@@ -59,27 +60,47 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                   children: [
                     _appBarBack(context),
                     for (var i = 0; i < Homepage.posts.length; i++) ...[
-                      if ((widget.fromLocation == Homepage.posts[i]['source'] ||
+                      if ((widget.fromLocation.toLowerCase() ==
+                                  Homepage.posts[i]['source']
+                                      .toString()
+                                      .toLowerCase() ||
                               widget.fromLocation == "") &&
-                          (widget.toLocation ==
-                                  Homepage.posts[i]['destination'] ||
+                          (widget.toLocation.toLowerCase() ==
+                                  Homepage.posts[i]['destination']
+                                      .toString()
+                                      .toLowerCase() ||
                               widget.toLocation == "") &&
-                          (formattedDate == Homepage.posts[i]['date'] ||
+                          (formattedDate.toLowerCase() ==
+                                  Homepage.posts[i]['date']
+                                      .toString()
+                                      .toLowerCase() ||
                               formattedDate == "") &&
-                          (formattedTime == Homepage.posts[i]['time'] ||
+                          (formattedTime.toLowerCase() ==
+                                  Homepage.posts[i]['time']
+                                      .toString()
+                                      .toLowerCase() ||
                               formattedTime == "") &&
-                          (widget.modeOfTransport ==
-                                  Homepage.posts[i]['modeOfTransport'] ||
+                          (widget.modeOfTransport.toLowerCase() ==
+                                  Homepage.posts[i]['modeOfTransport']
+                                      .toString()
+                                      .toLowerCase() ||
                               widget.modeOfTransport == "")) ...[
                         PostTile(
                             tripId: Homepage.posts[i]['id'],
                             userName: Homepage.posts[i]['username'],
-                            userImage: Homepage.posts[i]['userImage'],
+                            userImage: (Homepage.posts[i]
+                                        ['profilePhotoState'] ==
+                                    0)
+                                ? ""
+                                : Base.profilePictures[
+                                    Homepage.posts[i]['profilePhotoState'] - 1],
                             source: Homepage.posts[i]['source'],
                             destination: Homepage.posts[i]['destination'],
                             date: Homepage.posts[i]['date'] ?? 'Not Available',
                             time: Homepage.posts[i]['time'] ?? 'Not Available',
-                            modeOfTransport: Homepage.posts[i]['modeOfTransport'] ?? 'Not Available',
+                            modeOfTransport: Homepage.posts[i]
+                                    ['modeOfTransport'] ??
+                                'Not Available',
                             onPressed: () {
                               Navigator.push(
                                 context,

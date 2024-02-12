@@ -70,12 +70,11 @@ class Profile extends StatefulWidget {
 
   static Map<String, dynamic> userData = {};
 
-  static Future<Map<String, dynamic>> fetchUser(String userEmail) async {
+  static Future<Map<String, dynamic>> fetchUser(
+      DocumentReference userRef) async {
     DocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot =
-        await FirebaseFirestore.instance
-            .collection('Users')
-            .doc(userEmail)
-            .get();
+        await userRef.get() as DocumentSnapshot<Map<String, dynamic>>;
+
     var userData = queryDocumentSnapshot.data() ?? {};
     if (queryDocumentSnapshot.exists) {
       userData['id'] = queryDocumentSnapshot.id;
@@ -97,7 +96,9 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
-    userFuture = Profile.fetchUser(userEmail!);
+    DocumentReference userRef =
+        FirebaseFirestore.instance.collection('Users').doc(userEmail);
+    userFuture = Profile.fetchUser(userRef);
   }
 
   @override
@@ -108,12 +109,12 @@ class _ProfileState extends State<Profile> {
         child: FutureBuilder<Map<String, dynamic>>(
           future: userFuture,
           builder: (context, snapshot) {
+            print(userData);
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
-            }
-            else if (snapshot.hasError) {
+            } else if (snapshot.hasError) {
               return const Center(
                 child: Text(
                   'Error',
@@ -218,16 +219,26 @@ class _ProfileState extends State<Profile> {
                       color: Colors.black,
                     ),
                     for (var i = 0; i < Homepage.posts.length; i++) ...[
-                      if (Homepage.posts[i]['username'] == userData?['username']) ...[
+                      if (Homepage.posts[i]['username'] ==
+                          userData?['username']) ...[
                         PostTile(
                             tripId: Homepage.posts[i]['id'],
                             userName: Homepage.posts[i]['username'],
-                            userImage: Homepage.posts[i]['userImage'],
-                            source: Homepage.posts[i]['source']?? 'Not Decided',
-                            destination: Homepage.posts[i]['destination']?? 'Not Decided',
-                            date: Homepage.posts[i]['date']?? 'Not Decided',
-                            time: Homepage.posts[i]['time']?? 'Not Decided',
-                            modeOfTransport: Homepage.posts[i]['modeOfTransport']?? 'Not Decided',
+                            userImage: (Homepage.posts[i]
+                                        ['profilePhotoState'] ==
+                                    0)
+                                ? ""
+                                : Base.profilePictures[
+                                    Homepage.posts[i]['profilePhotoState'] - 1],
+                            source:
+                                Homepage.posts[i]['source'] ?? 'Not Decided',
+                            destination: Homepage.posts[i]['destination'] ??
+                                'Not Decided',
+                            date: Homepage.posts[i]['date'] ?? 'Not Decided',
+                            time: Homepage.posts[i]['time'] ?? 'Not Decided',
+                            modeOfTransport: Homepage.posts[i]
+                                    ['modeOfTransport'] ??
+                                'Not Decided',
                             onPressed: () {
                               Navigator.push(
                                 context,
@@ -237,8 +248,7 @@ class _ProfileState extends State<Profile> {
                                   ),
                                 ),
                               );
-                            }
-                        )
+                            })
                       ]
                     ]
                   ],
@@ -293,7 +303,7 @@ class _ProfileState extends State<Profile> {
                               ? ProfilePicture(
                                   name: userData!['username'],
                                   radius: 8,
-                                  fontsize: 30,
+                                  fontsize: 20,
                                 )
                               : CircleAvatar(
                                   radius: 8.0,
