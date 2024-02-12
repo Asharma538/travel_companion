@@ -197,11 +197,10 @@ class Signup extends State<SignupPage> {
             child: ElevatedButton(
               onPressed: () async {
                 formkey.currentState!.validate();
-                final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email.text, password: password.text);
-
+                
                 await FirebaseAuth.instance.createUserWithEmailAndPassword(
                     email: email.text, password: password.text
-                ).then((_) async {
+                ).then((credential) async {
                   await FirebaseFirestore.instance
                       .collection('Users')
                       .doc(credential.user?.email) 
