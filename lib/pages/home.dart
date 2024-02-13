@@ -10,30 +10,8 @@ class Homepage extends StatefulWidget {
 
   static List<Map<String, dynamic>> posts = [];
 
-  // static Future<List<Map<String, dynamic>>> fetchPosts() async {
-  //   QuerySnapshot<Map<String, dynamic>> querySnapshot =
-  //       await FirebaseFirestore.instance.collection('Trips').get();
-
-  //   List<Future<Map<String, dynamic>>> postFutures =
-  //       querySnapshot.docs.map<Future<Map<String, dynamic>>>((doc) {
-  //         return doc.data()['userRef'].get().then((queryDocumentSnapshot) {
-  //           var userData = queryDocumentSnapshot.data() ?? {};
-  //           var post = doc.data();
-  //           post['id'] = doc.id;
-  //           post['username'] = userData['username'];
-  //           post['about'] = userData['about'];
-  //           post['profilePhotoState'] = userData['prodilePhotState'];
-  //           return post;
-  //     });
-  //   }).toList();
-
-  //   List<Map<String, dynamic>> posts = await Future.wait(postFutures);
-  //   Homepage.posts = posts;
-  //   return posts;
-  // }
   static Future<List<Map<String, dynamic>>> fetchPosts() async {
-    QuerySnapshot<Map<String, dynamic>> querySnapshot =
-        await FirebaseFirestore.instance.collection('Trips').get();
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance.collection('Trips').get();
 
     List<Map<String, dynamic>> posts = [];
 
@@ -71,7 +49,7 @@ class _HomepageState extends State<Homepage> {
       backgroundColor: primaryColor,
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: postsFuture,
-        builder: (context, snapshot) {
+        builder: (context, snapshot){
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: CircularProgressIndicator(),
@@ -89,9 +67,7 @@ class _HomepageState extends State<Homepage> {
                 return PostTile(
                   tripId: post['id'] ?? 'Not Available',
                   userName: post['username'] ?? 'Not Available',
-                  userImage: (post['profilePhotoState'] == 0)
-                      ? ""
-                      : Base.profilePictures[post['profilePhotoState'] - 1],
+                  userImage: (post['profilePhotoState'] == 0) ? "" : Base.profilePictures[post['profilePhotoState'] - 1],
                   source: post['source'] ?? 'Not Available',
                   destination: post['destination'] ?? 'Not Available',
                   date: post['date'] ?? 'Not Available',

@@ -1,5 +1,7 @@
-import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:travel_companion/pages/profile.dart';
 import '../components/request_tile.dart';
 
 class Request {
@@ -7,18 +9,28 @@ class Request {
   final String? description;
   final String date;
   final String? status;
+  final String type;
+  final String tripId;
   final String source;
   final String destination;
   final String time;
+  final String modeOfTransport;
+  final String phoneNumber;
+  final String sentBy;
 
   Request({
     required this.username,
     this.description,
     required this.date,
     this.status,
+    required this.type,
+    required this.tripId,
     required this.source,
     required this.destination,
     required this.time,
+    required this.modeOfTransport,
+    required this.phoneNumber,
+    required this.sentBy,
   });
 }
 
@@ -43,81 +55,10 @@ class Requests extends StatefulWidget {
 
 class _RequestsState extends State<Requests> {
   String dropdownValue = 'All Requests';
-  List<Request> allRequests = [];
-
-  @override
-  void initState() {
-    super.initState();
-    loadData();
-  }
-
-  Future<void> loadData() async {
-    String data = await DefaultAssetBundle.of(context)
-        .loadString('lib/data/requests.json');
-
-    Map<String, dynamic> jsonData = jsonDecode(data);
-
-    if (jsonData.containsKey('requests') && jsonData['requests'] is List) {
-      List<dynamic> requestsData = jsonData['requests'];
-
-      List<Request> requests = requestsData
-          .map((json) => Request(
-                username: json['username'] ?? '',
-                description: json['description'] ?? 'Not decided',
-                date: json['date'],
-                status: json['status'] ?? '',
-                source: json['source'] ?? '',
-                destination: json['destination'] ?? '',
-                time: json['time'] ?? '',
-              ))
-          .toList();
-
-      setState(() {
-        allRequests = requests;
-      });
-    } else {
-      print('Invalid JSON structure. Expected a "requests" property of type List.');
-    }
-  }
-
-  List<Request> getFilteredRequests() {
-    if (dropdownValue == 'All Requests') {
-      return allRequests;
-    } else if (dropdownValue == 'Sent') {
-      return allRequests.where((request) => request.status == 'sent').toList();
-    } else if (dropdownValue == 'Received') {
-      return allRequests.where((request) => request.status != 'sent').toList();
-    }
-    return [];
-  }
-
-  Widget buildRequestTile(Request request) {
-    return RequestTile(
-      request: request,
-      isExpanded: isExpanded,
-      onAccept: () {
-        print('Accepted');
-      },
-      onReject: () {
-        print('Rejected');
-      },
-      onToggleExpansion: () {
-        setState(() {
-          // Toggle the isExpanded flag
-          isExpanded = !isExpanded;
-        });
-      },
-    );
-  }
-
-  bool isExpanded = false;
+  String userEmail = FirebaseAuth.instance.currentUser!.email ?? "";
 
   @override
   Widget build(BuildContext context) {
-    List<Request> filteredRequests = getFilteredRequests();
-
-    filteredRequests.sort((a, b) => a.date.compareTo(b.date));
-
     return Scaffold(
       body: Align(
         alignment: Alignment.topRight,
@@ -158,11 +99,48 @@ class _RequestsState extends State<Requests> {
                   dropdownColor: Colors.lightBlue,
                 ),
               ),
-              Flexible(
-                child: ListView.builder(
-                  itemCount: filteredRequests.length,
-                  itemBuilder: (context, index) {
-                    return buildRequestTile(filteredRequests[index]);
+              Expanded(
+                child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                  stream: FirebaseFirestore.instance.collection('Requests').doc(userEmail).snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    }
+                    List<dynamic> requests = [];
+                    if (snapshot.data!.exists) requests = snapshot.data?.get('requests');
+                    return ListView.builder(
+                      itemCount: requests.length,
+                      itemBuilder: (context, index){
+                        Request req = Request(
+                            username: "",
+                            date: "",
+                            type: requests[index]['type'],
+                            tripId: requests[index]['tripId'],
+                            source: "",
+                            destination: "",
+                            time: "",
+                            modeOfTransport: "",
+                            phoneNumber: "",
+                            sentBy: requests[index]['sentBy'],
+                            status: requests[index]['status']
+                        );
+                        return FutureBuilder<Request>(
+                          future: _getRequestWithData(req),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            }
+                            else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            }
+                            return buildRequestTile(snapshot.data!);
+                          },
+                        );
+                      },
+                    );
                   },
                 ),
               ),
@@ -172,4 +150,102 @@ class _RequestsState extends State<Requests> {
       ),
     );
   }
+
+  Future<Request> _getRequestWithData(Request request) async {
+    DocumentSnapshot tripSnapshot = await FirebaseFirestore.instance
+        .collection('Trips')
+        .doc(request.tripId)
+        .get();
+
+    String username = await _getUsername(tripSnapshot['userRef']);
+    String source = tripSnapshot['source'];
+    String destination = tripSnapshot['destination'];
+    String time = tripSnapshot['time'];
+    String modeOfTransport = tripSnapshot['modeOfTransport'];
+    String phoneNumber = await _getPhoneNumber(tripSnapshot['userRef']);
+
+    return Request(
+      username: username,
+      description: tripSnapshot['desc'],
+      date: tripSnapshot['date'],
+      status: request.status,
+      type: request.type,
+      tripId: request.tripId,
+      source: source,
+      destination: destination,
+      time: time,
+      modeOfTransport: modeOfTransport,
+      phoneNumber: phoneNumber,
+      sentBy: request.sentBy,
+    );
+  }
+
+  Future<String> _getUsername(DocumentReference userRef) async {
+    DocumentSnapshot userSnapshot = await userRef.get();
+    return userSnapshot['username'];
+  }
+
+  Future<String> _getPhoneNumber(DocumentReference userRef) async {
+    DocumentSnapshot userSnapshot = await userRef.get();
+    return userSnapshot['phoneNumber'];
+  }
+
+  Future<void> _updateRequestStatus(Request request, String newStatus) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('Requests')
+          .doc(userEmail)
+          .collection('requests')
+          .doc(request.tripId)
+          .update({'status': newStatus});
+
+      await FirebaseFirestore.instance
+          .collection('Requests')
+          .doc(request.sentBy)
+          .collection('requests')
+          .doc(request.tripId)
+          .update({'status': newStatus});
+
+      if (newStatus == 'Accepted' || newStatus == 'Rejected') {
+        String sentBy = request.sentBy;
+        if (sentBy.isNotEmpty) {
+          DocumentSnapshot tripSnapshot = await FirebaseFirestore.instance
+              .collection('Trips')
+              .doc(request.tripId)
+              .get();
+
+          List<dynamic> companionArray = List.from(tripSnapshot['companion']);
+          companionArray.add(sentBy);
+
+          await FirebaseFirestore.instance
+              .collection('Trips')
+              .doc(request.tripId)
+              .update({'companion': companionArray});
+
+        }
+      }
+    } catch (e) {
+      print('Error updating request status: $e');
+    }
+  }
+
+  Widget buildRequestTile(Request request) {
+    return RequestTile(
+      request: request,
+      onAccept: () {
+        _updateRequestStatus(request, 'Accepted');
+      },
+      onReject: () {
+        _updateRequestStatus(request, 'Rejected');
+      },
+      onToggleExpansion: () {
+        setState(() {
+          isExpanded = !isExpanded;
+        });
+      },
+      isExpanded: isExpanded,
+    );
+  }
+
+  bool isExpanded = false;
 }

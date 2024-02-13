@@ -5,8 +5,6 @@ import '../pages/profile.dart';
 import '../main.dart';
 
 class Trip {
-  // final String about;
-  // final String createdBy;
   final DocumentReference userRef;
   final String date;
   final String desc;
@@ -14,12 +12,8 @@ class Trip {
   final String modeOfTransport;
   final String source;
   final String time;
-  // final String userImage;
-  // final String username;
 
   Trip({
-    // required this.about,
-    // required this.createdBy,
     required this.userRef,
     required this.date,
     required this.desc,
@@ -27,14 +21,11 @@ class Trip {
     required this.modeOfTransport,
     required this.source,
     required this.time,
-    // required this.userImage,
-    // required this.username,
   });
 }
 
 class CreatePostPage extends StatefulWidget {
   final Map<String, dynamic>? initialPost;
-
   const CreatePostPage({Key? key, this.initialPost}) : super(key: key);
 
   @override
@@ -50,8 +41,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
   String transportationMode = '';
   String description = '';
 
-  void _showDatePicker(
-      BuildContext context, Function(DateTime) onDateSelected) {
+  void _showDatePicker(BuildContext context, Function(DateTime) onDateSelected) {
     showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -64,8 +54,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
     });
   }
 
-  void _showTimePicker(BuildContext context, TimeOfDay? selectedTime,
-      Function(TimeOfDay) onTimeSelected) async {
+  void _showTimePicker(BuildContext context, TimeOfDay? selectedTime,Function(TimeOfDay) onTimeSelected) async {
     TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: selectedTime ?? TimeOfDay.now(),
@@ -82,11 +71,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
     if (widget.initialPost != null) {
       fromLocation = widget.initialPost!['source'] ?? '';
       toLocation = widget.initialPost!['destination'] ?? '';
-
       transportationMode = widget.initialPost!['modeOfTransport'] ?? '';
-
       description = widget.initialPost!['desc'] ?? '';
-
       String dateString = widget.initialPost!['date'] ?? '';
       List<String> dateParts = dateString.split('-');
       int day = int.parse(dateParts[0]);
@@ -165,7 +151,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                     try {
                       await createNewTrip(context);
                     } catch (e) {
-                      print("Error creating post 1: $e");
+                      print("Error creating post : $e");
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -189,7 +175,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                   try {
                     await createNewTrip(context);
                   } catch (e) {
-                    print("Error creating post 1: $e");
+                    print("Error creating post: $e");
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -326,18 +312,13 @@ class _CreatePostPageState extends State<CreatePostPage> {
         : "";
 
     Trip newTrip = Trip(
-      // about: Profile.userData['about'] ?? '',
-      // createdBy: Profile.userData['id'] ?? '',
-      userRef:
-          await FirebaseFirestore.instance.collection('Users').doc(userEmail),
+      userRef: await FirebaseFirestore.instance.collection('Users').doc(userEmail),
       date: formattedDate,
       desc: description != "" ? description : 'Not Available',
       destination: toLocation,
       modeOfTransport: transportationMode ?? 'Not decided',
       source: fromLocation,
       time: formattedTime,
-      //   userImage: Profile.userData['profilePhoto'] ?? '',
-      //   username: Profile.userData['username'] ?? '',
     );
 
     try {
@@ -353,6 +334,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
           'modeOfTransport': newTrip.modeOfTransport,
           'source': newTrip.source,
           'time': newTrip.time,
+          'createdBy':userEmail
         });
 
         print("Post updated successfully!");
@@ -365,6 +347,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
           'modeOfTransport': newTrip.modeOfTransport,
           'source': newTrip.source,
           'time': newTrip.time,
+          'createdBy':userEmail
         });
 
         print("Post created successfully!");
