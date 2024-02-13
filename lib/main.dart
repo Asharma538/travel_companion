@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:travel_companion/pages/authentication/email_verification.dart';
-import 'package:travel_companion/pages/authentication/login.dart';
 import 'pages/profile.dart';
 import 'pages/search.dart';
 import 'pages/requests.dart';
@@ -27,8 +26,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String? userEmail = FirebaseAuth.instance.currentUser?.email;
-    DocumentReference userRef =
-        FirebaseFirestore.instance.collection('Users').doc(userEmail);
+    DocumentReference userRef = FirebaseFirestore.instance.collection('Users').doc(userEmail);
     Profile.fetchUser(userRef);
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       return MaterialApp(

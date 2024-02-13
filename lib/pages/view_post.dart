@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:travel_companion/pages/create_post_page.dart';
 import 'package:travel_companion/pages/home.dart';
+import 'package:travel_companion/pages/profile.dart';
 
 class ViewPost extends StatefulWidget {
   final Map<String, dynamic> post;
@@ -15,7 +16,7 @@ class ViewPost extends StatefulWidget {
 
 class _ViewPostState extends State<ViewPost> {
   late Map<String, dynamic> post;
-  String loggedInUser = 'Ash538';
+  String loggedInUser = Profile.userData['username'];
 
   Future<bool> deletePost() async {
     try {
@@ -44,33 +45,29 @@ class _ViewPostState extends State<ViewPost> {
 
   void storeRequest() async {
     String? userEmail = FirebaseAuth.instance.currentUser!.email;
-    var firestore = await FirebaseFirestore.instance;
+    var firestore = FirebaseFirestore.instance;
 
-    DocumentSnapshot<Map<String, dynamic>> myRequestSnapshot =
-        await firestore.collection('Requests').doc(userEmail).get();
-    DocumentSnapshot<Map<String, dynamic>> ownerRequestSnapshot =
-        await firestore.collection('Requests').doc(post['createdBy']).get();
+    DocumentSnapshot<Map<String, dynamic>> myRequestSnapshot = await firestore.collection('Requests').doc(userEmail).get();
+    DocumentSnapshot<Map<String, dynamic>> ownerRequestSnapshot = await firestore.collection('Requests').doc(post['createdBy']).get();
 
     Map<String, dynamic> myRequestInfo = {
       'tripId': post['id'],
       'status': 'Pending',
       'type': 'Sent',
-      'sent by': userEmail,
-      'sent to': post['createdBy'],
+      'sentBy': userEmail,
+      'sentTo': post['createdBy'],
     };
 
     Map<String, dynamic> ownerRequestInfo = {
       'tripId': post['id'],
       'status': 'Pending',
       'type': 'Received',
-      'sent by': userEmail,
-      'sent to': post['createdBy'],
+      'sentBy': userEmail,
+      'sentTo': post['createdBy'],
     };
 
     if (myRequestSnapshot.exists) {
-      List<dynamic> myExistingRequests =
-          myRequestSnapshot.data()?['requests'] ?? [];
-
+      List<dynamic> myExistingRequests = myRequestSnapshot.data()?['requests'] ?? [];
       myExistingRequests.add(myRequestInfo);
 
       await firestore.collection('Requests').doc(userEmail).update({
@@ -83,9 +80,7 @@ class _ViewPostState extends State<ViewPost> {
     }
 
     if (ownerRequestSnapshot.exists) {
-      List<dynamic> ownerExistingRequests =
-          ownerRequestSnapshot.data()?['requests'] ?? [];
-
+      List<dynamic> ownerExistingRequests = ownerRequestSnapshot.data()?['requests'] ?? [];
       ownerExistingRequests.add(ownerRequestInfo);
 
       await firestore.collection('Requests').doc(post['createdBy']).update({
@@ -104,14 +99,14 @@ class _ViewPostState extends State<ViewPost> {
     final messageController = TextEditingController();
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xff302360),
+        backgroundColor: const Color(0xff302360),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: Text(
+        title: const Text(
           "View Post",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
@@ -243,25 +238,22 @@ class _ViewPostState extends State<ViewPost> {
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: Text('Your Message:-'),
+                          title: const Text('Your Message:-'),
                           content: TextField(
                             controller: messageController,
                             decoration:
-                                InputDecoration(hintText: 'Enter your message'),
+                                const InputDecoration(hintText: 'Enter your message'),
                           ),
                           actions: [
                             TextButton(
                                 onPressed: () {
-                                  FirebaseFirestore.instance
-                                      .collection('Requests')
-                                      .doc(post['createdBy'])
-                                      .update({
+                                  FirebaseFirestore.instance.collection('Requests').doc(post['createdBy']).update({
                                     'message_req': 'message',
                                   });
                                   storeRequest();
                                   Navigator.of(context).pop();
                                 },
-                                child: Text('Submit'))
+                                child: const Text('Submit'))
                           ],
                         ),
                       );

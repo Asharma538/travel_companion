@@ -71,17 +71,16 @@ class Profile extends StatefulWidget {
   static Map<String, dynamic> userData = {};
 
   static Future<Map<String, dynamic>> fetchUser(
-      DocumentReference userRef) async {
-    DocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot =
-        await userRef.get() as DocumentSnapshot<Map<String, dynamic>>;
+  DocumentReference userRef) async {
+      DocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot = await userRef.get() as DocumentSnapshot<Map<String, dynamic>>;
 
-    var userData = queryDocumentSnapshot.data() ?? {};
-    if (queryDocumentSnapshot.exists) {
-      userData['id'] = queryDocumentSnapshot.id;
-    }
-    Profile.userData = userData;
+      var userData = queryDocumentSnapshot.data() ?? {};
+      if (queryDocumentSnapshot.exists) {
+        userData['id'] = queryDocumentSnapshot.id;
+      }
+      Profile.userData = userData;
 
-    return userData;
+      return userData;
   }
 
   @override
