@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:travel_companion/utils/colors.dart';
@@ -11,19 +12,37 @@ class Homepage extends StatefulWidget {
   static List<Map<String, dynamic>> posts = [];
 
   static Future<List<Map<String, dynamic>>> fetchPosts() async {
-    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance.collection('Trips').get();
+    QuerySnapshot<Map<String, dynamic>> querySnapshot =
+        await FirebaseFirestore.instance.collection('Trips').get();
 
     List<Map<String, dynamic>> posts = [];
 
     for (var doc in querySnapshot.docs) {
       var queryDocumentSnapshot = await doc.data()['userRef'].get();
       var userData = queryDocumentSnapshot.data() ?? {};
-      var post = doc.data();
-      post['id'] = doc.id;
-      post['username'] = userData['username'];
-      post['about'] = userData['about'];
-      post['profilePhotoState'] = userData['profilePhotoState'];
-      posts.add(post);
+
+      if ((doc.data()['date'] == "" &&
+              DateTime.now().isAfter(doc
+                  .data()['createdDateTime']
+                  .toDate()
+                  .add(Duration(days: 30)))) ||
+          (doc.data()['date'] != "" &&
+              DateTime.now().isAfter(DateTime.parse(doc.data()['date'])))) {
+        try {
+          FirebaseFirestore.instance.collection('Trips').doc(doc.id).delete();
+          print('post expired and deleted');
+        } catch (e) {
+          print('error deleteing post $e');
+        }
+      } else {
+        var post = doc.data();
+        post['id'] = doc.id;
+        post['createdDateTime'] = userData['createdDateTime'];
+        post['username'] = userData['username'];
+        post['about'] = userData['about'];
+        post['profilePhotoState'] = userData['profilePhotoState'];
+        posts.add(post);
+      }
     }
 
     Homepage.posts = posts;
@@ -49,7 +68,7 @@ class _HomepageState extends State<Homepage> {
       backgroundColor: primaryColor,
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: postsFuture,
-        builder: (context, snapshot){
+        builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: CircularProgressIndicator(),
@@ -67,7 +86,9 @@ class _HomepageState extends State<Homepage> {
                 return PostTile(
                   tripId: post['id'] ?? 'Not Available',
                   userName: post['username'] ?? 'Not Available',
-                  userImage: (post['profilePhotoState'] == 0) ? "" : Base.profilePictures[post['profilePhotoState'] - 1],
+                  userImage: (post['profilePhotoState'] == 0)
+                      ? ""
+                      : Base.profilePictures[post['profilePhotoState'] - 1],
                   source: post['source'] ?? 'Not Available',
                   destination: post['destination'] ?? 'Not Available',
                   date: post['date'] ?? 'Not Available',

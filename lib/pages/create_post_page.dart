@@ -12,6 +12,7 @@ class Trip {
   final String modeOfTransport;
   final String source;
   final String time;
+  final DateTime createdDateTime;
 
   Trip({
     required this.userRef,
@@ -21,6 +22,7 @@ class Trip {
     required this.modeOfTransport,
     required this.source,
     required this.time,
+    required this.createdDateTime,
   });
 }
 
@@ -41,7 +43,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
   String transportationMode = '';
   String description = '';
 
-  void _showDatePicker(BuildContext context, Function(DateTime) onDateSelected) {
+  void _showDatePicker(
+      BuildContext context, Function(DateTime) onDateSelected) {
     showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -54,7 +57,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
     });
   }
 
-  void _showTimePicker(BuildContext context, TimeOfDay? selectedTime,Function(TimeOfDay) onTimeSelected) async {
+  void _showTimePicker(BuildContext context, TimeOfDay? selectedTime,
+      Function(TimeOfDay) onTimeSelected) async {
     TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: selectedTime ?? TimeOfDay.now(),
@@ -300,25 +304,26 @@ class _CreatePostPageState extends State<CreatePostPage> {
 
   Future<void> createNewTrip(BuildContext context) async {
     if (fromLocation.isEmpty || toLocation.isEmpty) {
-      print("Please fill all the fields");
+      print("Please fill all the required fields");
       return;
     }
     String userEmail = Profile.userData['id'];
-    String formattedDate = selectedDate != null
-        ? "${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year}"
-        : "";
+    String formattedDate =
+        selectedDate != null ? selectedDate.toString().substring(0, 10) : "";
     String formattedTime = selectedTime != null
         ? "${selectedTime!.hour}:${selectedTime!.minute}"
         : "";
 
     Trip newTrip = Trip(
-      userRef: await FirebaseFirestore.instance.collection('Users').doc(userEmail),
+      userRef:
+          await FirebaseFirestore.instance.collection('Users').doc(userEmail),
       date: formattedDate,
       desc: description != "" ? description : 'Not Available',
       destination: toLocation,
       modeOfTransport: transportationMode ?? 'Not decided',
       source: fromLocation,
       time: formattedTime,
+      createdDateTime: DateTime.now(),
     );
 
     try {
@@ -334,7 +339,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
           'modeOfTransport': newTrip.modeOfTransport,
           'source': newTrip.source,
           'time': newTrip.time,
-          'createdBy':userEmail
+          'createdBy': userEmail,
         });
 
         print("Post updated successfully!");
@@ -347,7 +352,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
           'modeOfTransport': newTrip.modeOfTransport,
           'source': newTrip.source,
           'time': newTrip.time,
-          'createdBy':userEmail
+          'createdBy': userEmail,
+          'createdDateTime': newTrip.createdDateTime,
         });
 
         print("Post created successfully!");
