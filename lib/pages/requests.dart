@@ -1,4 +1,7 @@
+import 'dart:html';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:travel_companion/pages/profile.dart';
@@ -34,18 +37,6 @@ class Request {
   });
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Requests(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
 class Requests extends StatefulWidget {
   const Requests({Key? key}) : super(key: key);
 
@@ -56,6 +47,9 @@ class Requests extends StatefulWidget {
 class _RequestsState extends State<Requests> {
   String dropdownValue = 'All Requests';
   String userEmail = FirebaseAuth.instance.currentUser!.email ?? "";
+
+  List<dynamic> oldRequests = [];
+  List<dynamic> newRequests = [];
 
   @override
   Widget build(BuildContext context) {
@@ -101,19 +95,25 @@ class _RequestsState extends State<Requests> {
               ),
               Expanded(
                 child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                  stream: FirebaseFirestore.instance.collection('Requests').doc(userEmail).snapshots(),
+                  stream: FirebaseFirestore.instance
+                      .collection('Requests')
+                      .doc(userEmail)
+                      .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
-                    }
-                    else if (snapshot.hasError) {
+                    } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     }
                     List<dynamic> requests = [];
-                    if (snapshot.data!.exists) requests = snapshot.data?.get('requests');
+                    if (snapshot.data!.exists) {
+                      requests = snapshot.data?.get('requests');
+                    }
+                    oldRequests = requests;
+
                     return ListView.builder(
                       itemCount: requests.length,
-                      itemBuilder: (context, index){
+                      itemBuilder: (context, index) {
                         Request req = Request(
                             username: "",
                             date: "",
@@ -125,18 +125,26 @@ class _RequestsState extends State<Requests> {
                             modeOfTransport: "",
                             phoneNumber: "",
                             sentBy: requests[index]['sentBy'],
-                            status: requests[index]['status']
-                        );
+                            status: requests[index]['status']);
                         return FutureBuilder<Request>(
                           future: _getRequestWithData(req),
                           builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return const CircularProgressIndicator();
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const SizedBox(width: 0, height: 0);
+                            } else if (snapshot.hasError) {
+                              if (snapshot.error
+                                  .toString()
+                                  .contains('does not exist')) {
+                                print('request for trip with tripId ' +
+                                    req.tripId +
+                                    ' expired');
+                              }
+                              return const SizedBox(width: 0, height: 0);
                             }
-                            else if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            }
-                            return buildRequestTile(snapshot.data!);
+                            newRequests.add(oldRequests[index]);
+                            return buildRequestTile(
+                                snapshot.data!, oldRequests[index]);
                           },
                         );
                       },
@@ -221,7 +229,6 @@ class _RequestsState extends State<Requests> {
               .collection('Trips')
               .doc(request.tripId)
               .update({'companion': companionArray});
-
         }
       }
     } catch (e) {
@@ -229,7 +236,7 @@ class _RequestsState extends State<Requests> {
     }
   }
 
-  Widget buildRequestTile(Request request) {
+  Widget buildRequestTile(Request request, dynamic reqObj) {
     return RequestTile(
       request: request,
       onAccept: () {
@@ -243,9 +250,35 @@ class _RequestsState extends State<Requests> {
           isExpanded = !isExpanded;
         });
       },
+      onDelete: () {
+        _removeRequest(reqObj);
+      },
       isExpanded: isExpanded,
     );
   }
 
   bool isExpanded = false;
+
+  void _removeRequest(request) {
+    newRequests.remove(request);
+    if (newRequests.length < oldRequests.length)
+      FirebaseFirestore.instance
+            .collection('Requests')
+            .doc(userEmail)
+            .update({'requests': newRequests});
+  }
+
+  @override
+  void dispose() {
+    print('hi');
+    if (oldRequests.length >= newRequests.length) {
+      return;
+    } else {
+      FirebaseFirestore.instance
+          .collection('Requests')
+          .doc(userEmail)
+          .update({'requests': newRequests});
+    }
+    super.dispose();
+  }
 }
