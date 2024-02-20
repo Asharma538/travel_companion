@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:travel_companion/pages/authentication/email_verification.dart';
+import 'package:travel_companion/pages/authentication/login.dart';
 import '../../main.dart';
 import '../../pages/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,16 +10,29 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 final formkey = GlobalKey<FormState>();
 
-class SignupPage extends StatefulWidget {
+class SignupPage extends StatelessWidget {
   final String? signUpEmail;
 
   const SignupPage({Key? key, this.signUpEmail}) : super(key: key);
 
   @override
-  State<SignupPage> createState() => Signup();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SignupPageBody(signUpEmail: signUpEmail),
+    );
+  }
 }
 
-class Signup extends State<SignupPage> {
+class SignupPageBody extends StatefulWidget {
+  final String? signUpEmail;
+
+  const SignupPageBody({Key? key, this.signUpEmail}) : super(key: key);
+
+  @override
+  State<SignupPageBody> createState() => SignupBodyState();
+}
+
+class SignupBodyState extends State<SignupPageBody> {
   var userNameController = TextEditingController();
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
@@ -216,6 +230,13 @@ class Signup extends State<SignupPage> {
                     print('No user found for that email.');
                   } else if (e.code == 'wrong-password') {
                     print('Wrong password provided for that user.');
+                  } else if (e.code == 'email-already-in-use') {
+                    print("User already in use");
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                            'User already exists! Please try logging in')));
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => LoginPage()));
                   }
                 });
               },
