@@ -270,7 +270,6 @@ class _RequestsState extends State<Requests> {
 
   @override
   void dispose() {
-    print('hi');
     if (oldRequests.length >= newRequests.length) {
       return;
     } else {
