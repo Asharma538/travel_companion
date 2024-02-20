@@ -1,9 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:travel_companion/pages/create_post_page.dart';
-import 'package:travel_companion/pages/home.dart';
 import 'package:travel_companion/pages/profile.dart';
+import 'package:travel_companion/pages/home.dart';
+
+import '../main.dart';
 
 class ViewPost extends StatefulWidget {
   final Map<String, dynamic> post;
@@ -17,21 +20,7 @@ class ViewPost extends StatefulWidget {
 class _ViewPostState extends State<ViewPost> {
   late Map<String, dynamic> post;
   String loggedInUser = Profile.userData['username'];
-
-  Future<bool> deletePost() async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('Trips')
-          .doc(widget.post['id'])
-          .delete();
-      print("Post deleted successfully!");
-      Navigator.pop(context, true);
-      return true;
-    } catch (e) {
-      print("Error deleting post: $e");
-      return false;
-    }
-  }
+  var message;
 
   @override
   void initState() {
@@ -47,8 +36,10 @@ class _ViewPostState extends State<ViewPost> {
     String? userEmail = FirebaseAuth.instance.currentUser!.email;
     var firestore = FirebaseFirestore.instance;
 
-    DocumentSnapshot<Map<String, dynamic>> myRequestSnapshot = await firestore.collection('Requests').doc(userEmail).get();
-    DocumentSnapshot<Map<String, dynamic>> ownerRequestSnapshot = await firestore.collection('Requests').doc(post['createdBy']).get();
+    DocumentSnapshot<Map<String, dynamic>> myRequestSnapshot =
+    await firestore.collection('Requests').doc(userEmail).get();
+    DocumentSnapshot<Map<String, dynamic>> ownerRequestSnapshot =
+    await firestore.collection('Requests').doc(post['createdBy']).get();
 
     Map<String, dynamic> myRequestInfo = {
       'tripId': post['id'],
@@ -64,10 +55,20 @@ class _ViewPostState extends State<ViewPost> {
       'type': 'Received',
       'sentBy': userEmail,
       'sentTo': post['createdBy'],
+      'Message': message,
     };
+
 
     if (myRequestSnapshot.exists) {
       List<dynamic> myExistingRequests = myRequestSnapshot.data()?['requests'] ?? [];
+
+      for(var i=0;i<myExistingRequests.length;i++){
+        if (myExistingRequests[i]['tripId']==myRequestInfo['tripId']){
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Request Already sent')));
+          return;
+        }
+      }
+
       myExistingRequests.add(myRequestInfo);
 
       await firestore.collection('Requests').doc(userEmail).update({
@@ -93,6 +94,20 @@ class _ViewPostState extends State<ViewPost> {
     }
   }
 
+
+  Future<void> deletePost() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('Trips')
+          .doc(widget.post['id'])
+          .delete();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Post Deleted')));
+      Navigator.pop(context, true);
+    } catch (e) {
+      print("Error deleting post: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
@@ -108,156 +123,226 @@ class _ViewPostState extends State<ViewPost> {
         ),
         title: const Text(
           "View Post",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
       ),
       backgroundColor: const Color.fromARGB(255, 225, 224, 227),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+        padding: const EdgeInsets.all(16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Name: ${post['username']}",
-              style: const TextStyle(
+              "Post By: ",
+              style: TextStyle(
                 color: Colors.black,
-                fontSize: 20.0,
+                fontSize: 18.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: mediaQuery.height * 0.05),
-            Text(
-              "About: ${post['about']}",
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-              ),
+            SizedBox(height: 5),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+                if(post['profilePhotoState'] == 0)...{
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ProfilePicture(
+                  name: post!['username'],
+                  radius: 30,
+                  fontsize: 15,),
+                  )
+                  }else...{
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CircleAvatar(
+                  radius: 30.0,
+                  backgroundImage: NetworkImage(Base
+                      .profilePictures[
+                  post!['profilePhotoState'] - 1]),
+                      )
+                     )},
+                SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      post['username'] ?? 'Not available',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      "About: ${post['about'] ?? 'Not available'}",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      "Email: ${post['email'] ?? 'Not available'}",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            SizedBox(height: mediaQuery.height * 0.05),
-            Text(
-              "Email: ${post['createdBy']}",
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: mediaQuery.height * 0.05),
+            SizedBox(height: mediaQuery.height * 0.02),
             const Divider(
-              height: 20,
+              height: 10,
               color: Colors.black,
               thickness: 2,
             ),
-            SizedBox(height: mediaQuery.height * 0.05),
+            SizedBox(height: mediaQuery.height * 0.02),
             Text(
-              "From: ${post['source']}",
-              style: const TextStyle(
+              "Trip Route",
+              style: TextStyle(
                 color: Colors.black,
-                fontSize: 16.0,
+                fontSize: 18.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: mediaQuery.height * 0.05),
+            SizedBox(height: mediaQuery.height * 0.02),
             Text(
-              "To: ${post['destination']}",
-              style: const TextStyle(
+              "From: ${post['source'] ?? 'Not available'}",
+              style: TextStyle(
                 color: Colors.black,
-                fontSize: 16.0,
+                fontSize: 12.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: mediaQuery.height * 0.05),
+            SizedBox(height: mediaQuery.height * 0.02),
+            Text(
+              "To: ${post['destination'] ?? 'Not available'}",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: mediaQuery.height * 0.02),
+            const Divider(
+              height: 10,
+              color: Colors.black,
+              thickness: 2,
+            ),
+            SizedBox(height: mediaQuery.height * 0.02),
+            Text(
+              "On",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: mediaQuery.height * 0.02),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Date: ${post['date']}",
-                  style: const TextStyle(
+                  "Date: ${post['date'] ?? 'Not available'}",
+                  style: TextStyle(
                     color: Colors.black,
-                    fontSize: 16.0,
+                    fontSize: 12.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
-                  "Time: ${post['time']}",
-                  style: const TextStyle(
+                  "Time: ${post['time'] ?? 'Not available'}",
+                  style: TextStyle(
                     color: Colors.black,
-                    fontSize: 16.0,
+                    fontSize: 12.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: mediaQuery.height * 0.05),
+            SizedBox(height: mediaQuery.height * 0.02),
+            const Divider(
+              height: 10,
+              color: Colors.black,
+              thickness: 2,
+            ),
+            SizedBox(height: mediaQuery.height * 0.02),
             Text(
-              "Mode Of Transportation: ${post['modeOfTransport']}",
-              style: const TextStyle(
+              "By",
+              style: TextStyle(
                 color: Colors.black,
-                fontSize: 16.0,
+                fontSize: 18.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: mediaQuery.height * 0.05),
-            if (post['desc'] != null) ...[
-              Text(
-                "Description: ${post['desc']}",
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ] else ...[
-              const Text(
-                "Description: Not Specified",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-            SizedBox(height: mediaQuery.height * 0.05),
+            SizedBox(height: mediaQuery.height * 0.02),
             Text(
-              "Companions: ${getCompanions(post['companions'])}",
-              style: const TextStyle(
+              "Mode Of Transportation: ${post['modeOfTransport'] ?? 'Not available'}",
+              style: TextStyle(
                 color: Colors.black,
-                fontSize: 16.0,
+                fontSize: 12.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: mediaQuery.height * 0.1),
+            SizedBox(height: mediaQuery.height * 0.02),
+            const Divider(
+              height: 10,
+              color: Colors.black,
+              thickness: 2,
+            ),
+            SizedBox(height: mediaQuery.height * 0.02),
+            Text(
+              "Description",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: mediaQuery.height * 0.02),
+            Text(
+              post['desc'] != null ? "Description: ${post['desc']}" : "Description: Not Specified",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: mediaQuery.height * 0.02),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (!isOwnPost()) ...[
                   ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Your Message:-'),
-                          content: TextField(
-                            controller: messageController,
-                            decoration:
-                                const InputDecoration(hintText: 'Enter your message'),
-                          ),
-                          actions: [
-                            TextButton(
-                                onPressed: () {
-                                  FirebaseFirestore.instance.collection('Requests').doc(post['createdBy']).update({
-                                    'message_req': 'message',
-                                  });
-                                  storeRequest();
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('Submit'))
-                          ],
+                      onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Your Message:-'),
+                        content: TextField(
+                          controller: messageController,
+                          decoration: const InputDecoration(hintText: 'Enter your message'),
                         ),
-                      );
-                    },
+                        actions: [
+                          TextButton(
+                            onPressed: () async {
+                              message = messageController.text;
+                              storeRequest();
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Request sent')));
+                            },
+                            child: const Text('Submit'),
+                          )
+                        ],
+                      ),
+                    );
+                  },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xff302360),
                       shape: RoundedRectangleBorder(
@@ -268,7 +353,7 @@ class _ViewPostState extends State<ViewPost> {
                       "REQUEST",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 20.0,
+                        fontSize: 16.0,
                       ),
                     ),
                   ),
@@ -294,17 +379,37 @@ class _ViewPostState extends State<ViewPost> {
                       "Edit",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 20.0,
+                        fontSize: 16.0,
                       ),
                     ),
                   ),
                   const SizedBox(
-                    width: 40,
+                    width: 20,
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      deletePost();
-                      print('User requested Delete');
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text('Confirm Delete'),
+                          content: Text('Are you sure you want to delete this post?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                deletePost();
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Yes'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('No'),
+                            ),
+                          ],
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xff302360),
@@ -316,30 +421,16 @@ class _ViewPostState extends State<ViewPost> {
                       "Delete",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 20.0,
+                        fontSize: 16.0,
                       ),
                     ),
                   ),
-                ]
+                ],
               ],
             ),
           ],
         ),
       ),
     );
-  }
-}
-
-getCompanions(List<dynamic>? companions) {
-  print(companions);
-  if (companions == null) return '';
-
-  String res = "";
-  for (var i = 0; i < companions.length; i++) {
-    if (i == companions.length - 1) {
-      res += companions[i].toString();
-      return res;
-    }
-    res += companions[i] + ',';
   }
 }

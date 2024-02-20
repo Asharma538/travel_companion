@@ -37,6 +37,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
+  String dropdownValue = 'Flexible';
 
   TextEditingController fromLocationController = TextEditingController();
   TextEditingController toLocationController = TextEditingController();
@@ -163,33 +164,56 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
             const Text(
-              "MODE OF TRANSPORTATION",
+              "Mode of Transport",
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 15.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            TextField(
-              controller: modeOfTransportController,
-              style: const TextStyle(
-                color: primaryTextColor,
-              ),
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: textFieldBackgroundColor,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide.none,
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: secondaryColor,
+                      borderRadius: BorderRadius.circular(8.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: DropdownButton(
+                      value: dropdownValue,
+                      icon: const Icon(Icons.keyboard_arrow_down),
+                      isExpanded: true,
+                      items: ['Flexible', 'Flight', 'Train','Taxi','Bus'].map((item) {
+                        return DropdownMenuItem(
+                          value: item,
+                          child: Text(
+                            item,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          dropdownValue = newValue!;
+                        });
+                      },
+                      dropdownColor: secondaryColor,
+                    ),
+                  ),
                 ),
-                hintText: "Ex: Flight/Train/Taxi/Auto etc.",
-                hintStyle: const TextStyle(
-                  color: placeholderTextColor,
-                ),
-              ),
+              ],
             ),
+
             const Expanded(child: SizedBox()),
             Container(
               margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
