@@ -110,7 +110,10 @@ class _RequestsState extends State<Requests> {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     }
                     List<dynamic> requests = [];
+
                     if (snapshot.data!.exists) requests = snapshot.data?.get('requests');
+                    print(requests);
+
                     return ListView.builder(
                       itemCount: requests.length,
                       itemBuilder: (context, index){
