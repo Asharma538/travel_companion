@@ -53,40 +53,78 @@ class RequestTile extends StatelessWidget {
                       ),
                       SizedBox(height: 4),
                       if (request.status == 'Pending') ...[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: onAccept,
-                                icon: Icon(Icons.check, color: Colors.white),
-                                label: Text('Accept'),
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all(Colors.green),
-                                  padding: MaterialStateProperty.all(
-                                    EdgeInsets.symmetric(vertical: 8),
+                        if (request.type == 'Received') ...[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: onAccept,
+                                  icon: Icon(Icons.check, color: Colors.white),
+                                  label: Text('Accept'),
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all(Colors.green),
+                                    padding: MaterialStateProperty.all(
+                                      EdgeInsets.symmetric(vertical: 8),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            SizedBox(width: 5),
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: onReject,
-                                icon: Icon(Icons.clear, color: Colors.white),
-                                label: Text('Reject'),
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all(Colors.red),
-                                  padding: MaterialStateProperty.all(
-                                    EdgeInsets.symmetric(vertical: 8),
+                              SizedBox(width: 5),
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: onReject,
+                                  icon: Icon(Icons.clear, color: Colors.white),
+                                  label: Text('Reject'),
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all(Colors.red),
+                                    padding: MaterialStateProperty.all(
+                                      EdgeInsets.symmetric(vertical: 8),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
+                        ] else ...[
+                          ElevatedButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text('Confirm Deletion'),
+                                  content: Text(
+                                      'Are you sure you want to delete this request?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        onDelete?.call();
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('Confirm'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            child: Text('Withdraw'),
+                            style: ButtonStyle(
+                              backgroundColor:
+                              MaterialStateProperty.all(Colors.green),
+                              padding: MaterialStateProperty.all(
+                                EdgeInsets.symmetric(vertical: 8,horizontal: 20),
+                              ),
+                            )
+                          )
+                        ]
                       ] else if (request.status == 'Accepted') ...[
                         Text(
                           'Phone Number: ${request.phoneNumber}',
@@ -155,33 +193,6 @@ class RequestTile extends StatelessWidget {
                         ),
                       ],
                     ],
-                  ),
-                    trailing: IconButton(
-                    icon: Icon(Icons.close),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: Text('Confirm Deletion'),
-                          content: Text('Are you sure you want to delete this request?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                onDelete?.call();
-                                Navigator.pop(context);
-                              },
-                              child: Text('Confirm'),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
                   ),
                 ),
               ],

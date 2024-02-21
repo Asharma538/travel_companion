@@ -142,9 +142,12 @@ class _RequestsState extends State<Requests> {
                               }
                               return const SizedBox(width: 0, height: 0);
                             }
+
                             newRequests.add(oldRequests[index]);
-                            return buildRequestTile(
-                                snapshot.data!, oldRequests[index]);
+                            if (dropdownValue == 'All Requests') return buildRequestTile(snapshot.data!, oldRequests[index]);
+                            else if (dropdownValue == 'Sent' && oldRequests[index]['type'] == 'Sent') return buildRequestTile(snapshot.data!, oldRequests[index]);
+                            else if (dropdownValue == 'Received' && oldRequests[index]['type'] == 'Received') return buildRequestTile(snapshot.data!, oldRequests[index]);
+                            else return SizedBox(width: 0,height: 0,);
                           },
                         );
                       },
@@ -263,9 +266,9 @@ class _RequestsState extends State<Requests> {
     newRequests.remove(request);
     if (newRequests.length < oldRequests.length)
       FirebaseFirestore.instance
-            .collection('Requests')
-            .doc(userEmail)
-            .update({'requests': newRequests});
+          .collection('Requests')
+          .doc(userEmail)
+          .update({'requests': newRequests});
   }
 
   @override
