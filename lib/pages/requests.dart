@@ -271,13 +271,14 @@ class _RequestsState extends State<Requests> {
   @override
   void dispose() {
     if (oldRequests.length >= newRequests.length) {
+      super.dispose();
       return;
     } else {
       FirebaseFirestore.instance
           .collection('Requests')
           .doc(userEmail)
           .update({'requests': newRequests});
+      super.dispose();
     }
-    super.dispose();
   }
 }

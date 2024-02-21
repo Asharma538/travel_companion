@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:travel_companion/pages/home.dart';
 import 'package:travel_companion/utils/colors.dart';
 import '../pages/profile.dart';
 import '../main.dart';
@@ -152,7 +153,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
               child: DropdownButton(
                 value: transportationMode,
                 icon: const Icon(Icons.keyboard_arrow_down),
-                items: ['Flexible', 'Flight', 'Train','Taxi','Bus'].map((item) {
+                items:
+                    ['Flexible', 'Flight', 'Train', 'Taxi', 'Bus'].map((item) {
                   return DropdownMenuItem(
                     value: item,
                     child: Text(
@@ -353,7 +355,10 @@ class _CreatePostPageState extends State<CreatePostPage> {
 
     try {
       if (widget.initialPost != null) {
-        await FirebaseFirestore.instance.collection('Trips').doc(widget.initialPost!['id']).update({
+        await FirebaseFirestore.instance
+            .collection('Trips')
+            .doc(widget.initialPost!['id'])
+            .update({
           'userRef': newTrip.userRef,
           'date': newTrip.date,
           'desc': newTrip.desc,
@@ -363,8 +368,12 @@ class _CreatePostPageState extends State<CreatePostPage> {
           'time': newTrip.time,
           'createdBy': userEmail,
         });
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Post Updated')));
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Homepage()),
+            (route) => false);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Post Updated')));
       } else {
         await FirebaseFirestore.instance.collection('Trips').add({
           'userRef': newTrip.userRef,
@@ -377,8 +386,12 @@ class _CreatePostPageState extends State<CreatePostPage> {
           'createdBy': userEmail,
           'createdDateTime': newTrip.createdDateTime,
         });
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('New Post Created!')));
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Homepage()),
+            (route) => false);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('New Post Created!')));
       }
     } catch (e) {
       print("Error creating post: $e");
