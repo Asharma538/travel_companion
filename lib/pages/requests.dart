@@ -281,7 +281,7 @@ class _RequestsState extends State<Requests> {
           .collection('Requests')
           .doc(userEmail)
           .update({'requests': newRequests});
+      super.dispose();
     }
-    super.dispose();
   }
 }
