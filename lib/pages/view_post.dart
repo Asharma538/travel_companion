@@ -184,7 +184,7 @@ class _ViewPostState extends State<ViewPost> {
                       ),
                     ),
                     Text(
-                      "Email: ${post['email'] ?? 'Not available'}",
+                      "Email: ${post['createdBy'] ?? 'Not available'}",
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 12.0,
