@@ -101,7 +101,8 @@ class _VerifyPageState extends State<VerifyPage> {
                     filled: true,
                   ),
                   validator: (email) {
-                    if (email!.contains(RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
+                    if (email!.contains(
+                        RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
                       return null;
                     } else {
                       return "Enter a valid email";
@@ -134,13 +135,17 @@ class _VerifyPageState extends State<VerifyPage> {
             child: TextButton(
               onPressed: () {
                 formkey.currentState!.validate();
-                if (email.text.contains(RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))){
+                if (email.text
+                    .contains(RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
                   setState(() {
                     state = 1;
                   });
                 }
               },
-              style: TextButton.styleFrom(backgroundColor: secondaryColor,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+              style: TextButton.styleFrom(
+                  backgroundColor: secondaryColor,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10))),
               child: const Text(
                 'Next',
                 style: TextStyle(fontSize: 22, color: buttonTextColor),
