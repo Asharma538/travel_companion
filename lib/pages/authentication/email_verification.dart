@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:travel_companion/pages/authentication/login.dart';
@@ -157,6 +159,9 @@ class _VerifyPageState extends State<VerifyPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          TextButton(onPressed: () async {
+            UserCredential user = await FirebaseAuth.instance.signInAnonymously();
+          }, child: Text("hi")),
           Container(
             margin: const EdgeInsets.fromLTRB(0, 30, 0, 0),
             child: Container(

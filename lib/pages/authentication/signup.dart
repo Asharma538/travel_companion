@@ -191,11 +191,10 @@ class Signup extends State<SignupPage> {
           ),
           const SizedBox(height: 15),
           SizedBox(
-            height: MediaQuery.of(context).size.height / 10,
+            height: 50,
             child: ElevatedButton(
               onPressed: () async {
                 formkey.currentState!.validate();
-
                 await FirebaseAuth.instance
                     .createUserWithEmailAndPassword(
                         email: email.text, password: password.text)
