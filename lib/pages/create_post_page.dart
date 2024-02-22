@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:travel_companion/pages/home.dart';
 import 'package:travel_companion/utils/colors.dart';
 import '../pages/profile.dart';
 import '../main.dart';
@@ -12,6 +13,7 @@ class Trip {
   final String modeOfTransport;
   final String source;
   final String time;
+  final DateTime createdDateTime;
 
   Trip({
     required this.userRef,
@@ -21,6 +23,7 @@ class Trip {
     required this.modeOfTransport,
     required this.source,
     required this.time,
+    required this.createdDateTime,
   });
 }
 
@@ -35,13 +38,15 @@ class CreatePostPage extends StatefulWidget {
 class _CreatePostPageState extends State<CreatePostPage> {
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
+  String dropdownValue = 'Flexible';
 
   String fromLocation = '';
   String toLocation = '';
-  String transportationMode = '';
+  String transportationMode = 'Flexible';
   String description = '';
 
-  void _showDatePicker(BuildContext context, Function(DateTime) onDateSelected) {
+  void _showDatePicker(
+      BuildContext context, Function(DateTime) onDateSelected) {
     showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -54,7 +59,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
     });
   }
 
-  void _showTimePicker(BuildContext context, TimeOfDay? selectedTime,Function(TimeOfDay) onTimeSelected) async {
+  void _showTimePicker(BuildContext context, TimeOfDay? selectedTime,
+      Function(TimeOfDay) onTimeSelected) async {
     TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: selectedTime ?? TimeOfDay.now(),
@@ -131,15 +137,40 @@ class _CreatePostPageState extends State<CreatePostPage> {
             const SizedBox(height: 20),
             _buildDateTimeRow(),
             SizedBox(height: _mediaQuery.size.height * 0.02),
-            _buildTextField("MODE OF TRANSPORTATION", transportationMode,
-                "Ex: Flight/Train/Taxi/Auto etc.", (value) {
-              transportationMode = value;
-            }),
-            const SizedBox(height: 15),
-            _buildTextField("DESCRIPTION", description,
-                "Ex: Flight name or no./Train name or no.", (value) {
-              description = value;
-            }, maxLines: 2),
+            Container(
+              decoration: BoxDecoration(
+                color: secondaryColor,
+                borderRadius: BorderRadius.circular(8.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: DropdownButton(
+                value: transportationMode,
+                icon: const Icon(Icons.keyboard_arrow_down),
+                items:
+                    ['Flexible', 'Flight', 'Train', 'Taxi', 'Bus'].map((item) {
+                  return DropdownMenuItem(
+                    value: item,
+                    child: Text(
+                      item,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    transportationMode = newValue!;
+                  });
+                },
+                dropdownColor: secondaryColor,
+              ),
+            ),
             SizedBox(height: _mediaQuery.size.height * 0.02),
             if (widget.initialPost == null) ...[
               const Expanded(child: SizedBox()),
@@ -300,25 +331,26 @@ class _CreatePostPageState extends State<CreatePostPage> {
 
   Future<void> createNewTrip(BuildContext context) async {
     if (fromLocation.isEmpty || toLocation.isEmpty) {
-      print("Please fill all the fields");
+      print("Please fill all the required fields");
       return;
     }
     String userEmail = Profile.userData['id'];
-    String formattedDate = selectedDate != null
-        ? "${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year}"
-        : "";
+    String formattedDate =
+        selectedDate != null ? selectedDate.toString().substring(0, 10) : "";
     String formattedTime = selectedTime != null
         ? "${selectedTime!.hour}:${selectedTime!.minute}"
         : "";
 
     Trip newTrip = Trip(
-      userRef: await FirebaseFirestore.instance.collection('Users').doc(userEmail),
+      userRef:
+          await FirebaseFirestore.instance.collection('Users').doc(userEmail),
       date: formattedDate,
       desc: description != "" ? description : 'Not Available',
       destination: toLocation,
       modeOfTransport: transportationMode ?? 'Not decided',
       source: fromLocation,
       time: formattedTime,
+      createdDateTime: DateTime.now(),
     );
 
     try {
@@ -334,10 +366,14 @@ class _CreatePostPageState extends State<CreatePostPage> {
           'modeOfTransport': newTrip.modeOfTransport,
           'source': newTrip.source,
           'time': newTrip.time,
-          'createdBy':userEmail
+          'createdBy': userEmail,
         });
-
-        print("Post updated successfully!");
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Homepage()),
+            (route) => false);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Post Updated')));
       } else {
         await FirebaseFirestore.instance.collection('Trips').add({
           'userRef': newTrip.userRef,
@@ -347,13 +383,16 @@ class _CreatePostPageState extends State<CreatePostPage> {
           'modeOfTransport': newTrip.modeOfTransport,
           'source': newTrip.source,
           'time': newTrip.time,
-          'createdBy':userEmail
+          'createdBy': userEmail,
+          'createdDateTime': newTrip.createdDateTime,
         });
-
-        print("Post created successfully!");
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Homepage()),
+            (route) => false);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('New Post Created!')));
       }
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const MyApp()));
     } catch (e) {
       print("Error creating post: $e");
     }
