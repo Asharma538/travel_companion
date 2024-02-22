@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pinput/pinput.dart';
+import 'package:travel_companion/main.dart';
+import 'dart:async';
 import 'package:travel_companion/pages/authentication/login.dart';
 import 'package:travel_companion/pages/authentication/signup.dart';
 import 'package:travel_companion/utils/colors.dart';
@@ -34,15 +36,13 @@ class _VerifyPageState extends State<VerifyPage> {
       backgroundColor: primaryColor,
       body: SingleChildScrollView(
         child: Container(
-          margin: const EdgeInsets.all(15),
+          margin: const EdgeInsets.all(10),
           height: MediaQuery.of(context).size.height,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               if (state == 0) ...[
                 _body(context, emailController),
-              ] else ...[
-                _fillOTP(context, emailController),
               ]
             ],
           ),
@@ -51,203 +51,84 @@ class _VerifyPageState extends State<VerifyPage> {
     );
   }
 
-  _body(context, TextEditingController email) {
+  Widget _body(context, TextEditingController email) {
     return Container(
       height: MediaQuery.of(context).size.height,
       padding: const EdgeInsets.all(20),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            margin: const EdgeInsets.fromLTRB(0, 30, 0, 150),
+            margin: const EdgeInsets.fromLTRB(0, 150, 0, 10),
             child: Container(
-              alignment: Alignment.topCenter,
+              alignment: Alignment.center,
               child: const Text(
-                "Email Verification",
+                "Email verification link has been to your email",
                 style: TextStyle(
                   color: headingTextColor,
-                  fontSize: 30,
+                  fontSize: 35,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
           ),
-          Column(children: [
-            Container(
-                margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-                alignment: Alignment.centerLeft,
-                child: const Text(
-                  'Enter your email',
-                  style: TextStyle(
-                      color: primaryTextColor, fontWeight: FontWeight.w400),
-                )),
-            Form(
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              key: formkey,
-              child: SizedBox(
-                height: 80,
-                child: TextFormField(
-                  controller: email,
-                  decoration: InputDecoration(
-                    hintText: "Email",
-                    hintStyle: const TextStyle(color: placeholderTextColor),
-                    errorText: _validate ? "This field is required" : null,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(6),
-                        borderSide: BorderSide.none),
-                    fillColor: textFieldBackgroundColor,
-                    filled: true,
-                  ),
-                  validator: (email) {
-                    if (email!.contains(RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
-                      return null;
-                    } else {
-                      return "Enter a valid email";
-                    }
-                  },
-                ),
-              ),
-            ),
-          ]),
-          const Expanded(child: SizedBox()),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text("Already have an account?"),
-              TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => LoginPage()));
-                  },
-                  child: const Text(
-                    "Login",
-                    style: TextStyle(color: linkTextColor),
-                  ))
-            ],
-          ),
           Container(
-            margin: const EdgeInsets.only(bottom: 30, top: 10),
-            width: MediaQuery.of(context).size.width - 80,
-            height: 50,
+            margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+            alignment: Alignment.centerLeft,
             child: TextButton(
-              onPressed: () {
-                formkey.currentState!.validate();
-                if (email.text.contains(RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))){
-                  setState(() {
-                    state = 1;
-                  });
+              onPressed: () async {
+                await FirebaseAuth.instance.currentUser!.reload();
+                try {
+                  FirebaseAuth.instance.currentUser!.sendEmailVerification();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Verification send again'))
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error sending verification link'))
+                  );
                 }
               },
-              style: TextButton.styleFrom(backgroundColor: secondaryColor,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-              child: const Text(
-                'Next',
-                style: TextStyle(fontSize: 22, color: buttonTextColor),
-              ),
+              child: Text("Resend link")
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  _fillOTP(BuildContext context, TextEditingController email) {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
           Container(
-            margin: const EdgeInsets.fromLTRB(0, 30, 0, 0),
-            child: Container(
-              alignment: Alignment.topCenter,
-              child: const Text(
-                "Email Verification",
-                style: TextStyle(
-                  color: headingTextColor,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          Column(children: [
-            const Text(
-              'Enter the OTP send to you at',
-              style: TextStyle(
-                  color: primaryTextColor,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16),
-            ),
-            Container(
-              margin: const EdgeInsets.fromLTRB(0, 0, 0, 50),
-              child: Text(
-                email.text,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18,
-                ),
-              ),
-            ),
-            Container(
-                alignment: Alignment.centerLeft,
-                child: TextButton(
-                  onPressed: () {
-                    setState(() {
-                      state = 0;
-                    });
-                    email.clear();
-                  },
-                  child: const Text(
-                    "Change email",
-                    style: TextStyle(color: linkTextColor, fontSize: 15),
-                  ),
-                )),
-            const SizedBox(
-              height: 10,
-            ),
-            SizedBox(
-                child: Pinput(
-              length: 6,
-              defaultPinTheme: PinTheme(
-                width: MediaQuery.of(context).size.width / 8,
-                height: 60,
-                textStyle: const TextStyle(
-                  fontSize: 20,
-                ),
-                decoration: BoxDecoration(
-                  color: textFieldBackgroundColor,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-              ),
-              validator: (s) {
-                return null;
-              },
-            )),
-          ]),
-          const SizedBox(height: 15),
-          Container(
-            margin: const EdgeInsets.only(bottom: 30, top: 80),
-            width: MediaQuery.of(context).size.width - 80,
-            height: 50,
+            margin: const EdgeInsets.fromLTRB(0, 50, 0, 0),
+            alignment: Alignment.center,
             child: TextButton(
-              onPressed: () {
-                Navigator.pushReplacement(
+              onPressed: () async {
+                await FirebaseAuth.instance.currentUser!.reload();
+                if (FirebaseAuth.instance.currentUser!.emailVerified) {
+                  Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            SignupPage(signUpEmail: emailController.text)));
+                    MaterialPageRoute(builder: (context) => Base())
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('User Verified succesfully'))
+                  );
+                } else {
+                  print("Timeout error re verify the user");
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignupPage())
+                  );
+                  FirebaseAuth.instance.currentUser!.delete();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Error verifing user,kindly reverify"))
+                  );
+                }
               },
               style: TextButton.styleFrom(
-                  backgroundColor: secondaryColor,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10))),
+                backgroundColor: secondaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)
+                )
+              ),
               child: const Text(
                 'Next',
-                style: TextStyle(fontSize: 22, color: buttonTextColor),
+                style: TextStyle(fontSize: 25, color: buttonTextColor),
               ),
             ),
-          ),
+          )
         ],
       ),
     );
