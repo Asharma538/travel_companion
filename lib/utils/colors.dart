@@ -12,4 +12,6 @@ const secondaryTextColor = Color(0xFFFFFFFF); // Secondary Text Color
 const headingTextColor = Color(0xFF000000); // Headings Text Color
 const buttonTextColor = Color(0xFFFFFFFF); // Button Text color
 const linkTextColor = Color(0xFF5D68CE); // Link Text color
-const placeholderTextColor = Color(0xFF818181); // Input Text Field's Placeholder, About 
+const placeholderTextColor = Color(0xFF818181); // Input Text Field's Placeholder, About
+
+const errorRed = Color(0xFFC70000);

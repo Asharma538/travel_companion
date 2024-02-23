@@ -1,11 +1,32 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:travel_companion/pages/create_post_page.dart';
 import 'package:travel_companion/pages/profile.dart';
-import 'package:travel_companion/pages/home.dart';
-
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
+import 'package:travel_companion/utils/colors.dart';
 import '../main.dart';
 
 class ViewPost extends StatefulWidget {
@@ -20,7 +41,7 @@ class ViewPost extends StatefulWidget {
 class _ViewPostState extends State<ViewPost> {
   late Map<String, dynamic> post;
   String loggedInUser = Profile.userData['username'];
-  var message;
+  var message = "";
 
   @override
   void initState() {
@@ -64,7 +85,7 @@ class _ViewPostState extends State<ViewPost> {
 
       for(var i=0;i<myExistingRequests.length;i++){
         if (myExistingRequests[i]['tripId']==myRequestInfo['tripId']){
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Request Already sent')));
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Request Already sent')));
           return;
         }
       }
@@ -94,14 +115,13 @@ class _ViewPostState extends State<ViewPost> {
     }
   }
 
-
   Future<void> deletePost() async {
     try {
       await FirebaseFirestore.instance
           .collection('Trips')
           .doc(widget.post['id'])
           .delete();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Post Deleted')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Post Deleted')));
       Navigator.pop(context, true);
     } catch (e) {
       print("Error deleting post: $e");
@@ -110,84 +130,91 @@ class _ViewPostState extends State<ViewPost> {
 
   @override
   Widget build(BuildContext context) {
-    var mediaQuery = MediaQuery.of(context).size;
     final messageController = TextEditingController();
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xff302360),
+        backgroundColor: secondaryColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back,color: secondaryTextColor,),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         title: const Text(
           "View Post",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20,color: secondaryTextColor),
         ),
       ),
-      backgroundColor: const Color.fromARGB(255, 225, 224, 227),
+      backgroundColor: primaryColor,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Post By: ",
+            const Text(
+              "Post By:",
               style: TextStyle(
-                color: Colors.black,
-                fontSize: 18.0,
+                color: primaryTextColor,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
-                if(post['profilePhotoState'] == 0)...{
+                if(post['profilePhotoState'] == 0)...[
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ProfilePicture(
-                  name: post!['username'],
+                  name: post['username'],
                   radius: 30,
-                  fontsize: 15,),
+                  fontsize: 20,),
                   )
-                  }else...{
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CircleAvatar(
-                  radius: 30.0,
-                  backgroundImage: NetworkImage(Base
-                      .profilePictures[
-                  post!['profilePhotoState'] - 1]),
+                ] else...[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircleAvatar(
+                      radius: 30.0,
+                      backgroundImage: NetworkImage(Base
+                        .profilePictures[post['profilePhotoState'] - 1]),
                       )
-                     )},
-                SizedBox(width: 10),
+                  )
+                ],
+                const SizedBox(width: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       post['username'] ?? 'Not available',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16.0,
+                      style: const TextStyle(
+                        color: primaryTextColor,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text(
-                      "About: ${post['about'] ?? 'Not available'}",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 12.0,
-                        fontWeight: FontWeight.bold,
+                    Container(
+                      width: MediaQuery.of(context).size.width - 120,
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              "About: ${post['about'] ?? 'Not available'}",
+                              style: const TextStyle(
+                                color: primaryTextColor,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     Text(
                       "Email: ${post['createdBy'] ?? 'Not available'}",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 12.0,
+                      style: const TextStyle(
+                        color: primaryTextColor,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -195,125 +222,185 @@ class _ViewPostState extends State<ViewPost> {
                 ),
               ],
             ),
-            SizedBox(height: mediaQuery.height * 0.02),
+            const SizedBox(height: 10),
             const Divider(
               height: 10,
-              color: Colors.black,
+              color: primaryTextColor,
               thickness: 2,
             ),
-            SizedBox(height: mediaQuery.height * 0.02),
-            Text(
+            const SizedBox(height: 12),
+            const Text(
               "Trip Route",
               style: TextStyle(
-                color: Colors.black,
-                fontSize: 18.0,
+                color: primaryTextColor,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: mediaQuery.height * 0.02),
-            Text(
-              "From: ${post['source'] ?? 'Not available'}",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 12.0,
-                fontWeight: FontWeight.bold,
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 2),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "From:",
+                    style: TextStyle(
+                      color: primaryTextColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    "${post['source'] ?? 'Not available'}",
+                    style: const TextStyle(
+                      color: primaryTextColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: mediaQuery.height * 0.02),
-            Text(
-              "To: ${post['destination'] ?? 'Not available'}",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 12.0,
-                fontWeight: FontWeight.bold,
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 2, 10, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "To:",
+                    style: TextStyle(
+                      color: primaryTextColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    "${post['destination'] ?? 'Not available'}",
+                    style: const TextStyle(
+                      color: primaryTextColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: mediaQuery.height * 0.02),
+            const SizedBox(height: 12),
             const Divider(
               height: 10,
-              color: Colors.black,
+              color: primaryTextColor,
               thickness: 2,
             ),
-            SizedBox(height: mediaQuery.height * 0.02),
-            Text(
+            const SizedBox(height: 12),
+            const Text(
               "On",
               style: TextStyle(
-                color: Colors.black,
-                fontSize: 18.0,
+                color: primaryTextColor,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: mediaQuery.height * 0.02),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Date: ${post['date'] ?? 'Not available'}",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Date: ${post['date'] ?? 'Not available'}",
+                    style: const TextStyle(
+                      color: primaryTextColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                Text(
-                  "Time: ${post['time'] ?? 'Not available'}",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
+                  Text(
+                    "Time: ${post['time'] ?? 'Not available'}",
+                    style: const TextStyle(
+                      color: primaryTextColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-            SizedBox(height: mediaQuery.height * 0.02),
+            const SizedBox(height: 12),
             const Divider(
               height: 10,
-              color: Colors.black,
+              color: primaryTextColor,
               thickness: 2,
             ),
-            SizedBox(height: mediaQuery.height * 0.02),
-            Text(
+            const SizedBox(height: 12),
+            const Text(
               "By",
               style: TextStyle(
-                color: Colors.black,
+                color: primaryTextColor,
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: mediaQuery.height * 0.02),
-            Text(
-              "Mode Of Transportation: ${post['modeOfTransport'] ?? 'Not available'}",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 12.0,
-                fontWeight: FontWeight.bold,
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Mode Of Transportation:",
+                    style: TextStyle(
+                      color: primaryTextColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    "${post['modeOfTransport'] ?? 'Not available'}",
+                    style: const TextStyle(
+                      color: primaryTextColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                ],
               ),
             ),
-            SizedBox(height: mediaQuery.height * 0.02),
+            const SizedBox(height: 12),
             const Divider(
               height: 10,
-              color: Colors.black,
+              color: primaryTextColor,
               thickness: 2,
             ),
-            SizedBox(height: mediaQuery.height * 0.02),
-            Text(
+            const SizedBox(height: 12),
+            const Text(
               "Description",
               style: TextStyle(
-                color: Colors.black,
-                fontSize: 18.0,
+                color: primaryTextColor,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: mediaQuery.height * 0.02),
-            Text(
-              post['desc'] != null ? "Description: ${post['desc']}" : "Description: Not Specified",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 12.0,
-                fontWeight: FontWeight.bold,
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
+              child: Text(
+                post['desc'] != null ? "Description: ${post['desc']}" : "Description: Not Specified",
+                style: const TextStyle(
+                  color: primaryTextColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-            SizedBox(height: mediaQuery.height * 0.02),
+            const SizedBox(height: 12),
+            const Divider(
+              height: 10,
+              color: primaryTextColor,
+              thickness: 2,
+            ),
+            const SizedBox(height: 30,),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -335,7 +422,7 @@ class _ViewPostState extends State<ViewPost> {
                               storeRequest();
                               Navigator.of(context).pop();
                               Navigator.of(context).pop();
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Request sent')));
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Request sent')));
                             },
                             child: const Text('Submit'),
                           )
@@ -344,7 +431,7 @@ class _ViewPostState extends State<ViewPost> {
                     );
                   },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xff302360),
+                      backgroundColor: complementaryColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
@@ -370,15 +457,15 @@ class _ViewPostState extends State<ViewPost> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xff302360),
+                      backgroundColor: complementaryColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
                     child: const Text(
-                      "Edit",
+                      "EDIT",
                       style: TextStyle(
-                        color: Colors.white,
+                        color: secondaryTextColor,
                         fontSize: 16.0,
                       ),
                     ),
@@ -391,36 +478,36 @@ class _ViewPostState extends State<ViewPost> {
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: Text('Confirm Delete'),
-                          content: Text('Are you sure you want to delete this post?'),
+                          title: const Text('Confirm Delete'),
+                          content: const Text('Are you sure you want to delete this post?'),
                           actions: [
                             TextButton(
                               onPressed: () {
                                 deletePost();
                                 Navigator.of(context).pop();
                               },
-                              child: Text('Yes'),
+                              child: const Text('Yes'),
                             ),
                             TextButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
-                              child: Text('No'),
+                              child: const Text('No'),
                             ),
                           ],
                         ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xff302360),
+                      backgroundColor: complementaryColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
                     child: const Text(
-                      "Delete",
+                      "DELETE",
                       style: TextStyle(
-                        color: Colors.white,
+                        color: secondaryTextColor,
                         fontSize: 16.0,
                       ),
                     ),

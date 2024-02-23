@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:travel_companion/pages/authentication/email_verification.dart';
+import 'package:travel_companion/pages/authentication/signup.dart';
 import '../../main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -9,8 +10,33 @@ final loginFormKey = GlobalKey<FormState>();
 
 class LoginPage extends StatelessWidget {
 
-  var emailController = TextEditingController();
-  var passwordController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  LoginPage({super.key});
+
+  showNormalSnackBar(BuildContext context,String snackBarText){
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            dismissDirection: DismissDirection.horizontal,
+            margin: const EdgeInsets.all(5),
+            behavior: SnackBarBehavior.floating,
+            content: Text(snackBarText)
+        )
+    );
+  }
+  showErrorSnackBar(BuildContext context,String snackBarText){
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            dismissDirection: DismissDirection.horizontal,
+            margin: const EdgeInsets.all(5),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: errorRed,
+            content: Text(snackBarText)
+        )
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -47,108 +73,111 @@ class LoginPage extends StatelessWidget {
               style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
           ),
-          Column(
-            children: [
-              Container(alignment: Alignment.centerLeft, child: const Text('Email')),
-              SizedBox(
-                height: 80,
-                child: Form(
-                  key: loginFormKey,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  child: TextFormField(
-                    controller: email,
-                    decoration: InputDecoration(
-                      hintText: "Email",
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                          borderSide: BorderSide.none),
-                      fillColor: textFieldBackgroundColor,
-                      filled: true,
-                    ),
-                    validator: (emailIp){
-                      if (emailIp!.contains(RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
-                        return null;
-                      } else {
-                        return "Enter a valid email";
-                      }
-                    },
-                  ),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Password'),
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      "Forgot password?",
-                      style: TextStyle(color: linkTextColor),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 80,
+          Column(children: [
+            Container(alignment: Alignment.centerLeft, child: const Text('Email')),
+            SizedBox(
+              height: 80,
+              child: Form(
+                key: loginFormKey,
+                autovalidateMode: AutovalidateMode.disabled,
                 child: TextFormField(
-                  obscureText: true,
-                  controller: password,
+                  controller: email,
                   decoration: InputDecoration(
-                    hintText: "Password",
+                    hintText: "Email",
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(6),
                         borderSide: BorderSide.none),
                     fillColor: textFieldBackgroundColor,
                     filled: true,
                   ),
+                  validator: (emailIp){
+                    if (emailIp!.contains(RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
+                      return null;
+                    } else {
+                      return "Enter a valid email";
+                    }
+                  },
                 ),
               ),
-            ]),
-            const SizedBox(height: 15),
-            const Expanded(child: SizedBox()),
+            ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Don't have an account?"),
+                const Text('Password'),
                 TextButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => const VerifyPage()));
-                    },
-                    child: const Text(
-                      "Sign up",
-                      style: TextStyle(color: linkTextColor),
-                    ))
+                  onPressed: () {},
+                  child: const Text(
+                    "Forgot password?",
+                    style: TextStyle(color: linkTextColor),
+                  ),
+                ),
               ],
             ),
-            Container(
-              margin: const EdgeInsets.only(bottom: 30, top: 10),
-              width: MediaQuery.of(context).size.width - 80,
-              height: 50,
-              child: TextButton(
-                onPressed: () async {
-                  try {
-                    await FirebaseAuth.instance
-                        .signInWithEmailAndPassword(
-                        email: email.text, password: password.text)
-                        .then((_) {
-                      Navigator.pushReplacement(
-                          context, MaterialPageRoute(builder: (context) => Base()));
-                    });
-                  } on FirebaseAuthException catch (e) {
-                    if (e.code == 'user-not-found') {
-                      print('No user found for that email.');
-                    } else if (e.code == 'wrong-password') {
-                      print('Wrong password provided for that user.');
-                    }
-                  }
-                },
-                style: TextButton.styleFrom(backgroundColor: secondaryColor,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                child: const Text(
-                  'Next',
-                  style: TextStyle(fontSize: 22, color: buttonTextColor),
+            SizedBox(
+              height: 80,
+              child: TextFormField(
+                obscureText: true,
+                controller: password,
+                decoration: InputDecoration(
+                  hintText: "Password",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(6),
+                      borderSide: BorderSide.none),
+                  fillColor: textFieldBackgroundColor,
+                  filled: true,
                 ),
               ),
+            ),
+          ]
+        ),
+        const SizedBox(height: 15),
+        const Expanded(child: SizedBox()),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text("Don't have an account?"),
+            TextButton(
+                onPressed: () {
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => const SignupPage()));
+                },
+                child: const Text(
+                  "Sign up",
+                  style: TextStyle(color: linkTextColor),
+                )
+              )
+            ],
+          ),
+          Container(
+            margin: const EdgeInsets.only(bottom: 30, top: 10),
+            width: MediaQuery.of(context).size.width - 80,
+            height: 50,
+            child: TextButton(
+              onPressed: () async {
+                loginFormKey.currentState!.validate();
+                try {
+                  await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.text, password: password.text).then((_) {
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Base()));
+                  }).catchError((error){
+                    if ((error.toString()).contains('incorrect')){
+                      showErrorSnackBar(context, 'Incorrect Email or Password');
+                    } else {
+                      showErrorSnackBar(context, 'Error $error');
+                    }
+                  });
+                } catch (error) {
+                  showErrorSnackBar(context, 'Error $error');
+                }
+              },
+              style: TextButton.styleFrom(
+                  backgroundColor: secondaryColor,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))
+              ),
+              child: const Text(
+                'Next',
+                style: TextStyle(fontSize: 22, color: buttonTextColor),
+              ),
+            ),
           ),
         ],
       ),

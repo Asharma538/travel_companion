@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -108,7 +107,6 @@ class _ProfileState extends State<Profile> {
         child: FutureBuilder<Map<String, dynamic>>(
           future: userFuture,
           builder: (context, snapshot) {
-            print(userData);
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CircularProgressIndicator(),
@@ -134,7 +132,6 @@ class _ProfileState extends State<Profile> {
                   ),
                 );
               }
-              print(userData);
               return Padding(
                 padding: const EdgeInsets.all(10),
                 child: Column(

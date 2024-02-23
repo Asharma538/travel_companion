@@ -1,10 +1,11 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:pinput/pinput.dart';
-import 'package:travel_companion/pages/authentication/login.dart';
+import 'package:travel_companion/main.dart';
 import 'package:travel_companion/pages/authentication/signup.dart';
 import 'package:travel_companion/utils/colors.dart';
+import 'package:http/http.dart' as http;
 
 final formkey = GlobalKey<FormState>();
 
@@ -14,19 +15,34 @@ class VerifyPage extends StatefulWidget {
   const VerifyPage({Key? key, this.email}) : super(key: key);
 
   @override
-  State<VerifyPage> createState() => _VerifyPageState();
+  State<VerifyPage> createState() => _VerifyPageState(email);
 }
 
 class _VerifyPageState extends State<VerifyPage> {
-  var state = 0;
-  final emailController = TextEditingController();
-  RegExp emailRegExp = RegExp(r'^[a-zA-Z0-9_.&|^$#]+@iitj\.ac\.in$');
-  bool _validate = false;
+  String? email;
 
-  @override
-  void dispose() {
-    emailController.dispose();
-    super.dispose();
+  _VerifyPageState(this.email);
+
+  showNormalSnackBar(BuildContext context,String snackBarText){
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            dismissDirection: DismissDirection.horizontal,
+            margin: const EdgeInsets.all(5),
+            behavior: SnackBarBehavior.floating,
+            content: Text(snackBarText)
+        )
+    );
+  }
+  showErrorSnackBar(BuildContext context,String snackBarText){
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            dismissDirection: DismissDirection.horizontal,
+            margin: const EdgeInsets.all(5),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: errorRed,
+            content: Text(snackBarText)
+        )
+    );
   }
 
   @override
@@ -36,228 +52,95 @@ class _VerifyPageState extends State<VerifyPage> {
       backgroundColor: primaryColor,
       body: SingleChildScrollView(
         child: Container(
-          margin: const EdgeInsets.all(15),
+          margin: const EdgeInsets.all(10),
           height: MediaQuery.of(context).size.height,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              if (state == 0) ...[
-                _body(context, emailController),
-              ] else ...[
-                _fillOTP(context, emailController),
-              ]
-            ],
-          ),
+          child: _body(context,email),
         ),
       ),
     );
   }
 
-  _body(context, TextEditingController email) {
+  Widget _body(context, String? email) {
     return Container(
       height: MediaQuery.of(context).size.height,
       padding: const EdgeInsets.all(20),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            margin: const EdgeInsets.fromLTRB(0, 30, 0, 150),
-            child: Container(
-              alignment: Alignment.topCenter,
-              child: const Text(
-                "Email Verification",
-                style: TextStyle(
-                  color: headingTextColor,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                ),
+            margin: const EdgeInsets.fromLTRB(0, 50, 0, 50),
+            alignment: Alignment.center,
+            child: const Text(
+              "Email Verification",
+              style: TextStyle(
+                color: headingTextColor,
+                fontSize: 35,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ),
-          Column(children: [
-            Container(
-                margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-                alignment: Alignment.centerLeft,
-                child: const Text(
-                  'Enter your email',
-                  style: TextStyle(
-                      color: primaryTextColor, fontWeight: FontWeight.w400),
-                )),
-            Form(
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              key: formkey,
-              child: SizedBox(
-                height: 80,
-                child: TextFormField(
-                  controller: email,
-                  decoration: InputDecoration(
-                    hintText: "Email",
-                    hintStyle: const TextStyle(color: placeholderTextColor),
-                    errorText: _validate ? "This field is required" : null,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(6),
-                        borderSide: BorderSide.none),
-                    fillColor: textFieldBackgroundColor,
-                    filled: true,
-                  ),
-                  validator: (email) {
-                    if (email!.contains(
-                        RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
-                      return null;
-                    } else {
-                      return "Enter a valid email";
-                    }
-                  },
-                ),
-              ),
-            ),
-          ]),
-          const Expanded(child: SizedBox()),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text("Already have an account?"),
-              TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => LoginPage()));
-                  },
-                  child: const Text(
-                    "Login",
-                    style: TextStyle(color: linkTextColor),
-                  ))
-            ],
           ),
           Container(
-            margin: const EdgeInsets.only(bottom: 30, top: 10),
-            width: MediaQuery.of(context).size.width - 80,
-            height: 50,
+            margin: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+            alignment: Alignment.center,
+            child: const Text('Please check the email sent to',style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500),),
+          ),
+          Container(
+            margin: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+            child: Text(email!,style: const TextStyle(fontSize: 16),),
+          ),
+          Container(
+            margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+            alignment: Alignment.centerLeft,
             child: TextButton(
-              onPressed: () {
-                formkey.currentState!.validate();
-                if (email.text
-                    .contains(RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
-                  setState(() {
-                    state = 1;
-                  });
+              onPressed: () async {
+                try {
+                  FirebaseAuth.instance.currentUser!.sendEmailVerification();
+                  showNormalSnackBar(context, 'Verification email sent again');
+                } catch (e) {
+                  showErrorSnackBar(context, 'Error sending verification link $e');
                 }
               },
-              style: TextButton.styleFrom(
-                  backgroundColor: secondaryColor,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10))),
-              child: const Text(
-                'Next',
-                style: TextStyle(fontSize: 22, color: buttonTextColor),
-              ),
+              child: const Text("Resend link")
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  _fillOTP(BuildContext context, TextEditingController email) {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          TextButton(onPressed: () async {
-            UserCredential user = await FirebaseAuth.instance.signInAnonymously();
-          }, child: Text("hi")),
+          const Expanded(child: SizedBox()),
           Container(
-            margin: const EdgeInsets.fromLTRB(0, 30, 0, 0),
-            child: Container(
-              alignment: Alignment.topCenter,
-              child: const Text(
-                "Email Verification",
-                style: TextStyle(
-                  color: headingTextColor,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          Column(children: [
-            const Text(
-              'Enter the OTP send to you at',
-              style: TextStyle(
-                  color: primaryTextColor,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16),
-            ),
-            Container(
-              margin: const EdgeInsets.fromLTRB(0, 0, 0, 50),
-              child: Text(
-                email.text,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18,
-                ),
-              ),
-            ),
-            Container(
-                alignment: Alignment.centerLeft,
-                child: TextButton(
-                  onPressed: () {
-                    setState(() {
-                      state = 0;
-                    });
-                    email.clear();
-                  },
-                  child: const Text(
-                    "Change email",
-                    style: TextStyle(color: linkTextColor, fontSize: 15),
-                  ),
-                )),
-            const SizedBox(
-              height: 10,
-            ),
-            SizedBox(
-                child: Pinput(
-              length: 6,
-              defaultPinTheme: PinTheme(
-                width: MediaQuery.of(context).size.width / 8,
-                height: 60,
-                textStyle: const TextStyle(
-                  fontSize: 20,
-                ),
-                decoration: BoxDecoration(
-                  color: textFieldBackgroundColor,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-              ),
-              validator: (s) {
-                return null;
-              },
-            )),
-          ]),
-          const SizedBox(height: 15),
-          Container(
-            margin: const EdgeInsets.only(bottom: 30, top: 80),
-            width: MediaQuery.of(context).size.width - 80,
-            height: 50,
+            margin: const EdgeInsets.fromLTRB(0, 50, 0, 10),
+            alignment: Alignment.center,
             child: TextButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            SignupPage(signUpEmail: emailController.text)));
+              onPressed: () async {
+                FirebaseAuth.instance.currentUser!.reload();
+                String uid = FirebaseAuth.instance.currentUser!.uid;
+                http.get(Uri.parse('https://travel-companion-dev-jaea.2.sg-1.fl0.io/verify?uid=$uid'))
+                  .then((value){
+                    Map<String,dynamic> response = jsonDecode(value.body);
+                    if (response.containsKey('data') && response['data']=='User Verified'){
+                      showNormalSnackBar(context, response['data']);
+                      FirebaseAuth.instance.currentUser!.reload();
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Base()), (route) => false);
+                    }
+                    else if (response.containsKey('error')){
+                      showErrorSnackBar(context, response['error']);
+                    }
+                    else{
+                      showNormalSnackBar(context, response['data']);
+                    }
+                  })
+                  .catchError((error){
+                    showErrorSnackBar(context, 'Error: $error');
+                  });
               },
               style: TextButton.styleFrom(
-                  backgroundColor: secondaryColor,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10))),
+                backgroundColor: secondaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)
+                )
+              ),
               child: const Text(
                 'Next',
-                style: TextStyle(fontSize: 22, color: buttonTextColor),
+                style: TextStyle(fontSize: 25, color: buttonTextColor),
               ),
             ),
-          ),
+          )
         ],
       ),
     );
