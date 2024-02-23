@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:travel_companion/pages/authentication/email_verification.dart';
+import 'package:travel_companion/pages/authentication/signup.dart';
 import '../../main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -82,7 +83,6 @@ class LoginPage extends StatelessWidget {
                         borderSide: BorderSide.none),
                     fillColor: Colors.amber.withOpacity(0.1),
                     filled: true,
-                    // prefixIcon: const Icon(Icons.person)
                   ),
                 ),
               ),
@@ -110,7 +110,6 @@ class LoginPage extends StatelessWidget {
                         borderSide: BorderSide.none),
                     fillColor: Colors.amber.withOpacity(0.1),
                     filled: true,
-                    // prefixIcon: const Icon(Icons.password),
                   ),
                   obscureText: true,
                 ),
@@ -165,7 +164,7 @@ class LoginPage extends StatelessWidget {
         TextButton(
             onPressed: () {
               Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => const VerifyPage()));
+                      context, MaterialPageRoute(builder: (context) => SignupPage()));
             },
             child: const Text(
               "Sign Up",
