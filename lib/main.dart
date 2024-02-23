@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:travel_companion/pages/authentication/email_verification.dart';
+import 'package:travel_companion/pages/authentication/signup.dart';
 import 'pages/profile.dart';
 import 'pages/search.dart';
 import 'pages/requests.dart';
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
     String? userEmail = FirebaseAuth.instance.currentUser?.email;
     DocumentReference userRef = FirebaseFirestore.instance.collection('Users').doc(userEmail);
     Profile.fetchUser(userRef);
-    if (FirebaseAuth.instance.currentUser?.uid != null) {
+    if (FirebaseAuth.instance.currentUser!=null && FirebaseAuth.instance.currentUser!.emailVerified) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Base(),
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
     } else {
       return const MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: VerifyPage(),
+        home: SignupPage(),
       );
     }
   }

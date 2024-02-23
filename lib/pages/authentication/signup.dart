@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:travel_companion/pages/authentication/email_verification.dart';
 import 'package:travel_companion/pages/authentication/login.dart';
 import '../../main.dart';
@@ -112,15 +113,24 @@ class SignupBodyState extends State<SignupPageBody> {
                 height: 80,
                 child: TextFormField(
                   controller: email,
-                  enabled: false,
                   decoration: InputDecoration(
-                    hintText: "Email",
+                    hintText: "Email address",
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none),
                     fillColor: textFieldBackgroundColor,
                     filled: true,
                   ),
+                  validator: (email) {
+                    if (email == null || email.isEmpty) {
+                      return "This field is required";
+                    } else if (!email.contains(
+                        RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
+                      return "Enter a Valid Email";
+                    } else {
+                      return null;
+                    }
+                  },
                 ),
               ),
               SizedBox(
@@ -160,7 +170,6 @@ class SignupBodyState extends State<SignupPageBody> {
                         borderSide: BorderSide.none),
                     fillColor: textFieldBackgroundColor,
                     filled: true,
-                    // prefixIcon: const Icon(Icons.person)
                   ),
                   validator: (confirmPassword) {
                     if (confirmPassword == null || confirmPassword.isEmpty) {
@@ -176,12 +185,7 @@ class SignupBodyState extends State<SignupPageBody> {
               SizedBox(
                 height: MediaQuery.of(context).size.height / 10,
                 child: InternationalPhoneNumberInput(
-                  onInputChanged: (PhoneNumber number) {
-                    print(number.phoneNumber);
-                  },
-                  onInputValidated: (bool value) {
-                    print(value);
-                  },
+                  onInputChanged: (PhoneNumber number) {},
                   selectorConfig: const SelectorConfig(
                     selectorType: PhoneInputSelectorType.DIALOG,
                   ),
@@ -203,7 +207,22 @@ class SignupBodyState extends State<SignupPageBody> {
               ),
             ]),
           ),
-          const SizedBox(height: 15),
+          const SizedBox(height: 50),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("Already have an account?"),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => LoginPage()));
+                  },
+                  child: const Text(
+                    "Login",
+                    style: TextStyle(color: linkTextColor),
+                  ))
+            ],
+          ),
           SizedBox(
             height: MediaQuery.of(context).size.height / 10,
             child: ElevatedButton(
@@ -214,17 +233,30 @@ class SignupBodyState extends State<SignupPageBody> {
                     .createUserWithEmailAndPassword(
                         email: email.text, password: password.text)
                     .then((credential) async {
-                  await FirebaseFirestore.instance
+                  try {
+                    await FirebaseAuth.instance.currentUser!
+                        .sendEmailVerification();
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Verification link sent successfully')));
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(
+                            'Error sending link, please check the email provided')));
+                  }
+
+                  FirebaseFirestore.instance
                       .collection('Users')
                       .doc(credential.user?.email)
                       .set({
                     'username': username.text,
                     'phoneNumber': phoneNumber.text,
+                    "email": email.text,
                     'profilePhotoState': 0,
                     'about': "Not Available"
                   });
-                  Navigator.pushReplacement(
-                      context, MaterialPageRoute(builder: (context) => Base()));
+
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => VerifyPage()));
                 }).catchError((e) {
                   if (e.code == 'user-not-found') {
                     print('No user found for that email.');
