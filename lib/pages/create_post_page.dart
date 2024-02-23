@@ -370,7 +370,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
         });
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => Homepage()),
+            MaterialPageRoute(builder: (context) => Base()),
             (route) => false);
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text('Post Updated')));
@@ -388,7 +388,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
         });
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => Homepage()),
+            MaterialPageRoute(builder: (context) => Base()),
             (route) => false);
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text('New Post Created!')));
