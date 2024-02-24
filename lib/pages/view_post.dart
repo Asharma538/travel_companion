@@ -41,7 +41,10 @@ class ViewPost extends StatefulWidget {
 class _ViewPostState extends State<ViewPost> {
   late Map<String, dynamic> post;
   String loggedInUser = Profile.userData['username'];
-  var message = "";
+
+  var message;
+  var username1 = Profile.userData['username'];
+
 
   @override
   void initState() {
@@ -77,6 +80,7 @@ class _ViewPostState extends State<ViewPost> {
       'sentBy': userEmail,
       'sentTo': post['createdBy'],
       'Message': message,
+      'username1': username1,
     };
 
 

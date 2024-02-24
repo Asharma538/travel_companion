@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:travel_companion/pages/profile.dart';
 import '../pages/requests.dart';
 
 class RequestTile extends StatelessWidget {
@@ -32,7 +33,7 @@ class RequestTile extends StatelessWidget {
               children: [
                 ListTile(
                   title: Text(
-                    request.username,
+                    Profile.userData['username'] != request.username ? request.username : request.username1,
                     style: TextStyle(
                       fontSize: screenWidth * 0.04,
                       fontWeight: FontWeight.bold,
