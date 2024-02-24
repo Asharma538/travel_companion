@@ -345,7 +345,9 @@ class _CreatePostPageState extends State<CreatePostPage> {
         });
         Navigator.pushAndRemoveUntil(
             context,
+
             MaterialPageRoute(builder: (context) => const Base()),
+
             (route) => false);
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text('Post Updated')));

@@ -5,6 +5,7 @@ import '../components/request_tile.dart';
 
 class Request {
   final String username;
+  final String username1;
   final String? description;
   final String date;
   final String? status;
@@ -19,6 +20,7 @@ class Request {
 
   Request({
     required this.username,
+    required this.username1,
     this.description,
     required this.date,
     this.status,
@@ -112,6 +114,7 @@ class _RequestsState extends State<Requests> {
                       itemBuilder: (context, index) {
                         Request req = Request(
                             username: "",
+                            username1: requests[index]['username1'] ?? 'Not available',
                             date: "",
                             type: requests[index]['type'],
                             tripId: requests[index]['tripId'],
@@ -173,6 +176,7 @@ class _RequestsState extends State<Requests> {
 
     return Request(
       username: username,
+      username1: request.username1,
       description: tripSnapshot['desc'],
       date: tripSnapshot['date'],
       status: request.status,
@@ -187,6 +191,9 @@ class _RequestsState extends State<Requests> {
     );
   }
 
+
+
+
   Future<String> _getUsername(DocumentReference userRef) async {
     DocumentSnapshot userSnapshot = await userRef.get();
     return userSnapshot['username'];
@@ -199,35 +206,58 @@ class _RequestsState extends State<Requests> {
 
   Future<void> _updateRequestStatus(Request request, String newStatus) async {
     try {
+      print('Updating request status to $newStatus');
+      print('Request tripId: ${request.tripId}, sentBy: ${request.sentBy}, userEmail: ${userEmail}');
       await FirebaseFirestore.instance
           .collection('Requests')
           .doc(userEmail)
-          .collection('requests')
-          .doc(request.tripId)
-          .update({'status': newStatus});
+          .get()
+          .then((DocumentSnapshot documentSnapshot) {
+        if (documentSnapshot.exists) {
+          List<dynamic> requests = documentSnapshot['requests'];
+
+          for (int i = 0; i < requests.length; i++) {
+            if (requests[i]['tripId'] == request.tripId) {
+              requests[i]['status'] = newStatus;
+
+              documentSnapshot.reference.update({'requests': requests});
+              break;
+            }
+          }
+        } else {
+          print('Document does not exist');
+        }
+      });
 
       await FirebaseFirestore.instance
           .collection('Requests')
           .doc(request.sentBy)
-          .collection('requests')
-          .doc(request.tripId)
-          .update({'status': newStatus});
+          .get()
+          .then((DocumentSnapshot documentSnapshot) {
+        if (documentSnapshot.exists) {
+          List<dynamic> requests = documentSnapshot['requests'];
+
+          for (int i = 0; i < requests.length; i++) {
+            if (requests[i]['tripId'] == request.tripId) {
+              requests[i]['status'] = newStatus;
+
+              documentSnapshot.reference.update({'requests': requests});
+              break;
+            }
+          }
+        } else {
+          print('Document does not exist');
+        }
+      });
 
       if (newStatus == 'Accepted' || newStatus == 'Rejected') {
         String sentBy = request.sentBy;
         if (sentBy.isNotEmpty) {
-          DocumentSnapshot tripSnapshot = await FirebaseFirestore.instance
-              .collection('Trips')
-              .doc(request.tripId)
-              .get();
-
-          List<dynamic> companionArray = List.from(tripSnapshot['companion']);
-          companionArray.add(sentBy);
-
           await FirebaseFirestore.instance
               .collection('Trips')
               .doc(request.tripId)
-              .update({'companion': companionArray});
+              .update({'companion': FieldValue.arrayUnion([sentBy])});
+
         }
       }
     } catch (e) {
@@ -240,6 +270,7 @@ class _RequestsState extends State<Requests> {
       request: request,
       onAccept: () {
         _updateRequestStatus(request, 'Accepted');
+        print("request accepted");
       },
       onReject: () {
         _updateRequestStatus(request, 'Rejected');
