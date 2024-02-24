@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:travel_companion/pages/authentication/email_verification.dart';
 import 'package:travel_companion/pages/authentication/signup.dart';
+import 'package:travel_companion/utils/colors.dart';
 import 'pages/profile.dart';
 import 'pages/search.dart';
 import 'pages/requests.dart';
@@ -26,9 +27,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    FirebaseAuth.instance.currentUser?.reload();
     String? userEmail = FirebaseAuth.instance.currentUser?.email;
-    DocumentReference userRef = FirebaseFirestore.instance.collection('Users').doc(userEmail);
-    Profile.fetchUser(userRef);
+
+    if (userEmail!=null && userEmail.isNotEmpty){
+      DocumentReference userRef = FirebaseFirestore.instance.collection('Users').doc(userEmail);
+      Profile.fetchUser(userRef);
+    }
     if (FirebaseAuth.instance.currentUser!=null && FirebaseAuth.instance.currentUser!.emailVerified) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -44,7 +50,7 @@ class MyApp extends StatelessWidget {
 }
 
 class Base extends StatefulWidget {
-  Base({Key? key}) : super(key: key);
+  const Base({Key? key}) : super(key: key);
 
   static List<String> profilePictures = [
     "https://t4.ftcdn.net/jpg/00/99/53/31/360_F_99533164_fpE2O6vEjnXgYhonMyYBGtGUFCLqfTWA.jpg",
@@ -76,6 +82,7 @@ class _BaseState extends State<Base> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: const Color(0xffC4DFCB),
       appBar: AppBar(
         backgroundColor: Colors.black,

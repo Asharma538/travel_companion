@@ -15,8 +15,7 @@ void _showDatePicker(BuildContext context, Function(DateTime) onDateSelected) {
   });
 }
 
-void _showTimePicker(BuildContext context, TimeOfDay? selectedTime,
-    Function(TimeOfDay) onTimeSelected) async {
+void _showTimePicker(BuildContext context, TimeOfDay? selectedTime,Function(TimeOfDay) onTimeSelected) async {
   TimeOfDay? pickedTime = await showTimePicker(
     context: context,
     initialTime: selectedTime ?? TimeOfDay.now(),
@@ -46,8 +45,8 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: primaryColor,
       body: Container(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
@@ -173,47 +172,44 @@ class _SearchPageState extends State<SearchPage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: secondaryColor,
-                      borderRadius: BorderRadius.circular(8.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: DropdownButton(
-                      value: dropdownValue,
-                      icon: const Icon(Icons.keyboard_arrow_down),
-                      isExpanded: true,
-                      items: ['Flexible', 'Flight', 'Train','Taxi','Bus'].map((item) {
-                        return DropdownMenuItem(
-                          value: item,
-                          child: Text(
-                            item,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          dropdownValue = newValue!;
-                        });
-                      },
-                      dropdownColor: secondaryColor,
-                    ),
+            Container(
+              margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              decoration: BoxDecoration(
+                color: secondaryColor,
+                borderRadius: BorderRadius.circular(8.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
                   ),
-                ),
-              ],
+                ],
+              ),
+              child: DropdownButton(
+                padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                underline: const SizedBox(height: 0,),
+                value: dropdownValue,
+                icon: const Icon(Icons.keyboard_arrow_down,color: secondaryTextColor,),
+                isExpanded: true,
+                items: ['Flexible', 'Flight', 'Train','Taxi','Bus'].map((item) {
+                  return DropdownMenuItem(
+                    value: item,
+                    child: Text(
+                      item,
+                      style: const TextStyle(color: secondaryTextColor),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    dropdownValue = newValue!;
+                  });
+                },
+                dropdownColor: secondaryColor,
+              ),
             ),
-
             const Expanded(child: SizedBox()),
             Container(
               margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
@@ -222,7 +218,6 @@ class _SearchPageState extends State<SearchPage> {
                 onPressed: () {
                   String fromLocation = fromLocationController.text;
                   String toLocation = toLocationController.text;
-                  String modeOfTransport = modeOfTransportController.text;
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -231,7 +226,7 @@ class _SearchPageState extends State<SearchPage> {
                           toLocation: toLocation,
                           selectedDate: selectedDate,
                           selectedTime: selectedTime,
-                          modeOfTransport: modeOfTransport
+                          modeOfTransport: dropdownValue
                         )
                       )
                   );
