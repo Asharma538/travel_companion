@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:travel_companion/pages/home.dart';
 import 'package:travel_companion/utils/colors.dart';
 import '../main.dart';
 import '../pages/profile.dart';

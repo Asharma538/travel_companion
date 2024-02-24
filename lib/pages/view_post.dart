@@ -6,27 +6,6 @@ import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:travel_companion/pages/create_post_page.dart';
 import 'package:travel_companion/pages/profile.dart';
 import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
-import 'package:travel_companion/utils/colors.dart';
 import '../main.dart';
 
 class ViewPost extends StatefulWidget {

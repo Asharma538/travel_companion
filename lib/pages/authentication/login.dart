@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:travel_companion/pages/authentication/email_verification.dart';
 import 'package:travel_companion/pages/authentication/signup.dart';
 import '../../main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
