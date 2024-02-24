@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:travel_companion/utils/colors.dart';
 import '../components/request_tile.dart';
 
 class Request {
   final String username;
-  final String username1;
   final String? description;
   final String date;
   final String? status;
@@ -17,10 +17,13 @@ class Request {
   final String modeOfTransport;
   final String phoneNumber;
   final String sentBy;
+  final String sentByUsername;
+  final String sentByPhoneNumber;
 
   Request({
+    required this.sentByUsername,
+    required this.sentByPhoneNumber,
     required this.username,
-    required this.username1,
     this.description,
     required this.date,
     this.status,
@@ -45,12 +48,22 @@ class Requests extends StatefulWidget {
 class _RequestsState extends State<Requests> {
   String dropdownValue = 'All Requests';
   String userEmail = FirebaseAuth.instance.currentUser!.email ?? "";
-
   List<dynamic> oldRequests = [];
   List<dynamic> newRequests = [];
+  List<bool> isExpanded = [];
+
+  @override
+  void initState() {
+    oldRequests = [];
+    newRequests = [];
+    isExpanded = [];
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    oldRequests = [];
+    newRequests = [];
     return Scaffold(
       body: Align(
         alignment: Alignment.topRight,
@@ -58,46 +71,55 @@ class _RequestsState extends State<Requests> {
           padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
           child: Column(
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.lightBlue,
-                  borderRadius: BorderRadius.circular(8.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 2),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                    padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
+                    decoration: BoxDecoration(
+                      color: complementaryColor,
+                      borderRadius: BorderRadius.circular(8.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: DropdownButton(
-                  value: dropdownValue,
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                  items: ['All Requests', 'Sent', 'Received'].map((item) {
-                    return DropdownMenuItem(
-                      value: item,
-                      child: Text(
-                        item,
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      dropdownValue = newValue!;
-                    });
-                  },
-                  dropdownColor: Colors.lightBlue,
-                ),
+                    child: DropdownButton(
+                      underline: const SizedBox(height: 0,width: 0,),
+                      value: dropdownValue,
+                      icon: const Icon(Icons.keyboard_arrow_down,color: secondaryTextColor,),
+                      items: ['All Requests', 'Sent', 'Received'].map((item) {
+                        return DropdownMenuItem(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: const TextStyle(color: secondaryTextColor),
+                            )
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          dropdownValue = newValue!;
+                        });
+                      },
+                      dropdownColor: complementaryColor,
+                    ),
+                  ),
+                ],
               ),
               Expanded(
                 child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                   stream: FirebaseFirestore.instance.collection('Requests').doc(userEmail).snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     }
                     List<dynamic> requests = [];
@@ -108,41 +130,42 @@ class _RequestsState extends State<Requests> {
                     return ListView.builder(
                       itemCount: requests.length,
                       itemBuilder: (context, index){
-                        Request req = Request(
-                            username: "",
-                            username1: requests[index]['username1'] ?? 'Not available',
-                            date: "",
-                            type: requests[index]['type'],
-                            tripId: requests[index]['tripId'],
-                            source: "",
-                            destination: "",
-                            time: "",
-                            modeOfTransport: "",
-                            phoneNumber: "",
-                            sentBy: requests[index]['sentBy'],
-                            status: requests[index]['status']);
+                      Request req = Request(
+                          username: "",
+                          sentByUsername: requests[index]['sentByUsername'] ?? 'Not available',
+                          sentByPhoneNumber: requests[index]['sentByPhoneNumber'] ?? 'Not available',
+                          date: "",type: requests[index]['type'],
+                          tripId: requests[index]['tripId'],
+                          source: "",destination: "",time: "",
+                          modeOfTransport: "",phoneNumber: "",
+                          sentBy: requests[index]['sentBy'],status: requests[index]['status']
+                      );
                         return FutureBuilder<Request>(
                           future: _getRequestWithData(req),
                           builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const SizedBox(width: 0, height: 0);
-                            } else if (snapshot.hasError) {
-                              if (snapshot.error
-                                  .toString()
-                                  .contains('does not exist')) {
-                                print('request for trip with tripId ' +
-                                    req.tripId +
-                                    ' expired');
+                            if (snapshot.connectionState == ConnectionState.waiting) { return const SizedBox(width: 0, height: 0); }
+                            else if (snapshot.hasError) {
+                              if (snapshot.error.toString().contains('does not exist')) {
+                                print('request for trip with tripId ${req.tripId} expired');
                               }
                               return const SizedBox(width: 0, height: 0);
                             }
-
-                            newRequests.add(oldRequests[index]);
-                            if (dropdownValue == 'All Requests') return buildRequestTile(snapshot.data!, oldRequests[index]);
-                            else if (dropdownValue == 'Sent' && oldRequests[index]['type'] == 'Sent') return buildRequestTile(snapshot.data!, oldRequests[index]);
-                            else if (dropdownValue == 'Received' && oldRequests[index]['type'] == 'Received') return buildRequestTile(snapshot.data!, oldRequests[index]);
-                            else return SizedBox(width: 0,height: 0,);
+                            else if (snapshot.hasData){
+                              newRequests.add(oldRequests[index]);
+                              isExpanded.add(false);
+                              if (dropdownValue == 'All Requests') {
+                                return buildRequestTile(snapshot.data!, oldRequests[index], index);
+                              } else if (dropdownValue == 'Sent' && oldRequests[index]['type'] == 'Sent') {
+                                return buildRequestTile(snapshot.data!, oldRequests[index], index);
+                              }
+                              else if (dropdownValue == 'Received' && oldRequests[index]['type'] == 'Received') {
+                                return buildRequestTile(snapshot.data!, oldRequests[index], index);
+                              }
+                              else {
+                                return const SizedBox(width: 0,height: 0,);
+                              }
+                            }
+                            else { return const SizedBox(height: 0,width: 0,); }
                           },
                         );
                       },
@@ -158,21 +181,17 @@ class _RequestsState extends State<Requests> {
   }
 
   Future<Request> _getRequestWithData(Request request) async {
-    DocumentSnapshot tripSnapshot = await FirebaseFirestore.instance
-        .collection('Trips')
-        .doc(request.tripId)
-        .get();
-
+    DocumentSnapshot tripSnapshot = await FirebaseFirestore.instance.collection('Trips').doc(request.tripId).get();
     String username = await _getUsername(tripSnapshot['userRef']);
     String source = tripSnapshot['source'];
     String destination = tripSnapshot['destination'];
     String time = tripSnapshot['time'];
     String modeOfTransport = tripSnapshot['modeOfTransport'];
     String phoneNumber = await _getPhoneNumber(tripSnapshot['userRef']);
-
     return Request(
       username: username,
-      username1: request.username1,
+      sentByUsername: request.sentByUsername,
+      sentByPhoneNumber: request.sentByPhoneNumber,
       description: tripSnapshot['desc'],
       date: tripSnapshot['date'],
       status: request.status,
@@ -186,9 +205,6 @@ class _RequestsState extends State<Requests> {
       sentBy: request.sentBy,
     );
   }
-
-
-
 
   Future<String> _getUsername(DocumentReference userRef) async {
     DocumentSnapshot userSnapshot = await userRef.get();
@@ -204,11 +220,7 @@ class _RequestsState extends State<Requests> {
     try {
       print('Updating request status to $newStatus');
       print('Request tripId: ${request.tripId}, sentBy: ${request.sentBy}, userEmail: ${userEmail}');
-      await FirebaseFirestore.instance
-          .collection('Requests')
-          .doc(userEmail)
-          .get()
-          .then((DocumentSnapshot documentSnapshot) {
+      await FirebaseFirestore.instance.collection('Requests').doc(userEmail).get().then((DocumentSnapshot documentSnapshot) {
         if (documentSnapshot.exists) {
           List<dynamic> requests = documentSnapshot['requests'];
 
@@ -224,12 +236,7 @@ class _RequestsState extends State<Requests> {
           print('Document does not exist');
         }
       });
-
-      await FirebaseFirestore.instance
-          .collection('Requests')
-          .doc(request.sentBy)
-          .get()
-          .then((DocumentSnapshot documentSnapshot) {
+      await FirebaseFirestore.instance.collection('Requests').doc(request.sentBy).get().then((DocumentSnapshot documentSnapshot) {
         if (documentSnapshot.exists) {
           List<dynamic> requests = documentSnapshot['requests'];
 
@@ -259,9 +266,10 @@ class _RequestsState extends State<Requests> {
     } catch (e) {
       print('Error updating request status: $e');
     }
+    setState(() {});
   }
 
-  Widget buildRequestTile(Request request, dynamic reqObj) {
+  Widget buildRequestTile(Request request, dynamic reqObj,int index) {
     return RequestTile(
       request: request,
       onAccept: () {
@@ -271,40 +279,27 @@ class _RequestsState extends State<Requests> {
       onReject: () {
         _updateRequestStatus(request, 'Rejected');
       },
-      onToggleExpansion: () {
-        setState(() {
-          isExpanded = !isExpanded;
-        });
-      },
       onDelete: () {
         _removeRequest(reqObj);
       },
-      isExpanded: isExpanded,
     );
   }
 
-  bool isExpanded = false;
-
   void _removeRequest(request) {
     newRequests.remove(request);
-    if (newRequests.length < oldRequests.length)
-      FirebaseFirestore.instance
-          .collection('Requests')
-          .doc(userEmail)
-          .update({'requests': newRequests});
+    if (newRequests.length < oldRequests.length) {
+      FirebaseFirestore.instance.collection('Requests').doc(userEmail).update({'requests': newRequests});
+
+    }
+    isExpanded.removeLast();
+    setState(() {});
   }
 
   @override
   void dispose() {
-    if (oldRequests.length >= newRequests.length) {
-      super.dispose();
-      return;
-    } else {
-      FirebaseFirestore.instance
-          .collection('Requests')
-          .doc(userEmail)
-          .update({'requests': newRequests});
-      super.dispose();
+    if (oldRequests.length < newRequests.length) {
+      FirebaseFirestore.instance.collection('Requests').doc(userEmail).update({'requests': newRequests});
     }
+    super.dispose();
   }
 }

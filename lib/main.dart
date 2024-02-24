@@ -35,8 +35,8 @@ class MyApp extends StatelessWidget {
       DocumentReference userRef = FirebaseFirestore.instance.collection('Users').doc(userEmail);
       Profile.fetchUser(userRef);
     }
-    if (FirebaseAuth.instance.currentUser!=null && FirebaseAuth.instance.currentUser!.emailVerified) {
-      return MaterialApp(
+    if (FirebaseAuth.instance.currentUser!=null && FirebaseAuth.instance.currentUser!.emailVerified){
+      return const MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Base(),
       );

@@ -21,7 +21,8 @@ class _ViewPostState extends State<ViewPost> {
   String loggedInUser = Profile.userData['username'];
 
   var message;
-  var username1 = Profile.userData['username'];
+  var sentByUsername = Profile.userData['username'];
+  var sentByPhoneNumber = Profile.userData['phoneNumber'];
 
 
   @override
@@ -38,8 +39,7 @@ class _ViewPostState extends State<ViewPost> {
     String? userEmail = FirebaseAuth.instance.currentUser!.email;
     var firestore = FirebaseFirestore.instance;
 
-    DocumentSnapshot<Map<String, dynamic>> myRequestSnapshot =
-    await firestore.collection('Requests').doc(userEmail).get();
+    DocumentSnapshot<Map<String, dynamic>> myRequestSnapshot = await firestore.collection('Requests').doc(userEmail).get();
     DocumentSnapshot<Map<String, dynamic>> ownerRequestSnapshot = await firestore.collection('Requests').doc(post['createdBy']).get();
 
     Map<String, dynamic> myRequestInfo = {
@@ -49,7 +49,8 @@ class _ViewPostState extends State<ViewPost> {
       'sentBy': userEmail,
       'sentTo': post['createdBy'],
       'Message': message,
-      'username1': username1,
+      'sentByUsername': sentByUsername,
+      'sentByPhoneNumber': sentByPhoneNumber
     };
 
     Map<String, dynamic> ownerRequestInfo = {
@@ -59,7 +60,8 @@ class _ViewPostState extends State<ViewPost> {
       'sentBy': userEmail,
       'sentTo': post['createdBy'],
       'Message': message,
-      'username1': username1,
+      'sentByUsername': sentByUsername,
+      'sentByPhoneNumber': sentByPhoneNumber
     };
 
     if (myRequestSnapshot.exists) {
@@ -67,6 +69,7 @@ class _ViewPostState extends State<ViewPost> {
 
       for(var i=0;i<myExistingRequests.length;i++){
         if (myExistingRequests[i]['tripId']==myRequestInfo['tripId']){
+          print('gotcha');
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Request Already sent')));
           return;
         }
@@ -86,10 +89,18 @@ class _ViewPostState extends State<ViewPost> {
       List<dynamic> ownerExistingRequests = ownerRequestSnapshot.data()?['requests'] ?? [];
       ownerExistingRequests.add(ownerRequestInfo);
 
+      for(var i=0;i<ownerExistingRequests.length;i++){
+        if (ownerExistingRequests[i]['tripId']==myRequestInfo['tripId']){
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Request Already sent')));
+          return;
+        }
+      }
+
       await firestore.collection('Requests').doc(post['createdBy']).update({
         'requests': ownerExistingRequests,
       });
-    } else {
+    }
+    else {
       await firestore.collection('Requests').doc(post['createdBy']).set({
         'requests': [ownerRequestInfo],
       });
