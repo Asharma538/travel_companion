@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -41,8 +40,7 @@ class _ViewPostState extends State<ViewPost> {
 
     DocumentSnapshot<Map<String, dynamic>> myRequestSnapshot =
     await firestore.collection('Requests').doc(userEmail).get();
-    DocumentSnapshot<Map<String, dynamic>> ownerRequestSnapshot =
-    await firestore.collection('Requests').doc(post['createdBy']).get();
+    DocumentSnapshot<Map<String, dynamic>> ownerRequestSnapshot = await firestore.collection('Requests').doc(post['createdBy']).get();
 
     Map<String, dynamic> myRequestInfo = {
       'tripId': post['id'],
@@ -50,6 +48,8 @@ class _ViewPostState extends State<ViewPost> {
       'type': 'Sent',
       'sentBy': userEmail,
       'sentTo': post['createdBy'],
+      'Message': message,
+      'username1': username1,
     };
 
     Map<String, dynamic> ownerRequestInfo = {
@@ -62,7 +62,6 @@ class _ViewPostState extends State<ViewPost> {
       'username1': username1,
     };
 
-
     if (myRequestSnapshot.exists) {
       List<dynamic> myExistingRequests = myRequestSnapshot.data()?['requests'] ?? [];
 
@@ -72,13 +71,12 @@ class _ViewPostState extends State<ViewPost> {
           return;
         }
       }
-
       myExistingRequests.add(myRequestInfo);
-
       await firestore.collection('Requests').doc(userEmail).update({
         'requests': myExistingRequests,
       });
-    } else {
+    }
+    else {
       await firestore.collection('Requests').doc(userEmail).set({
         'requests': [myRequestInfo],
       });

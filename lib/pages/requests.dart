@@ -93,10 +93,7 @@ class _RequestsState extends State<Requests> {
               ),
               Expanded(
                 child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                  stream: FirebaseFirestore.instance
-                      .collection('Requests')
-                      .doc(userEmail)
-                      .snapshots(),
+                  stream: FirebaseFirestore.instance.collection('Requests').doc(userEmail).snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
@@ -108,10 +105,9 @@ class _RequestsState extends State<Requests> {
                       requests = snapshot.data?.get('requests');
                     }
                     oldRequests = requests;
-
                     return ListView.builder(
                       itemCount: requests.length,
-                      itemBuilder: (context, index) {
+                      itemBuilder: (context, index){
                         Request req = Request(
                             username: "",
                             username1: requests[index]['username1'] ?? 'Not available',
