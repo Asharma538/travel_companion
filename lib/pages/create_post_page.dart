@@ -174,6 +174,38 @@ class _CreatePostPageState extends State<CreatePostPage> {
                 dropdownColor: secondaryColor,
               ),
             ),
+            Container(
+              padding: const EdgeInsets.fromLTRB(0, 20, 0, 5),
+              child: const Text(
+                "DESCRIPTION",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            TextField(
+              style: const TextStyle(
+                color: primaryTextColor,
+              ),
+              maxLines: 2,
+              onChanged: (val){
+                description = val;
+              },
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: textFieldBackgroundColor,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide.none,
+                ),
+                hintText: "Ex: Fight name or no./Train name or no.",
+                hintStyle: const TextStyle(
+                  color: placeholderTextColor,
+                ),
+              ),
+            ),
             const SizedBox(height: 15),
             const Expanded(child: SizedBox()),
             Center(

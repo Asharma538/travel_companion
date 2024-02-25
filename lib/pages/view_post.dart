@@ -24,7 +24,6 @@ class _ViewPostState extends State<ViewPost> {
   var sentByUsername = Profile.userData['username'];
   var sentByPhoneNumber = Profile.userData['phoneNumber'];
 
-
   @override
   void initState() {
     super.initState();
@@ -52,7 +51,6 @@ class _ViewPostState extends State<ViewPost> {
       'sentByUsername': sentByUsername,
       'sentByPhoneNumber': sentByPhoneNumber
     };
-
     Map<String, dynamic> ownerRequestInfo = {
       'tripId': post['id'],
       'status': 'Pending',
@@ -66,11 +64,8 @@ class _ViewPostState extends State<ViewPost> {
 
     if (myRequestSnapshot.exists) {
       List<dynamic> myExistingRequests = myRequestSnapshot.data()?['requests'] ?? [];
-
       for(var i=0;i<myExistingRequests.length;i++){
         if (myExistingRequests[i]['tripId']==myRequestInfo['tripId']){
-          print('gotcha');
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Request Already sent')));
           return;
         }
       }
@@ -88,13 +83,6 @@ class _ViewPostState extends State<ViewPost> {
     if (ownerRequestSnapshot.exists) {
       List<dynamic> ownerExistingRequests = ownerRequestSnapshot.data()?['requests'] ?? [];
       ownerExistingRequests.add(ownerRequestInfo);
-
-      for(var i=0;i<ownerExistingRequests.length;i++){
-        if (ownerExistingRequests[i]['tripId']==myRequestInfo['tripId']){
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Request Already sent')));
-          return;
-        }
-      }
 
       await firestore.collection('Requests').doc(post['createdBy']).update({
         'requests': ownerExistingRequests,
@@ -123,6 +111,7 @@ class _ViewPostState extends State<ViewPost> {
   @override
   Widget build(BuildContext context) {
     final messageController = TextEditingController();
+    List<dynamic> companion = post['companion'] ?? [];
     return Scaffold(
       appBar: AppBar(
         backgroundColor: secondaryColor,
@@ -387,6 +376,33 @@ class _ViewPostState extends State<ViewPost> {
               ),
             ),
             const SizedBox(height: 12),
+            const Divider(
+              height: 10,
+              color: primaryTextColor,
+              thickness: 2,
+            ),const SizedBox(height: 12),
+            const Text(
+              "Companions",
+              style: TextStyle(
+                color: primaryTextColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            for (var i=0;i<companion.length;i++) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
+                child: Text(
+                  companion[i].toString(),
+                  style: const TextStyle(
+                    color: primaryTextColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
             const Divider(
               height: 10,
               color: primaryTextColor,

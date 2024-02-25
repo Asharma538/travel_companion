@@ -19,9 +19,11 @@ class Request {
   final String sentBy;
   final String sentByUsername;
   final String sentByPhoneNumber;
+  final String message;
 
   Request({
     required this.sentByUsername,
+    required this.message,
     required this.sentByPhoneNumber,
     required this.username,
     this.description,
@@ -132,11 +134,15 @@ class _RequestsState extends State<Requests> {
                       itemBuilder: (context, index){
                       Request req = Request(
                           username: "",
+                          message: requests[index]['Message'] ?? 'Not available',
                           sentByUsername: requests[index]['sentByUsername'] ?? 'Not available',
                           sentByPhoneNumber: requests[index]['sentByPhoneNumber'] ?? 'Not available',
-                          date: "",type: requests[index]['type'],
+                          date: "",
+                          type: requests[index]['type'],
                           tripId: requests[index]['tripId'],
-                          source: "",destination: "",time: "",
+                          source: "",
+                          destination: "",
+                          time: "",
                           modeOfTransport: "",phoneNumber: "",
                           sentBy: requests[index]['sentBy'],status: requests[index]['status']
                       );
@@ -190,6 +196,7 @@ class _RequestsState extends State<Requests> {
     String phoneNumber = await _getPhoneNumber(tripSnapshot['userRef']);
     return Request(
       username: username,
+      message: request.message,
       sentByUsername: request.sentByUsername,
       sentByPhoneNumber: request.sentByPhoneNumber,
       description: tripSnapshot['desc'],
@@ -218,16 +225,13 @@ class _RequestsState extends State<Requests> {
 
   Future<void> _updateRequestStatus(Request request, String newStatus) async {
     try {
-      print('Updating request status to $newStatus');
-      print('Request tripId: ${request.tripId}, sentBy: ${request.sentBy}, userEmail: ${userEmail}');
+
       await FirebaseFirestore.instance.collection('Requests').doc(userEmail).get().then((DocumentSnapshot documentSnapshot) {
         if (documentSnapshot.exists) {
           List<dynamic> requests = documentSnapshot['requests'];
-
           for (int i = 0; i < requests.length; i++) {
-            if (requests[i]['tripId'] == request.tripId) {
+            if (requests[i]['tripId'] == request.tripId && requests[i]['sentBy']==request.sentBy) {
               requests[i]['status'] = newStatus;
-
               documentSnapshot.reference.update({'requests': requests});
               break;
             }
@@ -243,7 +247,6 @@ class _RequestsState extends State<Requests> {
           for (int i = 0; i < requests.length; i++) {
             if (requests[i]['tripId'] == request.tripId) {
               requests[i]['status'] = newStatus;
-
               documentSnapshot.reference.update({'requests': requests});
               break;
             }
@@ -255,12 +258,13 @@ class _RequestsState extends State<Requests> {
 
       if (newStatus == 'Accepted' || newStatus == 'Rejected') {
         String sentBy = request.sentBy;
+        String sentByUsername = request.sentByUsername;
+        String space= " ";
         if (sentBy.isNotEmpty) {
           await FirebaseFirestore.instance
               .collection('Trips')
               .doc(request.tripId)
-              .update({'companion': FieldValue.arrayUnion([sentBy])});
-
+              .update({'companion': FieldValue.arrayUnion(['$sentByUsername $sentBy'])});
         }
       }
     } catch (e) {
