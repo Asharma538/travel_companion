@@ -178,7 +178,13 @@ class _RequestTileState extends State<RequestTile> {
                           : 'Description: ${widget.request.description!.substring(0, 10)}...',
                       style: const TextStyle(fontSize: 16),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
+                    Text(
+                      isExpanded
+                          ? 'Message: ${widget.request.message}'
+                          : 'Message: ${widget.request.message.substring(0, 10)}...',
+                      style: const TextStyle(fontSize: 16),
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
