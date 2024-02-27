@@ -115,6 +115,7 @@ class _VerifyPageState extends State<VerifyPage> {
                     if (response.containsKey('data') && response['data']=='User Verified'){
                       showNormalSnackBar(context, response['data']);
                       FirebaseAuth.instance.currentUser!.reload();
+                      FirebaseAuth.instance.currentUser?.getIdToken(true);
                       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Base()), (route) => false);
                     }
                     else if (response.containsKey('error')){

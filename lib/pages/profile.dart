@@ -68,6 +68,7 @@ class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
 
   static Map<String, dynamic> userData = {};
+  static String phoneNumber = "";
 
   static Future<Map<String, dynamic>> fetchUser(
   DocumentReference userRef) async {
@@ -78,7 +79,8 @@ class Profile extends StatefulWidget {
         userData['id'] = queryDocumentSnapshot.id;
       }
       Profile.userData = userData;
-
+      var phoneNumberDocument = await FirebaseFirestore.instance.collection('PhoneNumbers').doc(userData['id']).get();
+      Profile.phoneNumber = phoneNumberDocument.data()?['phoneNumber'] ?? '';
       return userData;
   }
 
@@ -90,6 +92,7 @@ class _ProfileState extends State<Profile> {
   late Future<Map<String, dynamic>> userFuture;
   String? userEmail = FirebaseAuth.instance.currentUser?.email;
   Map<String, dynamic>? userData;
+  dynamic phoneNumber;
 
   @override
   void initState() {

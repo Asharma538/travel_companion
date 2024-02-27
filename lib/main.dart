@@ -27,7 +27,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     FirebaseAuth.instance.currentUser?.reload();
     String? userEmail = FirebaseAuth.instance.currentUser?.email;
 
@@ -53,14 +52,14 @@ class Base extends StatefulWidget {
   const Base({Key? key}) : super(key: key);
 
   static List<String> profilePictures = [
-    "https://t4.ftcdn.net/jpg/00/99/53/31/360_F_99533164_fpE2O6vEjnXgYhonMyYBGtGUFCLqfTWA.jpg",
-    "https://png.pngtree.com/png-clipart/20200401/original/pngtree-gold-number-2-png-image_5330866.jpg",
-    "https://media.istockphoto.com/id/520661859/photo/golden-number-three-on-white.jpg?s=612x612&w=0&k=20&c=KN_2x0FhwlExacClUwZ5A5JDEW0j71Jt4xEB4L7yy-M=",
-    "https://media.istockphoto.com/id/520661263/photo/golden-number-four-on-white.jpg?s=612x612&w=0&k=20&c=RkYTTNQpnVy7d2UK9niOKpAG95kT8AkI27TwF9q4LnI=",
-    "https://media.istockphoto.com/id/475237371/vector/3d-shiny-golden-number-5.jpg?s=612x612&w=0&k=20&c=T9ziU71hG6YWwYHbhOafi82EWKg5vYzpKvHCJerHeAU=",
-    "https://media.istockphoto.com/id/618634702/photo/gold-number-6.jpg?s=612x612&w=0&k=20&c=OX7rnOS6fY9J27bHKmZ62Djdg5JpIPiMaGbxO8gszXQ=",
-    "https://png.pngtree.com/png-clipart/20200401/original/pngtree-gold-number-7-png-image_5330848.jpg",
-    "https://media.istockphoto.com/id/520661499/photo/golden-number-eight-on-white.jpg?s=612x612&w=0&k=20&c=sCyAJIx5m2gmVAmJiPwudvh8zOGhhDDjPcxbzyL9lAE="
+    "https://firebasestorage.googleapis.com/v0/b/travel-companion-374f9.appspot.com/o/photo_1.jpeg?alt=media&token=0c5d47c7-32f1-4136-bc00-8a1c8d51ca6c",
+    "https://firebasestorage.googleapis.com/v0/b/travel-companion-374f9.appspot.com/o/photo_2.jpeg?alt=media&token=9b553349-3ab7-4ae2-aea1-d7b42cd893a9",
+    "https://firebasestorage.googleapis.com/v0/b/travel-companion-374f9.appspot.com/o/photo_3.jpeg?alt=media&token=3a8bfe3d-c128-4c76-b123-4c025050e76e",
+    "https://firebasestorage.googleapis.com/v0/b/travel-companion-374f9.appspot.com/o/photo_4.jpeg?alt=media&token=cf3feabb-ffd0-4bb9-9d3c-ed17d44c20e3",
+    "https://firebasestorage.googleapis.com/v0/b/travel-companion-374f9.appspot.com/o/photo_5.jpeg?alt=media&token=97ab219c-57de-4fad-a5b9-6f2af176504d",
+    "https://firebasestorage.googleapis.com/v0/b/travel-companion-374f9.appspot.com/o/photo_6.jpeg?alt=media&token=f1a3f28a-2e94-4644-8c89-65898078f733",
+    "https://firebasestorage.googleapis.com/v0/b/travel-companion-374f9.appspot.com/o/photo_7.jpeg?alt=media&token=39164e9c-966d-494c-b988-2a61a388d888",
+    "https://firebasestorage.googleapis.com/v0/b/travel-companion-374f9.appspot.com/o/photo_8.jpeg?alt=media&token=7fe56bd8-cc55-4a02-b87b-84f0a34852be"
   ];
 
   @override

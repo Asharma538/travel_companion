@@ -22,7 +22,7 @@ class _ViewPostState extends State<ViewPost> {
 
   var message;
   var sentByUsername = Profile.userData['username'];
-  var sentByPhoneNumber = Profile.userData['phoneNumber'];
+  var sentByPhoneNumber = Profile.phoneNumber;
 
   @override
   void initState() {

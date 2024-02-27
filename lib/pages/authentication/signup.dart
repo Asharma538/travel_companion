@@ -57,11 +57,13 @@ class SignupBodyState extends State<SignupPageBody> {
   createUserDocument(email,username,phoneNumber){
     FirebaseFirestore.instance.collection('Users').doc(email).set({
       'username': username,
-      'phoneNumber': phoneNumber,
       "email": email,
       'profilePhotoState': 0,
       'about': "Not Available"
-    });
+    }).then((value) => print('done'));
+    FirebaseFirestore.instance.collection('PhoneNumbers').doc(email).set({
+      'phoneNumber': phoneNumber,
+    }).then((value) => print('done'));
   }
 
   showNormalSnackBar(BuildContext context,String snackBarText){
@@ -282,8 +284,11 @@ class SignupBodyState extends State<SignupPageBody> {
                   }
 
                   try{
+                    print('286');
                     createUserDocument(credential.user?.email,username.text,phoneNumber.text);
+                    print('288');
                   } catch (e){
+                    print(e);
                     showErrorSnackBar(context, 'Error creating User, please try again in some time');
                   }
 

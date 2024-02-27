@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 import 'package:travel_companion/utils/colors.dart';
 import '../components/request_tile.dart';
 
@@ -143,7 +144,8 @@ class _RequestsState extends State<Requests> {
                           source: "",
                           destination: "",
                           time: "",
-                          modeOfTransport: "",phoneNumber: "",
+                          modeOfTransport: "",
+                          phoneNumber: "",
                           sentBy: requests[index]['sentBy'],status: requests[index]['status']
                       );
                         return FutureBuilder<Request>(
@@ -193,7 +195,8 @@ class _RequestsState extends State<Requests> {
     String destination = tripSnapshot['destination'];
     String time = tripSnapshot['time'];
     String modeOfTransport = tripSnapshot['modeOfTransport'];
-    String phoneNumber = await _getPhoneNumber(tripSnapshot['userRef']);
+    DocumentReference userPhoneNumberDoc = FirebaseFirestore.instance.collection('PhoneNumbers').doc(tripSnapshot['createdBy']);
+    String phoneNumber = await _getPhoneNumber(userPhoneNumberDoc);
     return Request(
       username: username,
       message: request.message,
@@ -218,9 +221,9 @@ class _RequestsState extends State<Requests> {
     return userSnapshot['username'];
   }
 
-  Future<String> _getPhoneNumber(DocumentReference userRef) async {
-    DocumentSnapshot userSnapshot = await userRef.get();
-    return userSnapshot['phoneNumber'];
+  Future<String> _getPhoneNumber(DocumentReference phoneRef) async {
+    DocumentSnapshot snapshot = await phoneRef.get();
+    return snapshot['phoneNumber'];
   }
 
   Future<void> _updateRequestStatus(Request request, String newStatus) async {
