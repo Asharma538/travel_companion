@@ -83,9 +83,6 @@ class _RequestsState extends State<Requests> {
 
   @override
   Widget build(BuildContext context) {
-    oldRequests = [];
-    newRequests = [];
-    updations = {};
     return Scaffold(
       body: Align(
         alignment: Alignment.topRight,
@@ -138,6 +135,9 @@ class _RequestsState extends State<Requests> {
                 child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                   stream: FirebaseFirestore.instance.collection('Requests').doc(userEmail).snapshots(),
                   builder: (context, snapshot) {
+                    oldRequests = [];
+                    newRequests = [];
+                    updations = {};
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
                     }

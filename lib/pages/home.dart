@@ -20,20 +20,13 @@ class Homepage extends StatefulWidget {
       var queryDocumentSnapshot = await doc.data()['userRef'].get();
       var userData = queryDocumentSnapshot.data() ?? {};
 
-      if ((doc.data()['date'] == "" &&
-              DateTime.now().isAfter(doc
-                  .data()['createdDateTime']
-                  .toDate()
-                  .add(Duration(days: 30)))) ||
-          (doc.data()['date'] != "" &&
-              DateTime.now().isAfter(DateTime.parse(doc.data()['date'])))) {
-        try {
-          FirebaseFirestore.instance.collection('Trips').doc(doc.id).delete();
-          print('post expired and deleted');
-        } catch (e) {
-          print('error deleteing post $e');
-        }
-      } else {
+      if (
+          (doc.data()['date'] == "" && DateTime.now().isAfter(doc.data()['createdDateTime'].toDate().add(Duration(days: 30)))) ||
+          (doc.data()['date'] != "" && DateTime.now().isAfter(DateTime.parse(doc.data()['date'])))
+      ){
+          print('post expired ${doc.id}');
+      }
+      else {
         var post = doc.data();
         post['id'] = doc.id;
         post['createdDateTime'] = userData['createdDateTime'];
@@ -43,6 +36,10 @@ class Homepage extends StatefulWidget {
         posts.add(post);
       }
     }
+    posts.sort((Map<String,dynamic> a,Map<String,dynamic> b){
+      if (a['date']=='' || b['date']=='') return 0;
+      return DateTime.parse(a['date']).compareTo(DateTime.parse(b['date']));
+    });
 
     Homepage.posts = posts;
     return posts;
