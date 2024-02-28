@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
+import 'package:travel_companion/pages/profile.dart';
 import 'package:travel_companion/utils/colors.dart';
 import '../components/request_tile.dart';
 
@@ -16,16 +17,15 @@ class Request {
   final String destination;
   final String time;
   final String modeOfTransport;
-  final String phoneNumber;
   final String sentBy;
   final String sentByUsername;
-  final String sentByPhoneNumber;
+  final String phoneNumber;
   final String message;
 
   Request({
     required this.sentByUsername,
     required this.message,
-    required this.sentByPhoneNumber,
+    required this.phoneNumber,
     required this.username,
     this.description,
     required this.date,
@@ -36,7 +36,6 @@ class Request {
     required this.destination,
     required this.time,
     required this.modeOfTransport,
-    required this.phoneNumber,
     required this.sentBy,
   });
 }
@@ -54,12 +53,31 @@ class _RequestsState extends State<Requests> {
   List<dynamic> oldRequests = [];
   List<dynamic> newRequests = [];
   List<bool> isExpanded = [];
+  Map<String,dynamic> updations = {};
+
+  updateRequests(List<dynamic> requests){
+    for(var i=0;i<requests.length;i++){
+      if (updations.containsKey(requests[i]['tripId'])){
+        if (updations[requests[i]['tripId']]!=-1) {
+          requests[i]['status'] = 'Accepted';
+          requests[i]['phoneNumber'] = updations[requests[i]['tripId']];
+        }
+        else{
+          requests[i]['status'] = 'Rejected';
+        }
+      }
+    }
+    FirebaseFirestore.instance.collection('Requests').doc(userEmail).set({
+      'requests':requests
+    });
+  }
 
   @override
   void initState() {
     oldRequests = [];
     newRequests = [];
     isExpanded = [];
+    updations = {};
     super.initState();
   }
 
@@ -67,6 +85,7 @@ class _RequestsState extends State<Requests> {
   Widget build(BuildContext context) {
     oldRequests = [];
     newRequests = [];
+    updations = {};
     return Scaffold(
       body: Align(
         alignment: Alignment.topRight,
@@ -123,11 +142,21 @@ class _RequestsState extends State<Requests> {
                       return const Center(child: CircularProgressIndicator());
                     }
                     else if (snapshot.hasError) {
+                      if (snapshot.error.toString().contains('permission') ){
+                        return const Center(child: Text('No Requests yet'));
+                      }
                       return Center(child: Text('Error: ${snapshot.error}'));
                     }
                     List<dynamic> requests = [];
                     if (snapshot.data!.exists) {
                       requests = snapshot.data?.get('requests');
+                      Map<String, dynamic>? temp = snapshot.data?.data();
+                      temp?.remove('requests');
+                      updations = temp ?? {};
+                      if (temp!={}) updateRequests(requests);
+                    }
+                    if (requests.isEmpty){
+                      return const Center(child: Text('No Requests found'));
                     }
                     oldRequests = requests;
                     return ListView.builder(
@@ -137,7 +166,7 @@ class _RequestsState extends State<Requests> {
                           username: "",
                           message: requests[index]['Message'] ?? 'Not available',
                           sentByUsername: requests[index]['sentByUsername'] ?? 'Not available',
-                          sentByPhoneNumber: requests[index]['sentByPhoneNumber'] ?? 'Not available',
+                          phoneNumber: requests[index]['phoneNumber'] ?? 'Not available',
                           date: "",
                           type: requests[index]['type'],
                           tripId: requests[index]['tripId'],
@@ -145,7 +174,6 @@ class _RequestsState extends State<Requests> {
                           destination: "",
                           time: "",
                           modeOfTransport: "",
-                          phoneNumber: "",
                           sentBy: requests[index]['sentBy'],status: requests[index]['status']
                       );
                         return FutureBuilder<Request>(
@@ -195,13 +223,12 @@ class _RequestsState extends State<Requests> {
     String destination = tripSnapshot['destination'];
     String time = tripSnapshot['time'];
     String modeOfTransport = tripSnapshot['modeOfTransport'];
-    DocumentReference userPhoneNumberDoc = FirebaseFirestore.instance.collection('PhoneNumbers').doc(tripSnapshot['createdBy']);
-    String phoneNumber = await _getPhoneNumber(userPhoneNumberDoc);
+    String phoneNumber = request.phoneNumber;
     return Request(
       username: username,
       message: request.message,
       sentByUsername: request.sentByUsername,
-      sentByPhoneNumber: request.sentByPhoneNumber,
+      phoneNumber: request.phoneNumber,
       description: tripSnapshot['desc'],
       date: tripSnapshot['date'],
       status: request.status,
@@ -211,7 +238,6 @@ class _RequestsState extends State<Requests> {
       destination: destination,
       time: time,
       modeOfTransport: modeOfTransport,
-      phoneNumber: phoneNumber,
       sentBy: request.sentBy,
     );
   }
@@ -219,11 +245,6 @@ class _RequestsState extends State<Requests> {
   Future<String> _getUsername(DocumentReference userRef) async {
     DocumentSnapshot userSnapshot = await userRef.get();
     return userSnapshot['username'];
-  }
-
-  Future<String> _getPhoneNumber(DocumentReference phoneRef) async {
-    DocumentSnapshot snapshot = await phoneRef.get();
-    return snapshot['phoneNumber'];
   }
 
   Future<void> _updateRequestStatus(Request request, String newStatus) async {
@@ -243,23 +264,11 @@ class _RequestsState extends State<Requests> {
           print('Document does not exist');
         }
       });
-      await FirebaseFirestore.instance.collection('Requests').doc(request.sentBy).get().then((DocumentSnapshot documentSnapshot) {
-        if (documentSnapshot.exists) {
-          List<dynamic> requests = documentSnapshot['requests'];
 
-          for (int i = 0; i < requests.length; i++) {
-            if (requests[i]['tripId'] == request.tripId) {
-              requests[i]['status'] = newStatus;
-              documentSnapshot.reference.update({'requests': requests});
-              break;
-            }
-          }
-        } else {
-          print('Document does not exist');
-        }
-      });
-
-      if (newStatus == 'Accepted' || newStatus == 'Rejected') {
+      if (newStatus == 'Accepted') {
+        await FirebaseFirestore.instance.collection('Requests').doc(request.sentBy).update({
+          request.tripId: Profile.phoneNumber
+        });
         String sentBy = request.sentBy;
         String sentByUsername = request.sentByUsername;
         String space= " ";
@@ -269,6 +278,11 @@ class _RequestsState extends State<Requests> {
               .doc(request.tripId)
               .update({'companion': FieldValue.arrayUnion(['$sentByUsername $sentBy'])});
         }
+      }
+      else {
+        await FirebaseFirestore.instance.collection('Requests').doc(request.sentBy).update({
+          request.tripId: -1
+        });
       }
     } catch (e) {
       print('Error updating request status: $e');
@@ -281,7 +295,6 @@ class _RequestsState extends State<Requests> {
       request: request,
       onAccept: () {
         _updateRequestStatus(request, 'Accepted');
-        print("request accepted");
       },
       onReject: () {
         _updateRequestStatus(request, 'Rejected');
@@ -296,7 +309,6 @@ class _RequestsState extends State<Requests> {
     newRequests.remove(request);
     if (newRequests.length < oldRequests.length) {
       FirebaseFirestore.instance.collection('Requests').doc(userEmail).update({'requests': newRequests});
-
     }
     isExpanded.removeLast();
     setState(() {});

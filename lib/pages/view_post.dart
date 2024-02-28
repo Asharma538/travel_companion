@@ -24,6 +24,28 @@ class _ViewPostState extends State<ViewPost> {
   var sentByUsername = Profile.userData['username'];
   var sentByPhoneNumber = Profile.phoneNumber;
 
+  showNormalSnackBar(BuildContext context,String snackBarText) {
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            dismissDirection: DismissDirection.horizontal,
+            margin: const EdgeInsets.all(5),
+            behavior: SnackBarBehavior.floating,
+            content: Text(snackBarText)
+        )
+    );
+  }
+  showErrorSnackBar(BuildContext context,String snackBarText){
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            dismissDirection: DismissDirection.horizontal,
+            margin: const EdgeInsets.all(5),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: errorRed,
+            content: Text(snackBarText)
+        )
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -35,63 +57,38 @@ class _ViewPostState extends State<ViewPost> {
   }
 
   void storeRequest() async {
-    String? userEmail = FirebaseAuth.instance.currentUser!.email;
-    var firestore = FirebaseFirestore.instance;
+    try{
+      String? userEmail = FirebaseAuth.instance.currentUser!.email;
+      var firestore = FirebaseFirestore.instance;
 
-    DocumentSnapshot<Map<String, dynamic>> myRequestSnapshot = await firestore.collection('Requests').doc(userEmail).get();
-    DocumentSnapshot<Map<String, dynamic>> ownerRequestSnapshot = await firestore.collection('Requests').doc(post['createdBy']).get();
+      Map<String, dynamic> myRequestInfo = {
+        'tripId': post['id'],
+        'status': 'Pending',
+        'type': 'Sent',
+        'sentBy': userEmail,
+        'sentTo': post['createdBy'],
+        'Message': message,
+        'sentByUsername': sentByUsername,
+      };
+      Map<String, dynamic> ownerRequestInfo = {
+        'tripId': post['id'],
+        'status': 'Pending',
+        'type': 'Received',
+        'sentBy': userEmail,
+        'sentTo': post['createdBy'],
+        'Message': message,
+        'sentByUsername': sentByUsername,
+        'phoneNumber': sentByPhoneNumber
+      };
 
-    Map<String, dynamic> myRequestInfo = {
-      'tripId': post['id'],
-      'status': 'Pending',
-      'type': 'Sent',
-      'sentBy': userEmail,
-      'sentTo': post['createdBy'],
-      'Message': message,
-      'sentByUsername': sentByUsername,
-      'sentByPhoneNumber': sentByPhoneNumber
-    };
-    Map<String, dynamic> ownerRequestInfo = {
-      'tripId': post['id'],
-      'status': 'Pending',
-      'type': 'Received',
-      'sentBy': userEmail,
-      'sentTo': post['createdBy'],
-      'Message': message,
-      'sentByUsername': sentByUsername,
-      'sentByPhoneNumber': sentByPhoneNumber
-    };
-
-    if (myRequestSnapshot.exists) {
-      List<dynamic> myExistingRequests = myRequestSnapshot.data()?['requests'] ?? [];
-      for(var i=0;i<myExistingRequests.length;i++){
-        if (myExistingRequests[i]['tripId']==myRequestInfo['tripId']){
-          return;
-        }
-      }
-      myExistingRequests.add(myRequestInfo);
       await firestore.collection('Requests').doc(userEmail).update({
-        'requests': myExistingRequests,
+        'requests': FieldValue.arrayUnion([myRequestInfo]),
       });
-    }
-    else {
-      await firestore.collection('Requests').doc(userEmail).set({
-        'requests': [myRequestInfo],
-      });
-    }
-
-    if (ownerRequestSnapshot.exists) {
-      List<dynamic> ownerExistingRequests = ownerRequestSnapshot.data()?['requests'] ?? [];
-      ownerExistingRequests.add(ownerRequestInfo);
-
       await firestore.collection('Requests').doc(post['createdBy']).update({
-        'requests': ownerExistingRequests,
+        'requests': FieldValue.arrayUnion([ownerRequestInfo]),
       });
-    }
-    else {
-      await firestore.collection('Requests').doc(post['createdBy']).set({
-        'requests': [ownerRequestInfo],
-      });
+    } catch (e) {
+      showErrorSnackBar(context, e.toString());
     }
   }
 

@@ -147,7 +147,7 @@ class _RequestTileState extends State<RequestTile> {
                   ]
                   else if (widget.request.status == 'Accepted') ...[
                     Text(
-                      Profile.userData['username'] != widget.request.username ? widget.request.phoneNumber : widget.request.sentByPhoneNumber,
+                      widget.request.phoneNumber,
                       style: const TextStyle(fontSize: 16),
                     ),
                   ],
