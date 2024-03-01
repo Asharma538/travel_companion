@@ -104,7 +104,9 @@ class LoginPage extends StatelessWidget {
               children: [
                 const Text('Password'),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    showNormalSnackBar(context, "Contact Devlup Labs");
+                  },
                   child: const Text(
                     "Forgot password?",
                     style: TextStyle(color: linkTextColor),
