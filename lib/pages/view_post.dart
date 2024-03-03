@@ -219,7 +219,7 @@ class _ViewPostState extends State<ViewPost> {
             Padding(
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 2),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                
                 children: [
                   const Text(
                     "From:",
@@ -229,6 +229,7 @@ class _ViewPostState extends State<ViewPost> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  SizedBox(width: 20,),
                   Text(
                     "${post['source'] ?? 'Not available'}",
                     style: const TextStyle(
@@ -240,11 +241,10 @@ class _ViewPostState extends State<ViewPost> {
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            
             Padding(
               padding: const EdgeInsets.fromLTRB(10, 2, 10, 0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
                     "To:",
@@ -254,6 +254,7 @@ class _ViewPostState extends State<ViewPost> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  SizedBox(width: 40),
                   Text(
                     "${post['destination'] ?? 'Not available'}",
                     style: const TextStyle(
@@ -364,7 +365,7 @@ class _ViewPostState extends State<ViewPost> {
             Padding(
               padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
               child: Text(
-                post['desc'] != null ? "Description: ${post['desc']}" : "Description: Not Specified",
+                post['desc'] != null ? "${post['desc']}" : "Description: Not Specified",
                 style: const TextStyle(
                   color: primaryTextColor,
                   fontSize: 14,
