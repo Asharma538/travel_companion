@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 width: MediaQuery.of(context).size.width - 100,
               )),
               const Text(
-                '<Caption>',
+                'Discover New Buddies',
                 style: TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,

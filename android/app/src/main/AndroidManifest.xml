@@ -2,7 +2,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:label="travel_companiion"
+        android:label="Travel Companion"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
