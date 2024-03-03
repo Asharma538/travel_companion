@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:travel_companion/pages/authentication/login.dart';
 import 'package:travel_companion/pages/home.dart';
 import 'package:travel_companion/pages/view_post.dart';
+import 'package:travel_companion/utils/colors.dart';
 import '../components/post.dart';
 import '../main.dart';
+import '../pages/about_us.dart';
 
 class AboutTextField extends StatefulWidget {
   final String initialText;
@@ -249,7 +251,19 @@ class _ProfileState extends State<Profile> {
                               );
                             })
                       ]
-                    ]
+                    ],
+    
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => about_us()),
+                          );
+                        },
+                        child: Text('About Us',style: TextStyle(color: linkTextColor),),
+                        ),
+                    )
                   ],
                 ),
               );
@@ -313,6 +327,7 @@ class _ProfileState extends State<Profile> {
                   },
                 ),
               ),
+              
             ],
           ),
         );
