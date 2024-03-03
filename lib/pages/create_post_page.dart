@@ -185,27 +185,17 @@ class _CreatePostPageState extends State<CreatePostPage> {
                 ),
               ),
             ),
-            TextField(
-              style: const TextStyle(
-                color: primaryTextColor,
-              ),
-              maxLines: 2,
-              onChanged: (val){
-                description = val;
-              },
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: textFieldBackgroundColor,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide.none,
-                ),
-                hintText: "Ex: Fight name or no./Train name or no.",
-                hintStyle: const TextStyle(
-                  color: placeholderTextColor,
-                ),
-              ),
-            ),
+            _buildTextField("", description, "Ex: Fight name or no./Train name or no.", (value) {
+              description = value;
+            },
+            maxLines: 2),
+            // _buildTextField(
+            //   "DESCRIPTION", // Label
+            //   "",             // Initial text (should be changed to description)
+            //   "Ex: Fight name or no./Train name or no.", // Hint
+            //   (value) { description = value; }, // OnChanged function
+            //   maxLines: 2, // Max lines (optional)
+            // ),
             const SizedBox(height: 15),
             const Expanded(child: SizedBox()),
             Center(
