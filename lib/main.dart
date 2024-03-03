@@ -12,6 +12,7 @@ import 'pages/home.dart';
 import 'pages/create_post_page.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
+import './pages/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,23 +29,29 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     FirebaseAuth.instance.currentUser?.reload();
-    String? userEmail = FirebaseAuth.instance.currentUser?.email; 
+    String? userEmail = FirebaseAuth.instance.currentUser?.email;
 
-    if (userEmail!=null && userEmail.isNotEmpty){
-      DocumentReference userRef = FirebaseFirestore.instance.collection('Users').doc(userEmail);
+    if (userEmail != null && userEmail.isNotEmpty) {
+      DocumentReference userRef =
+          FirebaseFirestore.instance.collection('Users').doc(userEmail);
       Profile.fetchUser(userRef);
     }
-    if (FirebaseAuth.instance.currentUser!=null && FirebaseAuth.instance.currentUser!.emailVerified){
-      return const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Base(),
-      );
-    } else {
-      return const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: SignupPage(),
-      );
-    }
+
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen(),
+    );
+    // if (FirebaseAuth.instance.currentUser!=null && FirebaseAuth.instance.currentUser!.emailVerified){
+    //   return const MaterialApp(
+    //     debugShowCheckedModeBanner: false,
+    //     home: Base(),
+    //   );
+    // } else {
+    //   return const MaterialApp(
+    //     debugShowCheckedModeBanner: false,
+    //     home: SignupPage(),
+    //   );
+    // }
   }
 }
 
