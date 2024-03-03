@@ -53,6 +53,8 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                   ? "${widget.selectedTime!.hour}:${widget.selectedTime!.minute}"
                   : "";
 
+              print(Homepage.posts);
+
               return Padding(
                 padding: const EdgeInsets.all(10),
                 child: Column(
@@ -60,31 +62,26 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                   children: [
                     _appBarBack(context),
                     for (var i = 0; i < Homepage.posts.length; i++) ...[
-                      if ((widget.fromLocation.toLowerCase() ==
-                                  Homepage.posts[i]['source']
+                      if ((Homepage.posts[i]['source']
                                       .toString()
-                                      .toLowerCase() ||
+                                      .toLowerCase().contains(widget.fromLocation.toLowerCase()) ||
                               widget.fromLocation == "") &&
-                          (widget.toLocation.toLowerCase() ==
-                                  Homepage.posts[i]['destination']
+                          (Homepage.posts[i]['destination']
                                       .toString()
-                                      .toLowerCase() ||
+                                      .toLowerCase().contains(widget.toLocation.toLowerCase()) ||
                               widget.toLocation == "") &&
-                          (formattedDate.toLowerCase() ==
-                                  Homepage.posts[i]['date']
+                          (Homepage.posts[i]['date']
                                       .toString()
-                                      .toLowerCase() ||
+                                      .toLowerCase().contains(formattedDate.toLowerCase()) ||
                               formattedDate == "") &&
-                          (formattedTime.toLowerCase() ==
-                                  Homepage.posts[i]['time']
+                          (Homepage.posts[i]['time']
                                       .toString()
-                                      .toLowerCase() ||
+                                      .toLowerCase().contains(formattedTime.toLowerCase()) ||
                               formattedTime == "") &&
-                          (widget.modeOfTransport.toLowerCase() ==
-                                  Homepage.posts[i]['modeOfTransport']
+                          (Homepage.posts[i]['modeOfTransport']
                                       .toString()
-                                      .toLowerCase() ||
-                              widget.modeOfTransport == "")) ...[
+                                      .toLowerCase().contains(widget.modeOfTransport.toLowerCase()) ||
+                              widget.modeOfTransport == "Flexible")) ...[
                         PostTile(
                             tripId: Homepage.posts[i]['id'],
                             userName: Homepage.posts[i]['username'],

@@ -83,9 +83,9 @@ class _CreatePostPageState extends State<CreatePostPage> {
       int day = int.parse(dateParts[2]);
       int month = int.parse(dateParts[1]);
       int year = int.parse(dateParts[0]);
-      selectedDate = DateTime(year, month, day);
+      selectedDate = widget.initialPost!['date']==""?null: DateTime(year, month, day);
 
-      selectedTime = TimeOfDay(
+      selectedTime = widget.initialPost!['time']==""?null:TimeOfDay(
         hour: int.parse(widget.initialPost!['time'].split(':')[0]),
         minute: int.parse(widget.initialPost!['time'].split(':')[1]),
       );
@@ -342,6 +342,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
     if (fromLocation.isEmpty || toLocation.isEmpty) {
       print("Please fill all the required fields"); return;
     }
+
+    print(selectedTime);
 
     String userEmail = Profile.userData['id'];
     String formattedDate =
