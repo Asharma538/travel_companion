@@ -21,15 +21,17 @@ class Request {
   final String sentByUsername;
   final String phoneNumber;
   final String message;
+  final String sentTo;
 
   Request({
+    required this.sentTo,
     required this.sentByUsername,
     required this.message,
     required this.phoneNumber,
     required this.username,
     this.description,
     required this.date,
-    this.status,
+    required this.status,
     required this.type,
     required this.tripId,
     required this.source,
@@ -48,12 +50,13 @@ class Requests extends StatefulWidget {
 }
 
 class _RequestsState extends State<Requests> {
-  String dropdownValue = 'All Requests';
-  String userEmail = FirebaseAuth.instance.currentUser!.email ?? "";
-  List<dynamic> requests = [];
-  Map<String,dynamic> updations = {};
+  late String dropdownValue;
+  late String userEmail;
+  late List<dynamic> requests;
+  late Map<String,dynamic> updations;
 
   void updateRequests() {
+
     List<dynamic>finalRequests=[];
     for (var i = 0; i < requests.length; i++) {
       if (updations.containsKey(requests[i]['tripId'])) {
@@ -70,11 +73,25 @@ class _RequestsState extends State<Requests> {
           finalRequests.add(requests[i]);
         }
       }
+      else{
+        finalRequests.add(requests[i]);
+      }
     }
-    //if the request array remains the same the update is unnecessary
-    FirebaseFirestore.instance.collection('Requests').doc(userEmail).set({
-      'requests': finalRequests
-    });
+    print(finalRequests);
+    if (finalRequests != requests){
+      FirebaseFirestore.instance.collection('Requests').doc(userEmail).set({
+        'requests': finalRequests
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    userEmail = FirebaseAuth.instance.currentUser!.email ?? "";
+    updations = {};
+    requests = [];
+    dropdownValue = 'All Requests';
+    super.initState();
   }
 
   @override
@@ -142,9 +159,11 @@ class _RequestsState extends State<Requests> {
                     }
                     if (snapshot.data!.exists) {
                       requests = List.from(snapshot.data!.get('requests'));
-                      print(requests);
                       updations = Map<String, dynamic>.from(snapshot.data!.data() ?? {});
+                      print(160);
+                      print(requests);
                       updateRequests();
+                      print('updated requests - 163');
                     }
                     if (requests.isEmpty) {
                       return const Center(child: Text('No Requests found'));
@@ -166,6 +185,7 @@ class _RequestsState extends State<Requests> {
                           modeOfTransport: "",
                           sentBy: requests[index]['sentBy'],
                           status: requests[index]['status'],
+                          sentTo: requests[index]['sentTo'],
                         );
                         return FutureBuilder<Request>(
                           future: _getRequestWithData(req),
@@ -229,6 +249,7 @@ class _RequestsState extends State<Requests> {
         time: time,
         modeOfTransport: modeOfTransport,
         sentBy: request.sentBy,
+        sentTo: request.sentTo
       );
     } catch (e) {
       print('Error fetching trip data for tripId ${request.tripId}: $e');
@@ -253,7 +274,8 @@ class _RequestsState extends State<Requests> {
               break;
             }
           }
-        } else {
+        }
+        else {
           print('Document does not exist');
         }
       });
@@ -264,7 +286,6 @@ class _RequestsState extends State<Requests> {
         });
         String sentBy = request.sentBy;
         String sentByUsername = request.sentByUsername;
-        String space= " ";
         if (sentBy.isNotEmpty) {
           await FirebaseFirestore.instance
               .collection('Trips')
@@ -295,9 +316,10 @@ class _RequestsState extends State<Requests> {
       },
       onDelete: () {
         print('withdrawing');
-        FirebaseFirestore.instance.collection('Requests').doc(request.sentBy).update({
+        FirebaseFirestore.instance.collection('Requests').doc(request.sentTo).update({
           request.tripId: request.sentBy
         });
+        _removeRequest(request);
       },
     );
   }
