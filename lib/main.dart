@@ -41,17 +41,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: SplashScreen(),
     );
-    // if (FirebaseAuth.instance.currentUser!=null && FirebaseAuth.instance.currentUser!.emailVerified){
-    //   return const MaterialApp(
-    //     debugShowCheckedModeBanner: false,
-    //     home: Base(),
-    //   );
-    // } else {
-    //   return const MaterialApp(
-    //     debugShowCheckedModeBanner: false,
-    //     home: SignupPage(),
-    //   );
-    // }
   }
 }
 
