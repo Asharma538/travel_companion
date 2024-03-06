@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigate() {
-    Timer(Duration(milliseconds: 15000), () {
+    Timer(Duration(milliseconds: 1500), () {
       if (FirebaseAuth.instance.currentUser != null &&
           FirebaseAuth.instance.currentUser!.emailVerified) {
         Navigator.pushReplacement(
