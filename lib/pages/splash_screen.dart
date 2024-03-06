@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigate() {
-    Timer(Duration(milliseconds: 1500), () {
+    Timer(Duration(milliseconds: 15000), () {
       if (FirebaseAuth.instance.currentUser != null &&
           FirebaseAuth.instance.currentUser!.emailVerified) {
         Navigator.pushReplacement(
@@ -45,13 +45,17 @@ class _SplashScreenState extends State<SplashScreen> {
               Container(
                   child: Image.network(
                 "https://firebasestorage.googleapis.com/v0/b/travel-companion-374f9.appspot.com/o/Logo.jpeg?alt=media&token=ad36063c-7e43-4ce4-ba50-fc36c5768747",
-                width: MediaQuery.of(context).size.width - 100,
+                width: MediaQuery.of(context).size.width,
               )),
-              const Text(
-                'Discover New Buddies',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
+              Container(
+                width: MediaQuery.of(context).size.width - 100,
+                child: const Text(
+                  'Discover New Buddies !',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               )
             ],

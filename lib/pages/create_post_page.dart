@@ -44,8 +44,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
   String transportationMode = 'Flexible';
   String description = '';
 
-  void _showDatePicker(BuildContext context,
-      Function(DateTime) onDateSelected) {
+  void _showDatePicker(
+      BuildContext context, Function(DateTime) onDateSelected) {
     showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -78,17 +78,22 @@ class _CreatePostPageState extends State<CreatePostPage> {
       toLocation = widget.initialPost!['destination'] ?? '';
       transportationMode = widget.initialPost!['modeOfTransport'] ?? '';
       description = widget.initialPost!['desc'] ?? '';
-      String dateString = widget.initialPost!['date'] ?? '';
-      List<String> dateParts = dateString.split('-');
-      int day = int.parse(dateParts[2]);
-      int month = int.parse(dateParts[1]);
-      int year = int.parse(dateParts[0]);
-      selectedDate = widget.initialPost!['date']==""?null: DateTime(year, month, day);
-
-      selectedTime = widget.initialPost!['time']==""?null:TimeOfDay(
-        hour: int.parse(widget.initialPost!['time'].split(':')[0]),
-        minute: int.parse(widget.initialPost!['time'].split(':')[1]),
-      );
+      if (widget.initialPost!['date'] != "") {
+        String dateString = widget.initialPost!['date'] ?? '';
+        List<String> dateParts = dateString.split('-');
+        int day = int.parse(dateParts[2]);
+        int month = int.parse(dateParts[1]);
+        int year = int.parse(dateParts[0]);
+        selectedDate = DateTime(year, month, day);
+      } else {
+        selectedDate = null;
+      }
+      selectedTime = widget.initialPost!['time'] == ""
+          ? null
+          : TimeOfDay(
+              hour: int.parse(widget.initialPost!['time'].split(':')[0]),
+              minute: int.parse(widget.initialPost!['time'].split(':')[1]),
+            );
 
       setState(() {});
     }
@@ -114,11 +119,13 @@ class _CreatePostPageState extends State<CreatePostPage> {
         title: widget.initialPost != null
             ? const Text(
                 "Edit Post",
-                style: TextStyle(fontWeight: FontWeight.w500,color: secondaryTextColor),
+                style: TextStyle(
+                    fontWeight: FontWeight.w500, color: secondaryTextColor),
               )
             : const Text(
                 "New Post",
-                style: TextStyle(fontWeight: FontWeight.w500,color: secondaryTextColor),
+                style: TextStyle(
+                    fontWeight: FontWeight.w500, color: secondaryTextColor),
               ),
       ),
       body: Container(
@@ -126,11 +133,11 @@ class _CreatePostPageState extends State<CreatePostPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildTextField("FROM", fromLocation, "Ex: Jodhpur", (value) {
+            _buildTextField("FROM *", fromLocation, "Ex: Jodhpur", (value) {
               fromLocation = value;
             }),
             const SizedBox(height: 25),
-            _buildTextField("TO", toLocation, "Ex: Airport", (value) {
+            _buildTextField("TO *", toLocation, "Ex: Airport", (value) {
               toLocation = value;
             }),
             const SizedBox(height: 35),
@@ -151,11 +158,16 @@ class _CreatePostPageState extends State<CreatePostPage> {
                 ],
               ),
               child: DropdownButton(
-                underline: const SizedBox(height: 0,),
+                underline: const SizedBox(
+                  height: 0,
+                ),
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 value: transportationMode,
                 isExpanded: true,
-                icon: const Icon(Icons.keyboard_arrow_down,color: secondaryTextColor,),
+                icon: const Icon(
+                  Icons.keyboard_arrow_down,
+                  color: secondaryTextColor,
+                ),
                 items:
                     ['Flexible', 'Flight', 'Train', 'Taxi', 'Bus'].map((item) {
                   return DropdownMenuItem(
@@ -185,10 +197,11 @@ class _CreatePostPageState extends State<CreatePostPage> {
                 ),
               ),
             ),
-            _buildTextField("", description, "Ex: Fight name or no./Train name or no.", (value) {
+            _buildTextField(
+                "", description, "Ex: Fight name or no./Train name or no.",
+                (value) {
               description = value;
-            },
-            maxLines: 2),
+            }, maxLines: 2),
             // _buildTextField(
             //   "DESCRIPTION", // Label
             //   "",             // Initial text (should be changed to description)
@@ -200,32 +213,31 @@ class _CreatePostPageState extends State<CreatePostPage> {
             const Expanded(child: SizedBox()),
             Center(
               child: TextButton(
-                onPressed: () async {
-                  try {
-                    await createNewTrip(context);
-                  } catch (e) {
-                    print("Error creating post : $e");
-                  }
-                },
-                style: TextButton.styleFrom(
-                  backgroundColor: complementaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-                child: Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.only(top: 5,bottom: 5),
-                  width: 130,
-                  child: Text(
-                    widget.initialPost==null? "Create Post" : "Edit Post",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
+                  onPressed: () async {
+                    try {
+                      await createNewTrip(context);
+                    } catch (e) {
+                      print("Error creating post : $e");
+                    }
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: complementaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.0),
                     ),
                   ),
-                )
-              ),
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.only(top: 5, bottom: 5),
+                    width: 130,
+                    child: Text(
+                      widget.initialPost == null ? "Create Post" : "Edit Post",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
+                    ),
+                  )),
             ),
           ],
         ),
@@ -293,7 +305,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
     );
   }
 
-  Widget _buildDateTimeButton(String label, IconData icon, VoidCallback onPressed) {
+  Widget _buildDateTimeButton(
+      String label, IconData icon, VoidCallback onPressed) {
     return MaterialButton(
       padding: const EdgeInsets.fromLTRB(0, 18, 0, 18),
       minWidth: MediaQuery.of(context).size.width * 0.4,
@@ -330,7 +343,11 @@ class _CreatePostPageState extends State<CreatePostPage> {
 
   Future<void> createNewTrip(BuildContext context) async {
     if (fromLocation.isEmpty || toLocation.isEmpty) {
-      print("Please fill all the required fields"); return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Please fill all the fields marked with *')));
+
+      print("Please fill all the required fields");
+      return;
     }
 
     print(selectedTime);
@@ -339,7 +356,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
     String formattedDate =
         selectedDate != null ? selectedDate.toString().substring(0, 10) : "";
     String formattedTime = selectedTime != null
-        ? "${selectedTime!.hour}:${selectedTime!.minute}" : "";
+        ? "${selectedTime!.hour}:${selectedTime!.minute}"
+        : "";
 
     Trip newTrip = Trip(
       userRef: FirebaseFirestore.instance.collection('Users').doc(userEmail),
@@ -369,14 +387,11 @@ class _CreatePostPageState extends State<CreatePostPage> {
         });
         Navigator.pushAndRemoveUntil(
             context,
-
             MaterialPageRoute(builder: (context) => const Base()),
-
             (route) => false);
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text('Post Updated')));
-      }
-      else {
+      } else {
         await FirebaseFirestore.instance.collection('Trips').add({
           'userRef': newTrip.userRef,
           'date': newTrip.date,
