@@ -61,6 +61,9 @@ class _ViewPostState extends State<ViewPost> {
       String? userEmail = FirebaseAuth.instance.currentUser!.email;
       var firestore = FirebaseFirestore.instance;
 
+      DocumentSnapshot<Map<String, dynamic>> myRequestSnapshot = await firestore.collection('Requests').doc(userEmail).get();
+
+
       Map<String, dynamic> myRequestInfo = {
         'tripId': post['id'],
         'status': 'Pending',
@@ -81,12 +84,25 @@ class _ViewPostState extends State<ViewPost> {
         'phoneNumber': sentByPhoneNumber
       };
 
-      await firestore.collection('Requests').doc(userEmail).update({
-        'requests': FieldValue.arrayUnion([myRequestInfo]),
-      });
-      await firestore.collection('Requests').doc(post['createdBy']).update({
-        'requests': FieldValue.arrayUnion([ownerRequestInfo]),
-      });
+      if(myRequestSnapshot.exists) {
+        List<dynamic> myExistingRequests = myRequestSnapshot.data()?['requests'] ?? [];
+        for (var i = 0; i < myExistingRequests.length; i++) {//checking if the request exists
+          if (myExistingRequests[i]['tripId'] == myRequestInfo['tripId']) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Request already exists')));
+            return;
+          }
+        }
+        await firestore.collection('Requests').doc(userEmail).update({
+          'requests': FieldValue.arrayUnion([myRequestInfo]),
+        });
+        await firestore.collection('Requests').doc(post['createdBy']).update({
+          'requests': FieldValue.arrayUnion([ownerRequestInfo]),
+        });
+
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Request sent')));
+      }
     } catch (e) {
       showErrorSnackBar(context, e.toString());
     }
@@ -426,9 +442,6 @@ class _ViewPostState extends State<ViewPost> {
                             onPressed: () async {
                               message = messageController.text;
                               storeRequest();
-                              Navigator.of(context).pop();
-                              Navigator.of(context).pop();
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Request sent')));
                             },
                             child: const Text('Submit'),
                           )

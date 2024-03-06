@@ -102,7 +102,8 @@ class _RequestTileState extends State<RequestTile> {
                           ),
                         ],
                       ),
-                    ] else ...[
+                    ]
+                    else ...[
                       ElevatedButton(
                         onPressed: () {
                           showDialog(
@@ -203,7 +204,8 @@ class _RequestTileState extends State<RequestTile> {
                         ),
                       ],
                     ),
-                  ] else ...[
+                  ]
+                  else ...[
                     const SizedBox(height:2), // Reduced the height of the show more button
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
