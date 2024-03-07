@@ -33,7 +33,6 @@ class PostTile extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.fromLTRB(10, 12, 10, 8),
         decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFF000000), width: 1.5),
             borderRadius: BorderRadius.circular(12),
             color: cardBackgroundColor,
             boxShadow: const [
@@ -96,12 +95,12 @@ class PostTile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Date: $date',
+                    'Date: ${date==""? 'Not Decided' : date}',
                     style: const TextStyle(
                         fontSize: 13.5, fontWeight: FontWeight.w500),
                   ),
                   Text(
-                    'Time: $time',
+                    'Time: ${time==""? 'Not Decided' : time}',
                     style: const TextStyle(
                         fontSize: 13.5, fontWeight: FontWeight.w500),
                   ),

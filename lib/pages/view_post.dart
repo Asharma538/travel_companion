@@ -117,7 +117,7 @@ class _ViewPostState extends State<ViewPost> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Post Deleted')));
       Navigator.pop(context, true);
     } catch (e) {
-      print("Error deleting post: $e");
+      showErrorSnackBar(context,"Error deleting post: ${e.toString()}");
     }
   }
 

@@ -70,6 +70,28 @@ class _CreatePostPageState extends State<CreatePostPage> {
     }
   }
 
+  showNormalSnackBar(BuildContext context,String snackBarText) {
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            dismissDirection: DismissDirection.horizontal,
+            margin: const EdgeInsets.all(5),
+            behavior: SnackBarBehavior.floating,
+            content: Text(snackBarText)
+        )
+    );
+  }
+  showErrorSnackBar(BuildContext context,String snackBarText){
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            dismissDirection: DismissDirection.horizontal,
+            margin: const EdgeInsets.all(5),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: errorRed,
+            content: Text(snackBarText)
+        )
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -94,7 +116,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
               hour: int.parse(widget.initialPost!['time'].split(':')[0]),
               minute: int.parse(widget.initialPost!['time'].split(':')[1]),
             );
-
       setState(() {});
     }
   }
@@ -102,7 +123,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      // resizeToAvoidBottomInset: true,
       backgroundColor: primaryColor,
       appBar: AppBar(
         backgroundColor: secondaryColor,
@@ -129,95 +150,78 @@ class _CreatePostPageState extends State<CreatePostPage> {
               ),
       ),
       body: Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildTextField("FROM *", fromLocation, "Ex: Jodhpur", (value) {
-              fromLocation = value;
-            }),
-            const SizedBox(height: 25),
-            _buildTextField("TO *", toLocation, "Ex: Airport", (value) {
-              toLocation = value;
-            }),
-            const SizedBox(height: 35),
-            _buildDateTimeRow(),
-            const SizedBox(height: 35),
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-              decoration: BoxDecoration(
-                color: secondaryColor,
-                borderRadius: BorderRadius.circular(8.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: DropdownButton(
-                underline: const SizedBox(
-                  height: 0,
-                ),
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                value: transportationMode,
-                isExpanded: true,
-                icon: const Icon(
-                  Icons.keyboard_arrow_down,
-                  color: secondaryTextColor,
-                ),
-                items:
-                    ['Flexible', 'Flight', 'Train', 'Taxi', 'Bus'].map((item) {
-                  return DropdownMenuItem(
-                    value: item,
-                    child: Text(
-                      item,
-                      style: const TextStyle(color: Colors.white),
+        height: MediaQuery.of(context).size.height,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              _buildTextField("FROM *", fromLocation, "Ex: Jodhpur", (value) {
+                fromLocation = value;
+              },1),
+              const SizedBox(height: 25),
+              _buildTextField("TO *", toLocation, "Ex: Airport", (value) {
+                toLocation = value;
+              },1),
+              const SizedBox(height: 35),
+              _buildDateTimeRow(),
+              const SizedBox(height: 35),
+              Container(
+                padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                decoration: BoxDecoration(
+                  color: secondaryColor,
+                  borderRadius: BorderRadius.circular(8.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
                     ),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    transportationMode = newValue!;
-                  });
-                },
-                dropdownColor: secondaryColor,
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.fromLTRB(0, 20, 0, 5),
-              child: const Text(
-                "DESCRIPTION",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 15.0,
-                  fontWeight: FontWeight.bold,
+                  ],
+                ),
+                child: DropdownButton(
+                  underline: const SizedBox(
+                    height: 0,
+                  ),
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  value: transportationMode,
+                  isExpanded: true,
+                  icon: const Icon(
+                    Icons.keyboard_arrow_down,
+                    color: secondaryTextColor,
+                  ),
+                  items:
+                      ['Flexible', 'Flight', 'Train', 'Taxi', 'Bus'].map((item) {
+                    return DropdownMenuItem(
+                      value: item,
+                      child: Text(
+                        item,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      transportationMode = newValue!;
+                    });
+                  },
+                  dropdownColor: secondaryColor,
                 ),
               ),
-            ),
-            _buildTextField(
-                "", description, "Ex: Fight name or no./Train name or no.",
-                (value) {
-              description = value;
-            }, maxLines: 2),
-            // _buildTextField(
-            //   "DESCRIPTION", // Label
-            //   "",             // Initial text (should be changed to description)
-            //   "Ex: Fight name or no./Train name or no.", // Hint
-            //   (value) { description = value; }, // OnChanged function
-            //   maxLines: 2, // Max lines (optional)
-            // ),
-            const SizedBox(height: 15),
-            const Expanded(child: SizedBox()),
-            Center(
-              child: TextButton(
+              SizedBox(height: 30,),
+              _buildTextField(
+                  "DESCRIPTION", description, "Ex: Fight name or no./Train name or no.",
+                  (value) {
+                description = value;
+              },2),
+              const SizedBox(height: 70),
+              Center(
+                child: TextButton(
                   onPressed: () async {
                     try {
                       await createNewTrip(context);
                     } catch (e) {
-                      print("Error creating post : $e");
+                      showErrorSnackBar(context,"Error creating post : $e");
                     }
                   },
                   style: TextButton.styleFrom(
@@ -231,23 +235,23 @@ class _CreatePostPageState extends State<CreatePostPage> {
                     padding: const EdgeInsets.only(top: 5, bottom: 5),
                     width: 130,
                     child: Text(
-                      widget.initialPost == null ? "Create Post" : "Edit Post",
+                      widget.initialPost == null ? "CREATE" : "Edit Post",
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                       ),
                     ),
-                  )),
-            ),
-          ],
+                  )
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildTextField(
-      String label, String initialText, String hint, Function(String) onChanged,
-      {int? maxLines}) {
+  Widget _buildTextField(String label, String initialText, String hint, Function(String) onChanged, int? maxLines) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -260,6 +264,9 @@ class _CreatePostPageState extends State<CreatePostPage> {
           ),
         ),
         TextField(
+          onTapOutside: (event){
+            FocusNode().unfocus();
+          },
           controller: TextEditingController()..text = initialText,
           onChanged: onChanged,
           style: const TextStyle(
@@ -344,17 +351,13 @@ class _CreatePostPageState extends State<CreatePostPage> {
   Future<void> createNewTrip(BuildContext context) async {
     if (fromLocation.isEmpty || toLocation.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Please fill all the fields marked with *')));
-
+          content: Text('Please fill all the required fields')));
       print("Please fill all the required fields");
       return;
     }
 
-    print(selectedTime);
-
     String userEmail = Profile.userData['id'];
-    String formattedDate =
-        selectedDate != null ? selectedDate.toString().substring(0, 10) : "";
+    String formattedDate = selectedDate != null ? selectedDate.toString().substring(0, 10) : "";
     String formattedTime = selectedTime != null
         ? "${selectedTime!.hour}:${selectedTime!.minute}"
         : "";
