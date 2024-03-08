@@ -121,7 +121,7 @@ class _RequestTileState extends State<RequestTile> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    widget.onDelete?.call();
+                                    widget.onDelete!();
                                     Navigator.pop(context);
                                   },
                                   child: const Text('Confirm'),

@@ -56,8 +56,9 @@ class _RequestsState extends State<Requests> {
   late Map<String,dynamic> updations;
 
   void updateRequests() {
-
     List<dynamic>finalRequests=[];
+    print('inside update requests');
+    print(requests);
     for (var i = 0; i < requests.length; i++) {
       if (updations.containsKey(requests[i]['tripId'])) {
         if (updations[requests[i]['tripId']] == -1) {
@@ -78,11 +79,10 @@ class _RequestsState extends State<Requests> {
       }
     }
     print(finalRequests);
-    if (finalRequests != requests){
-      FirebaseFirestore.instance.collection('Requests').doc(userEmail).set({
-        'requests': finalRequests
-      });
-    }
+    FirebaseFirestore.instance.collection('Requests').doc(userEmail).set({
+      'requests': finalRequests
+    });
+    print('completed update requests');
   }
 
   @override
@@ -91,6 +91,7 @@ class _RequestsState extends State<Requests> {
     updations = {};
     requests = [];
     dropdownValue = 'All Requests';
+    print('completed init');
     super.initState();
   }
 
@@ -160,10 +161,7 @@ class _RequestsState extends State<Requests> {
                     if (snapshot.data!.exists) {
                       requests = List.from(snapshot.data!.get('requests'));
                       updations = Map<String, dynamic>.from(snapshot.data!.data() ?? {});
-                      print(160);
-                      print(requests);
-                      updateRequests();
-                      print('updated requests - 163');
+                      if (updations.keys.length > 1) updateRequests();
                     }
                     if (requests.isEmpty) {
                       return const Center(child: Text('No Requests found'));
@@ -195,9 +193,8 @@ class _RequestsState extends State<Requests> {
                             } else if (snapshot.hasError) {
                               if (snapshot.error.toString().contains('does not exist')) {
                                 // Automatically remove request if trip data is not found
-                                setState(() {
-                                  requests.removeAt(index);
-                                });
+                                requests.removeAt(index);
+                                setState(() {});
                               }
                               return const SizedBox(width: 0, height: 0);
                             } else if (snapshot.hasData) {
@@ -319,14 +316,16 @@ class _RequestsState extends State<Requests> {
         FirebaseFirestore.instance.collection('Requests').doc(request.sentTo).update({
           request.tripId: request.sentBy
         });
-        _removeRequest(request);
+        _removeRequest(reqObj);
       },
     );
   }
 
-  void _removeRequest(request) {
+  void _removeRequest(request) async {
     requests.remove(request);
-    FirebaseFirestore.instance.collection('Requests').doc(userEmail).update({'requests': requests});
-    setState(() {});
+    await FirebaseFirestore.instance.collection('Requests').doc(userEmail).update({'requests': requests});
   }
+
+
+
 }

@@ -47,14 +47,12 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
               );
             } else {
               String formattedDate = widget.selectedDate != null
-                  ? "${widget.selectedDate!.day}-${widget.selectedDate!.month}-${widget.selectedDate!.year}"
+                  // ? "${widget.selectedDate!.year}-${widget.selectedDate!.month}-${widget.selectedDate!.day}"
+                  ? "${widget.selectedDate.toString().substring(0,10)}"
                   : "";
               String formattedTime = widget.selectedTime != null
                   ? "${widget.selectedTime!.hour}:${widget.selectedTime!.minute}"
                   : "";
-
-              print(Homepage.posts);
-
               return Padding(
                 padding: const EdgeInsets.all(10),
                 child: Column(
@@ -62,26 +60,16 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                   children: [
                     _appBarBack(context),
                     for (var i = 0; i < Homepage.posts.length; i++) ...[
-                      if ((Homepage.posts[i]['source']
-                                      .toString()
-                                      .toLowerCase().contains(widget.fromLocation.toLowerCase()) ||
-                              widget.fromLocation == "") &&
-                          (Homepage.posts[i]['destination']
-                                      .toString()
-                                      .toLowerCase().contains(widget.toLocation.toLowerCase()) ||
-                              widget.toLocation == "") &&
-                          (Homepage.posts[i]['date']
-                                      .toString()
-                                      .toLowerCase().contains(formattedDate.toLowerCase()) ||
-                              formattedDate == "") &&
-                          (Homepage.posts[i]['time']
-                                      .toString()
-                                      .toLowerCase().contains(formattedTime.toLowerCase()) ||
-                              formattedTime == "") &&
-                          (Homepage.posts[i]['modeOfTransport']
-                                      .toString()
-                                      .toLowerCase().contains(widget.modeOfTransport.toLowerCase()) ||
-                              widget.modeOfTransport == "Flexible")) ...[
+                      if (
+                          (Homepage.posts[i]['source'].toLowerCase().contains(widget.fromLocation.toLowerCase()) || widget.fromLocation == "")
+                          &&
+                          (Homepage.posts[i]['destination'].toLowerCase().contains(widget.toLocation.toLowerCase()) || widget.toLocation == "")
+                          &&
+                          (Homepage.posts[i]['date'].toLowerCase() == formattedDate.toLowerCase() || formattedDate == "")
+                          &&
+                          (Homepage.posts[i]['time'].toLowerCase() == formattedTime.toLowerCase() || formattedTime == "")
+                          &&
+                          (Homepage.posts[i]['modeOfTransport'].toLowerCase().contains(widget.modeOfTransport.toLowerCase()) || widget.modeOfTransport == "Flexible")) ...[
                         PostTile(
                             tripId: Homepage.posts[i]['id'],
                             userName: Homepage.posts[i]['username'],
@@ -107,7 +95,8 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                                   ),
                                 ),
                               );
-                            })
+                            }
+                          )
                       ]
                     ]
                   ],
