@@ -59,9 +59,10 @@ class about_us extends StatelessWidget {
             ),
             Text(" "),
             Text(
-              'For any issues please Contact Devlup Labs',
+              'Kindly fill this form to report any bugs/queries ',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
+            
           ],
         ),
       ),

@@ -8,52 +8,45 @@ import '../../utils/colors.dart';
 final loginFormKey = GlobalKey<FormState>();
 
 class LoginPage extends StatelessWidget {
-
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   LoginPage({super.key});
 
-  showNormalSnackBar(BuildContext context,String snackBarText){
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            dismissDirection: DismissDirection.horizontal,
-            margin: const EdgeInsets.all(5),
-            behavior: SnackBarBehavior.floating,
-            content: Text(snackBarText)
-        )
-    );
-  }
-  showErrorSnackBar(BuildContext context,String snackBarText){
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            dismissDirection: DismissDirection.horizontal,
-            margin: const EdgeInsets.all(5),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: errorRed,
-            content: Text(snackBarText)
-        )
-    );
+  showNormalSnackBar(BuildContext context, String snackBarText) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        dismissDirection: DismissDirection.horizontal,
+        margin: const EdgeInsets.all(5),
+        behavior: SnackBarBehavior.floating,
+        content: Text(snackBarText)));
   }
 
+  showErrorSnackBar(BuildContext context, String snackBarText) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        dismissDirection: DismissDirection.horizontal,
+        margin: const EdgeInsets.all(5),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: errorRed,
+        content: Text(snackBarText)));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: primaryColor,
-        body: SingleChildScrollView(
-          child: Container(
-            margin: const EdgeInsets.all(15),
-            height: MediaQuery.of(context).size.height,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                _body(context, emailController, passwordController),
-              ],
-            ),
+      backgroundColor: primaryColor,
+      body: SingleChildScrollView(
+        child: Container(
+          margin: const EdgeInsets.all(15),
+          height: MediaQuery.of(context).size.height,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _body(context, emailController, passwordController),
+            ],
           ),
         ),
-      );
+      ),
+    );
   }
 
   _body(context, TextEditingController email, TextEditingController password) {
@@ -73,7 +66,8 @@ class LoginPage extends StatelessWidget {
             ),
           ),
           Column(children: [
-            Container(alignment: Alignment.centerLeft, child: const Text('Email')),
+            Container(
+                alignment: Alignment.centerLeft, child: const Text('Email')),
             SizedBox(
               height: 80,
               child: Form(
@@ -89,8 +83,10 @@ class LoginPage extends StatelessWidget {
                     fillColor: textFieldBackgroundColor,
                     filled: true,
                   ),
-                  validator: (emailIp){
-                    if (emailIp!.contains(RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
+                  validator: (emailIp) {
+                    emailIp = emailIp!.trim();
+                    if (emailIp!.contains(
+                        RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
                       return null;
                     } else {
                       return "Enter a valid email";
@@ -129,24 +125,24 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
             ),
-          ]
-        ),
-        const SizedBox(height: 15),
-        const Expanded(child: SizedBox()),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text("Don't have an account?"),
-            TextButton(
-                onPressed: () {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => const SignupPage()));
-                },
-                child: const Text(
-                  "Sign up",
-                  style: TextStyle(color: linkTextColor),
-                )
-              )
+          ]),
+          const SizedBox(height: 15),
+          const Expanded(child: SizedBox()),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("Don't have an account?"),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SignupPage()));
+                  },
+                  child: const Text(
+                    "Sign up",
+                    style: TextStyle(color: linkTextColor),
+                  ))
             ],
           ),
           Container(
@@ -157,10 +153,14 @@ class LoginPage extends StatelessWidget {
               onPressed: () async {
                 loginFormKey.currentState!.validate();
                 try {
-                  await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.text, password: password.text).then((_) {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Base()));
-                  }).catchError((error){
-                    if ((error.toString()).contains('incorrect')){
+                  await FirebaseAuth.instance
+                      .signInWithEmailAndPassword(
+                          email: email.text.trim(), password: password.text)
+                      .then((_) {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => Base()));
+                  }).catchError((error) {
+                    if ((error.toString()).contains('incorrect')) {
                       showErrorSnackBar(context, 'Incorrect Email or Password');
                     } else {
                       showErrorSnackBar(context, 'Error $error');
@@ -172,8 +172,8 @@ class LoginPage extends StatelessWidget {
               },
               style: TextButton.styleFrom(
                   backgroundColor: secondaryColor,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))
-              ),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10))),
               child: const Text(
                 'Next',
                 style: TextStyle(fontSize: 22, color: buttonTextColor),
