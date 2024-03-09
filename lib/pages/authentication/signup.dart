@@ -10,7 +10,6 @@ import 'package:http/http.dart' as http;
 final formKey = GlobalKey<FormState>();
 
 class SignupPage extends StatelessWidget {
-
   const SignupPage({Key? key}) : super(key: key);
 
   @override
@@ -22,7 +21,6 @@ class SignupPage extends StatelessWidget {
 }
 
 class SignupPageBody extends StatefulWidget {
-
   const SignupPageBody({Key? key}) : super(key: key);
 
   @override
@@ -41,20 +39,23 @@ class SignupBodyState extends State<SignupPageBody> {
     super.initState();
   }
 
-  sendVerificationLink(String uid) async{
-    await http.get(Uri.parse('https://travel-companion-dev-jaea.2.sg-1.fl0.io/signup?uid=$uid'))
-      .then((response) async {
-        if (response.statusCode==200){
-          await FirebaseAuth.instance.currentUser!.sendEmailVerification();
-        }
-        else{
-          throw Exception('Something went wrong, please retry signing up after 5-10 minutes');
-        }
-      }).catchError((error){
-        throw Exception('Error $error');
-      });
+  sendVerificationLink(String uid) async {
+    await http
+        .get(Uri.parse(
+            'https://travel-companion-dev-jaea.2.sg-1.fl0.io/signup?uid=$uid'))
+        .then((response) async {
+      if (response.statusCode == 200) {
+        await FirebaseAuth.instance.currentUser!.sendEmailVerification();
+      } else {
+        throw Exception(
+            'Something went wrong, please retry signing up after 5-10 minutes');
+      }
+    }).catchError((error) {
+      throw Exception('Error $error');
+    });
   }
-  createUserDocument(email,username,phoneNumber){
+
+  createUserDocument(email, username, phoneNumber) {
     FirebaseFirestore.instance.collection('Users').doc(email).set({
       'username': username,
       "email": email,
@@ -64,31 +65,27 @@ class SignupBodyState extends State<SignupPageBody> {
     FirebaseFirestore.instance.collection('PhoneNumbers').doc(email).set({
       'phoneNumber': phoneNumber,
     });
-    FirebaseFirestore.instance.collection('Requests').doc(email).set({
-      'requests':[]
-    });
+    FirebaseFirestore.instance
+        .collection('Requests')
+        .doc(email)
+        .set({'requests': []});
   }
 
-  showNormalSnackBar(BuildContext context,String snackBarText){
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            dismissDirection: DismissDirection.horizontal,
-            margin: const EdgeInsets.all(5),
-            behavior: SnackBarBehavior.floating,
-            content: Text(snackBarText)
-        )
-    );
+  showNormalSnackBar(BuildContext context, String snackBarText) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        dismissDirection: DismissDirection.horizontal,
+        margin: const EdgeInsets.all(5),
+        behavior: SnackBarBehavior.floating,
+        content: Text(snackBarText)));
   }
-  showErrorSnackBar(BuildContext context,String snackBarText){
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            dismissDirection: DismissDirection.horizontal,
-            margin: const EdgeInsets.all(5),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: errorRed,
-            content: Text(snackBarText)
-        )
-    );
+
+  showErrorSnackBar(BuildContext context, String snackBarText) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        dismissDirection: DismissDirection.horizontal,
+        margin: const EdgeInsets.all(5),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: errorRed,
+        content: Text(snackBarText)));
   }
 
   @override
@@ -109,7 +106,13 @@ class SignupBodyState extends State<SignupPageBody> {
     );
   }
 
-  _body(context,TextEditingController username,TextEditingController email,TextEditingController password,TextEditingController confirmPassword,TextEditingController phoneNumber) {
+  _body(
+      context,
+      TextEditingController username,
+      TextEditingController email,
+      TextEditingController password,
+      TextEditingController confirmPassword,
+      TextEditingController phoneNumber) {
     return SingleChildScrollView(
       child: Container(
         height: MediaQuery.of(context).size.height,
@@ -119,7 +122,7 @@ class SignupBodyState extends State<SignupPageBody> {
           children: [
             SizedBox(
               child: Container(
-                margin: const EdgeInsets.only(top: 50,bottom: 80),
+                margin: const EdgeInsets.only(top: 50, bottom: 80),
                 alignment: Alignment.center,
                 child: const Text(
                   "SIGN UP",
@@ -130,125 +133,124 @@ class SignupBodyState extends State<SignupPageBody> {
             Form(
               autovalidateMode: AutovalidateMode.disabled,
               key: formKey,
-              child: Column(
-                  children: [
-                    SizedBox(
-                      height: 80,
-                      child: TextFormField(
-                        autocorrect: false,
-                        controller: username,
-                        decoration: InputDecoration(
-                          hintText: "Username",
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none),
-                          fillColor: textFieldBackgroundColor,
-                          filled: true,
-                        ),
-                        validator: (username) =>
-                            username!.isEmpty ? 'This field is required' : null,
-                      ),
+              child: Column(children: [
+                SizedBox(
+                  height: 80,
+                  child: TextFormField(
+                    autocorrect: false,
+                    controller: username,
+                    decoration: InputDecoration(
+                      hintText: "Username",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none),
+                      fillColor: textFieldBackgroundColor,
+                      filled: true,
                     ),
-                    SizedBox(
-                      height: 80,
-                      child: TextFormField(
-                        autocorrect: false,
-                        controller: email,
-                        decoration: InputDecoration(
-                          hintText: "Email address",
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none),
-                          fillColor: textFieldBackgroundColor,
-                          filled: true,
-                        ),
-                        validator: (email) {
-                          if (email == null || email.isEmpty) {
-                            return "This field is required";
-                          } else if (!email.contains(
-                              RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
-                            return "Enter a Valid Email";
-                          } else {
-                            return null;
-                          }
-                        },
-                      ),
+                    validator: (username) =>
+                        username!.isEmpty ? 'This field is required' : null,
+                  ),
+                ),
+                SizedBox(
+                  height: 80,
+                  child: TextFormField(
+                    autocorrect: false,
+                    controller: email,
+                    decoration: InputDecoration(
+                      hintText: "Email address",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none),
+                      fillColor: textFieldBackgroundColor,
+                      filled: true,
                     ),
-                    SizedBox(
-                      height: 80,
-                      child: TextFormField(
-                        autocorrect: false,
-                        controller: password,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          hintText: "Password",
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none),
-                          fillColor: textFieldBackgroundColor,
-                          filled: true,
-                          // prefixIcon: const Icon(Icons.person)
-                        ),
-                        validator: (password) {
-                          if (password == null || password.isEmpty) {
-                            return "This field is required";
-                          } else if (password.length < 8) {
-                            return "Password must be at least 8 characters long";
-                          } else {
-                            return null;
-                          }
-                        },
-                      ),
+                    validator: (email) {
+                      if (email!.isEmpty) {
+                        return "This field is required";
+                      } else if (!email.contains(
+                          RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
+                        return "Enter a Valid Email";
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+                ),
+                SizedBox(
+                  height: 80,
+                  child: TextFormField(
+                    autocorrect: false,
+                    controller: password,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      hintText: "Password",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none),
+                      fillColor: textFieldBackgroundColor,
+                      filled: true,
+                      // prefixIcon: const Icon(Icons.person)
                     ),
-                    SizedBox(
-                      height: 80,
-                      child: TextFormField(
-                        autocorrect: false,
-                        controller: confirmPassword,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          hintText: "Confirm Password",
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none),
-                          fillColor: textFieldBackgroundColor,
-                          filled: true,
-                        ),
-                        validator: (confirmPassword) {
-                          if (confirmPassword == null || confirmPassword.isEmpty) {
-                            return "This feild is required";
-                          } else if (confirmPassword != passwordController.text) {
-                            return "Confirm the same password";
-                          } else {
-                            return null;
-                          }
-                        },
-                      ),
+                    validator: (password) {
+                      if (password == null || password.isEmpty) {
+                        return "This field is required";
+                      } else if (password.length < 8) {
+                        return "Password must be at least 8 characters long";
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+                ),
+                SizedBox(
+                  height: 80,
+                  child: TextFormField(
+                    autocorrect: false,
+                    controller: confirmPassword,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      hintText: "Confirm Password",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none),
+                      fillColor: textFieldBackgroundColor,
+                      filled: true,
                     ),
-                    SizedBox(
-                      height: 80,
-                      child: InternationalPhoneNumberInput(
-                        onInputChanged: (PhoneNumber number) {},
-                        selectorConfig: const SelectorConfig(
-                          selectorType: PhoneInputSelectorType.DIALOG,
-                        ),
-                        ignoreBlank: false,
-                        autoValidateMode: AutovalidateMode.onUserInteraction,
-                        selectorTextStyle: const TextStyle(color: Colors.black),
-                        initialValue: PhoneNumber(isoCode: 'IN'),
-                        textFieldController: phoneNumber,
-                        formatInput: false,
-                        validator: (String? val) {
-                          if (val == "" || val == null) {
-                            return "Phone Number is needed";
-                          } else if (val.length < 10) {
-                            return "Please enter a valid phone number";
-                          }
-                          return null;
-                        },
-                      ),
+                    validator: (confirmPassword) {
+                      if (confirmPassword == null || confirmPassword.isEmpty) {
+                        return "This feild is required";
+                      } else if (confirmPassword != passwordController.text) {
+                        return "Confirm the same password";
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+                ),
+                SizedBox(
+                  height: 80,
+                  child: InternationalPhoneNumberInput(
+                    onInputChanged: (PhoneNumber number) {},
+                    selectorConfig: const SelectorConfig(
+                      selectorType: PhoneInputSelectorType.DIALOG,
                     ),
-                    SizedBox(height: MediaQuery.of(context).size.height-720),
+                    ignoreBlank: false,
+                    autoValidateMode: AutovalidateMode.onUserInteraction,
+                    selectorTextStyle: const TextStyle(color: Colors.black),
+                    initialValue: PhoneNumber(isoCode: 'IN'),
+                    textFieldController: phoneNumber,
+                    formatInput: false,
+                    validator: (String? val) {
+                      if (val == "" || val == null) {
+                        return "Phone Number is needed";
+                      } else if (val.length < 10) {
+                        return "Please enter a valid phone number";
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                SizedBox(height: MediaQuery.of(context).size.height - 720),
               ]),
             ),
             Row(
@@ -271,49 +273,59 @@ class SignupBodyState extends State<SignupPageBody> {
               width: MediaQuery.of(context).size.width * 0.8,
               child: ElevatedButton(
                 onPressed: () async {
-      
                   formKey.currentState!.validate();
       
-                  if (passwordController.text!=confirmPasswordController.text || phoneNumberController.text.toString().length<10 || phoneNumberController.text.toString().isEmpty || passwordController.text.length<8){
+                  if (passwordController.text != confirmPasswordController.text ||
+                      phoneNumberController.text.toString().length < 10 ||
+                      phoneNumberController.text.toString().isEmpty ||
+                      passwordController.text.length < 8) {
                     return;
                   }
       
-                  await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email.text, password: password.text)
+                  await FirebaseAuth.instance
+                      .createUserWithEmailAndPassword(
+                          email: email.text, password: password.text)
                       .then((credential) async {
                     try {
                       await sendVerificationLink(credential.user!.uid);
-                      showNormalSnackBar(context,'Verification link sent successfully');
+                      showNormalSnackBar(
+                          context, 'Verification link sent successfully');
                     } catch (e) {
-                      showErrorSnackBar(context, 'Error sending link, please recheck the email or try again in some time');
+                      showErrorSnackBar(context,
+                          'Error sending link, please recheck the email or try again in some time');
                     }
       
-                    try{
-                      createUserDocument(credential.user?.email,username.text,phoneNumber.text);
-                    } catch (e){
+                    try {
+                      createUserDocument(credential.user?.email, username.text,
+                          phoneNumber.text);
+                    } catch (e) {
                       print(e);
-                      showErrorSnackBar(context, 'Error creating User, please try again in some time');
+                      showErrorSnackBar(context,
+                          'Error creating User, please try again in some time');
                     }
       
-                    Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => VerifyPage(email: credential.user?.email)));
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                VerifyPage(email: credential.user?.email)));
                   }).catchError((e) {
                     if (e.code == 'user-not-found') {
                       showNormalSnackBar(context, 'No user found for that Email');
-                    }
-                    else if (e.code == 'wrong-password') {
+                    } else if (e.code == 'wrong-password') {
                       showNormalSnackBar(context, 'Wrong Email or Password!');
-                    }
-                    else if (e.code == 'email-already-in-use') {
-                      showNormalSnackBar(context, 'User already exists! Please try logging in');
-                      Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => LoginPage()));
+                    } else if (e.code == 'email-already-in-use') {
+                      showNormalSnackBar(
+                          context, 'User already exists! Please try logging in');
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) => LoginPage()));
                     }
                   });
                 },
                 style: TextButton.styleFrom(
                     backgroundColor: secondaryColor,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)
-                    )
-                ),
+                        borderRadius: BorderRadius.circular(10))),
                 child: const Text(
                   'Next',
                   style: TextStyle(fontSize: 22, color: buttonTextColor),

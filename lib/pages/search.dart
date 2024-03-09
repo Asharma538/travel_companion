@@ -15,7 +15,8 @@ void _showDatePicker(BuildContext context, Function(DateTime) onDateSelected) {
   });
 }
 
-void _showTimePicker(BuildContext context, TimeOfDay? selectedTime,Function(TimeOfDay) onTimeSelected) async {
+void _showTimePicker(BuildContext context, TimeOfDay? selectedTime,
+    Function(TimeOfDay) onTimeSelected) async {
   TimeOfDay? pickedTime = await showTimePicker(
     context: context,
     initialTime: selectedTime ?? TimeOfDay.now(),
@@ -190,11 +191,17 @@ class _SearchPageState extends State<SearchPage> {
                 ),
                 child: DropdownButton(
                   padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                  underline: const SizedBox(height: 0,),
+                  underline: const SizedBox(
+                    height: 0,
+                  ),
                   value: dropdownValue,
-                  icon: const Icon(Icons.keyboard_arrow_down,color: secondaryTextColor,),
+                  icon: const Icon(
+                    Icons.keyboard_arrow_down,
+                    color: secondaryTextColor,
+                  ),
                   isExpanded: true,
-                  items: ['Flexible', 'Flight', 'Train','Taxi','Bus'].map((item) {
+                  items: ['Flexible', 'Flight', 'Train', 'Taxi', 'Bus']
+                      .map((item) {
                     return DropdownMenuItem(
                       value: item,
                       child: Text(
@@ -222,15 +229,12 @@ class _SearchPageState extends State<SearchPage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => SearchResultsPage(
-                            fromLocation: fromLocation,
-                            toLocation: toLocation,
-                            selectedDate: selectedDate,
-                            selectedTime: selectedTime,
-                            modeOfTransport: dropdownValue
-                          )
-                        )
-                    );
+                            builder: (context) => SearchResultsPage(
+                                fromLocation: fromLocation,
+                                toLocation: toLocation,
+                                selectedDate: selectedDate,
+                                selectedTime: selectedTime,
+                                modeOfTransport: dropdownValue)));
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.fromLTRB(50, 6, 50, 6),
