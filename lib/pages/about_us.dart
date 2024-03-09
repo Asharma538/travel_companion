@@ -20,12 +20,21 @@ class about_us extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: secondaryColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back,color: secondaryTextColor,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: secondaryTextColor,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: Text('About Us',style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20,color: secondaryTextColor),),
+        title: Text(
+          'About Us',
+          style: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 20,
+              color: secondaryTextColor),
+        ),
       ),
       backgroundColor: primaryColor,
       body: Center(
