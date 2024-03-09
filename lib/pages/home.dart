@@ -78,57 +78,63 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: primaryColor,
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: Homepage.fetchPosts(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          else if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          }
-          else {
-            List<Map<String, dynamic>> posts = snapshot.data ?? [];
-            return ListView.builder(
-              itemCount: posts.length,
-              itemBuilder: (context, index) {
-                final post = posts[index];
-                return PostTile(
-                  tripId: post['id'] ?? 'Not Available',
-                  userName: post['username'] ?? 'Not Available',
-                  userImage: (post['profilePhotoState'] == 0)
-                      ? ""
-                      : Base.profilePictures[post['profilePhotoState'] - 1],
-                  source: post['source'] ?? 'Not Available',
-                  destination: post['destination'] ?? 'Not Available',
-                  date: post['date'] ?? 'Not Available',
-                  time: post['time'] ?? 'Not Available',
-                  modeOfTransport: post['modeOfTransport'] ?? 'Not Available',
-                  onPressed: () async {
-                    var result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ViewPost(post: post),
-                      ),
-                    );
-                    if (result == true) {
-                      setState(() {
-                        posts.removeWhere((p) => p['id'] == post['id']);
-                      });
-                    }
-                  },
-                );
-              },
-            );
-          }
-        },
+    return RefreshIndicator(
+      onRefresh: () => Future.delayed(
+        const Duration(seconds: 2),
+        () => setState(() {
+          postsFuture = Homepage.fetchPosts();
+        }),
+      ),
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: primaryColor,
+        body: FutureBuilder<List<Map<String, dynamic>>>(
+          future: postsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('Error: ${snapshot.error}'),
+              );
+            } else {
+              List<Map<String, dynamic>> posts = snapshot.data ?? [];
+              return ListView.builder(
+                itemCount: posts.length,
+                itemBuilder: (context, index) {
+                  final post = posts[index];
+                  return PostTile(
+                    tripId: post['id'] ?? 'Not Available',
+                    userName: post['username'] ?? 'Not Available',
+                    userImage: (post['profilePhotoState'] == 0)
+                        ? ""
+                        : Base.profilePictures[post['profilePhotoState'] - 1],
+                    source: post['source'] ?? 'Not Available',
+                    destination: post['destination'] ?? 'Not Available',
+                    date: post['date'] ?? 'Not Available',
+                    time: post['time'] ?? 'Not Available',
+                    modeOfTransport: post['modeOfTransport'] ?? 'Not Available',
+                    onPressed: () async {
+                      var result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ViewPost(post: post),
+                        ),
+                      );
+                      if (result == true) {
+                        setState(() {
+                          posts.removeWhere((p) => p['id'] == post['id']);
+                        });
+                      }
+                    },
+                  );
+                },
+              );
+            }
+          },
+        ),
       ),
     );
   }

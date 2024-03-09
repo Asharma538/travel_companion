@@ -46,11 +46,11 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: primaryColor,
-        body: Container(
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: primaryColor,
+      body: SingleChildScrollView(
+        child: Container(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
