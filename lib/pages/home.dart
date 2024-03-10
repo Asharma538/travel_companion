@@ -82,14 +82,14 @@ class _HomepageState extends State<Homepage> {
       onRefresh: () => Future.delayed(
         const Duration(seconds: 2),
         () => setState(() {
-          postsFuture = Homepage.fetchPosts();
+          Homepage.fetchPosts();
         }),
       ),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: primaryColor,
         body: FutureBuilder<List<Map<String, dynamic>>>(
-          future: postsFuture,
+          future: Homepage.fetchPosts(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(

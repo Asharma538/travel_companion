@@ -49,211 +49,210 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: primaryColor,
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "FROM",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 15.0,
-                  fontWeight: FontWeight.bold,
+      body: Container(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+        height: MediaQuery.of(context).size.height,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "FROM",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 15.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            TextField(
+              controller: fromLocationController,
+              style: const TextStyle(
+                color: primaryTextColor,
+              ),
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: textFieldBackgroundColor,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide.none,
+                ),
+                hintText: "Ex: Jodhpur",
+                hintStyle: const TextStyle(
+                  color: placeholderTextColor,
                 ),
               ),
-              TextField(
-                controller: fromLocationController,
-                style: const TextStyle(
-                  color: primaryTextColor,
+            ),
+            const SizedBox(height: 15),
+            const Text(
+              "TO",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 15.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            TextField(
+              controller: toLocationController,
+              style: const TextStyle(
+                color: primaryTextColor,
+              ),
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: textFieldBackgroundColor,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide.none,
                 ),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: textFieldBackgroundColor,
-                  border: OutlineInputBorder(
+                hintText: "Ex: Airport",
+                hintStyle: const TextStyle(
+                  color: placeholderTextColor,
+                ),
+              ),
+            ),
+            const SizedBox(height: 25),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                MaterialButton(
+                  height: 45,
+                  onPressed: () => _showDatePicker(context, (date) {
+                    setState(() {
+                      selectedDate = date;
+                    });
+                  }),
+                  color: secondaryColor,
+                  shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
-                    borderSide: BorderSide.none,
+                    side: BorderSide.none,
                   ),
-                  hintText: "Ex: Jodhpur",
-                  hintStyle: const TextStyle(
-                    color: placeholderTextColor,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 15),
-              const Text(
-                "TO",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 15.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextField(
-                controller: toLocationController,
-                style: const TextStyle(
-                  color: primaryTextColor,
-                ),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: textFieldBackgroundColor,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: BorderSide.none,
-                  ),
-                  hintText: "Ex: Airport",
-                  hintStyle: const TextStyle(
-                    color: placeholderTextColor,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 25),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  MaterialButton(
-                    height: 45,
-                    onPressed: () => _showDatePicker(context, (date) {
-                      setState(() {
-                        selectedDate = date;
-                      });
-                    }),
-                    color: secondaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      side: BorderSide.none,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                      child: Text(
-                        selectedDate != null
-                            ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
-                            : "DATE",
-                        style: const TextStyle(
-                          color: secondaryTextColor,
-                          fontSize: 15.0,
-                        ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: Text(
+                      selectedDate != null
+                          ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
+                          : "DATE",
+                      style: const TextStyle(
+                        color: secondaryTextColor,
+                        fontSize: 15.0,
                       ),
                     ),
                   ),
-                  MaterialButton(
-                    height: 45,
-                    onPressed: () =>
-                        _showTimePicker(context, selectedTime, (time) {
-                      setState(() {
-                        selectedTime = time;
-                      });
-                    }),
-                    color: secondaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      side: BorderSide.none,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                      child: Text(
-                        selectedTime != null
-                            ? "${selectedTime!.hour}:${selectedTime!.minute}"
-                            : "TIME",
-                        style: const TextStyle(
-                          color: secondaryTextColor,
-                          fontSize: 15.0,
-                        ),
+                ),
+                MaterialButton(
+                  height: 45,
+                  onPressed: () =>
+                      _showTimePicker(context, selectedTime, (time) {
+                    setState(() {
+                      selectedTime = time;
+                    });
+                  }),
+                  color: secondaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    side: BorderSide.none,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: Text(
+                      selectedTime != null
+                          ? "${selectedTime!.hour}:${selectedTime!.minute}"
+                          : "TIME",
+                      style: const TextStyle(
+                        color: secondaryTextColor,
+                        fontSize: 15.0,
                       ),
                     ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 15),
+            const Text(
+              "Mode of Transport",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 15.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              decoration: BoxDecoration(
+                color: secondaryColor,
+                borderRadius: BorderRadius.circular(8.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
-              const SizedBox(height: 15),
-              const Text(
-                "Mode of Transport",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 15.0,
-                  fontWeight: FontWeight.bold,
+              child: DropdownButton(
+                padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                underline: const SizedBox(
+                  height: 0,
                 ),
-              ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                decoration: BoxDecoration(
-                  color: secondaryColor,
-                  borderRadius: BorderRadius.circular(8.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 2),
+                value: dropdownValue,
+                icon: const Icon(
+                  Icons.keyboard_arrow_down,
+                  color: secondaryTextColor,
+                ),
+                isExpanded: true,
+                items: ['Flexible', 'Flight', 'Train', 'Taxi', 'Bus']
+                    .map((item) {
+                  return DropdownMenuItem(
+                    value: item,
+                    child: Text(
+                      item,
+                      style: const TextStyle(color: secondaryTextColor),
                     ),
-                  ],
-                ),
-                child: DropdownButton(
-                  padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                  underline: const SizedBox(
-                    height: 0,
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    dropdownValue = newValue!;
+                  });
+                },
+                dropdownColor: secondaryColor,
+              ),
+            ),
+            const Expanded(child: SizedBox()),
+            Container(
+              margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+              alignment: Alignment.center,
+              child: ElevatedButton(
+                onPressed: () {
+                  String fromLocation = fromLocationController.text;
+                  String toLocation = toLocationController.text;
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SearchResultsPage(
+                              fromLocation: fromLocation,
+                              toLocation: toLocation,
+                              selectedDate: selectedDate,
+                              selectedTime: selectedTime,
+                              modeOfTransport: dropdownValue)));
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.fromLTRB(50, 6, 50, 6),
+                  backgroundColor: complementaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  value: dropdownValue,
-                  icon: const Icon(
-                    Icons.keyboard_arrow_down,
+                ),
+                child: const Text(
+                  "GO",
+                  style: TextStyle(
                     color: secondaryTextColor,
+                    fontSize: 25,
                   ),
-                  isExpanded: true,
-                  items: ['Flexible', 'Flight', 'Train', 'Taxi', 'Bus']
-                      .map((item) {
-                    return DropdownMenuItem(
-                      value: item,
-                      child: Text(
-                        item,
-                        style: const TextStyle(color: secondaryTextColor),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      dropdownValue = newValue!;
-                    });
-                  },
-                  dropdownColor: secondaryColor,
                 ),
               ),
-              const Expanded(child: SizedBox()),
-              Container(
-                margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
-                alignment: Alignment.center,
-                child: ElevatedButton(
-                  onPressed: () {
-                    String fromLocation = fromLocationController.text;
-                    String toLocation = toLocationController.text;
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SearchResultsPage(
-                                fromLocation: fromLocation,
-                                toLocation: toLocation,
-                                selectedDate: selectedDate,
-                                selectedTime: selectedTime,
-                                modeOfTransport: dropdownValue)));
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.fromLTRB(50, 6, 50, 6),
-                    backgroundColor: complementaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    "GO",
-                    style: TextStyle(
-                      color: secondaryTextColor,
-                      fontSize: 25,
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
+            )
+          ],
         ),
       ),
     );

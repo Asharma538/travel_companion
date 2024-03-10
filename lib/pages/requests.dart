@@ -57,7 +57,6 @@ class _RequestsState extends State<Requests> {
 
   void updateRequests() {
     List<dynamic>finalRequests=[];
-    print('inside update requests');
     print(requests);
     for (var i = 0; i < requests.length; i++) {
       if (updations.containsKey(requests[i]['tripId'])) {
@@ -78,11 +77,9 @@ class _RequestsState extends State<Requests> {
         finalRequests.add(requests[i]);
       }
     }
-    print(finalRequests);
     FirebaseFirestore.instance.collection('Requests').doc(userEmail).set({
       'requests': finalRequests
     });
-    print('completed update requests');
   }
 
   @override
@@ -91,7 +88,6 @@ class _RequestsState extends State<Requests> {
     updations = {};
     requests = [];
     dropdownValue = 'All Requests';
-    print('completed init');
     super.initState();
   }
 
