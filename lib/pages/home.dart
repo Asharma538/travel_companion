@@ -11,8 +11,7 @@ class Homepage extends StatefulWidget {
   static List<Map<String, dynamic>> posts = [];
 
   static Future<List<Map<String, dynamic>>> fetchPosts() async {
-    QuerySnapshot<Map<String, dynamic>> querySnapshot =
-        await FirebaseFirestore.instance.collection('Trips').get();
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance.collection('Trips').get();
 
     List<Map<String, dynamic>> posts = [];
 
@@ -50,12 +49,31 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  late Future<List<Map<String, dynamic>>> postsFuture;
 
   @override
   void initState() {
     super.initState();
-    postsFuture = Homepage.fetchPosts();
+  }
+  showNormalSnackBar(BuildContext context,String snackBarText) {
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            dismissDirection: DismissDirection.horizontal,
+            margin: const EdgeInsets.all(5),
+            behavior: SnackBarBehavior.floating,
+            content: Text(snackBarText)
+        )
+    );
+  }
+  showErrorSnackBar(BuildContext context,String snackBarText){
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            dismissDirection: DismissDirection.horizontal,
+            margin: const EdgeInsets.all(5),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: errorRed,
+            content: Text(snackBarText)
+        )
+    );
   }
 
   @override
@@ -64,14 +82,14 @@ class _HomepageState extends State<Homepage> {
       onRefresh: () => Future.delayed(
         const Duration(seconds: 2),
         () => setState(() {
-          postsFuture = Homepage.fetchPosts();
+          Homepage.fetchPosts();
         }),
       ),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: primaryColor,
         body: FutureBuilder<List<Map<String, dynamic>>>(
-          future: postsFuture,
+          future: Homepage.fetchPosts(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(

@@ -104,10 +104,31 @@ class _ProfileState extends State<Profile> {
     userFuture = Profile.fetchUser(userRef);
   }
 
+  showNormalSnackBar(BuildContext context,String snackBarText) {
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            dismissDirection: DismissDirection.horizontal,
+            margin: const EdgeInsets.all(5),
+            behavior: SnackBarBehavior.floating,
+            content: Text(snackBarText)
+        )
+    );
+  }
+  showErrorSnackBar(BuildContext context,String snackBarText){
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            dismissDirection: DismissDirection.horizontal,
+            margin: const EdgeInsets.all(5),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: errorRed,
+            content: Text(snackBarText)
+        )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: FutureBuilder<Map<String, dynamic>>(
           future: userFuture,
@@ -151,7 +172,7 @@ class _ProfileState extends State<Profile> {
                               MaterialPageRoute(
                                   builder: (context) => LoginPage()));
                         } catch (e) {
-                          print('Error logging out: $e');
+                          showErrorSnackBar(context,'Error logging out: ${e.toString()}');
                         }
                       },
                       icon: const Icon(Icons.logout),
