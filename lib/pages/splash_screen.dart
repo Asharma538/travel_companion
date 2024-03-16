@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_companion/main.dart';
+import 'package:travel_companion/pages/authentication/email_verification.dart';
 import 'package:travel_companion/pages/home.dart';
+import 'package:travel_companion/pages/profile.dart';
 import 'authentication/signup.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -21,12 +24,17 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigate() {
-    Timer(Duration(milliseconds: 1500), () {
+    Timer(Duration(milliseconds: 1500), () async {
       if (FirebaseAuth.instance.currentUser != null &&
           FirebaseAuth.instance.currentUser!.emailVerified) {
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => Base()));
-      } else {
+            context, MaterialPageRoute(builder: (context) => Base())
+        );
+      } else if ( FirebaseAuth.instance.currentUser != null) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => VerifyPage(email: FirebaseAuth.instance.currentUser!.email,)));
+      }
+      else {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => SignupPage()));
       }

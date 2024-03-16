@@ -224,8 +224,8 @@ class _SearchPageState extends State<SearchPage> {
               alignment: Alignment.center,
               child: ElevatedButton(
                 onPressed: () {
-                  String fromLocation = fromLocationController.text;
-                  String toLocation = toLocationController.text;
+                  String fromLocation = fromLocationController.text.trim();
+                  String toLocation = toLocationController.text.trim();
                   Navigator.push(
                       context,
                       MaterialPageRoute(

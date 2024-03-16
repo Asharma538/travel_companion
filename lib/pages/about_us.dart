@@ -6,8 +6,8 @@ class about_us extends StatelessWidget {
 
   void _launchURL() async {
     const url = 'https://forms.gle/JXBwR9KiEk83VwpD6';
-    if (await canLaunch(url)) {
-      await launch(url);
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
     } else {
       throw 'Could not launch $url';
     }

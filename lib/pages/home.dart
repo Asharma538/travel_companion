@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:travel_companion/pages/profile.dart';
 import 'package:travel_companion/utils/colors.dart';
 import '../components/post.dart';
 import 'package:travel_companion/pages/view_post.dart';
@@ -21,7 +22,7 @@ class Homepage extends StatefulWidget {
 
       if (
           (doc.data()['date'] == "" && DateTime.now().isAfter(doc.data()['createdDateTime'].toDate().add(Duration(days: 30)))) ||
-          (doc.data()['date'] != "" && DateTime.now().isAfter(DateTime.parse(doc.data()['date'])))
+          (doc.data()['date'] != "" && DateTime.now().isAfter(DateTime.parse(doc.data()['date']).add(Duration(days: 1))))
       ){
           print('post expired ${doc.id}');
       }

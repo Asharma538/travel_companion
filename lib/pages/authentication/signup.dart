@@ -40,15 +40,12 @@ class SignupBodyState extends State<SignupPageBody> {
   }
 
   sendVerificationLink(String uid) async {
-    await http
-        .get(Uri.parse(
-            'https://travel-companion-dev-jaea.2.sg-1.fl0.io/signup?uid=$uid'))
+    await http.get(Uri.parse('https://travel-companion-dev-jaea.2.sg-1.fl0.io/signup?uid=$uid'))
         .then((response) async {
       if (response.statusCode == 200) {
         await FirebaseAuth.instance.currentUser!.sendEmailVerification();
       } else {
-        throw Exception(
-            'Something went wrong, please retry signing up after 5-10 minutes');
+        throw Exception('Something went wrong, please retry signing up after 5-10 minutes');
       }
     }).catchError((error) {
       throw Exception('Error $error');
@@ -167,7 +164,7 @@ class SignupBodyState extends State<SignupPageBody> {
                     validator: (email) {
                       if (email!.isEmpty) {
                         return "This field is required";
-                      } else if (!email.contains(
+                      } else if (!email.trim().contains(
                           RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
                         return "Enter a Valid Email";
                       } else {
@@ -278,26 +275,25 @@ class SignupBodyState extends State<SignupPageBody> {
                   if (passwordController.text != confirmPasswordController.text ||
                       phoneNumberController.text.toString().length < 10 ||
                       phoneNumberController.text.toString().isEmpty ||
-                      passwordController.text.length < 8) {
+                      passwordController.text.length < 8 ||
+                      !(emailController.text.trim().contains(RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$')))
+                  ) {
                     return;
                   }
-      
+
                   await FirebaseAuth.instance
                       .createUserWithEmailAndPassword(
-                          email: email.text, password: password.text)
+                          email: email.text.trim(), password: password.text)
                       .then((credential) async {
                     try {
                       await sendVerificationLink(credential.user!.uid);
-                      showNormalSnackBar(
-                          context, 'Verification link sent successfully');
+                      showNormalSnackBar(context, 'Verification link sent successfully');
                     } catch (e) {
-                      showErrorSnackBar(context,
-                          'Error sending link, please recheck the email or try again in some time');
+                      showErrorSnackBar(context,'Error sending link, please recheck the email or try again in some time');
                     }
-      
+
                     try {
-                      createUserDocument(credential.user?.email, username.text,
-                          phoneNumber.text);
+                      createUserDocument(credential.user?.email, username.text,phoneNumber.text);
                     } catch (e) {
                       print(e);
                       showErrorSnackBar(context,
