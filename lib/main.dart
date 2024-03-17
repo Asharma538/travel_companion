@@ -28,8 +28,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FirebaseAuth.instance.currentUser?.reload();
-    String? userEmail = FirebaseAuth.instance.currentUser?.email;
+
+    FirebaseAuth.instance.currentUser?.getIdToken(true);
 
     return const MaterialApp(
       debugShowCheckedModeBanner: false,

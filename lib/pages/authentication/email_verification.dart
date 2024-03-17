@@ -134,9 +134,7 @@ class _VerifyPageState extends State<VerifyPage> {
               onPressed: () async {
                 FirebaseAuth.instance.currentUser!.reload();
                 String uid = FirebaseAuth.instance.currentUser!.uid;
-                http
-                    .get(Uri.parse(
-                        'https://travel-companion-dev-jaea.2.sg-1.fl0.io/verify?uid=$uid'))
+                http.get(Uri.parse('https://travel-companion-dev-jaea.2.sg-1.fl0.io/verify?uid=$uid'))
                     .then((value) {
                   Map<String, dynamic> response = jsonDecode(value.body);
                   if (response.containsKey('data') &&

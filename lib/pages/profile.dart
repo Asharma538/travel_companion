@@ -98,6 +98,8 @@ class _ProfileState extends State<Profile> {
 
   @override
   void initState() {
+    DocumentReference userRef = FirebaseFirestore.instance.collection('Users').doc(userEmail);
+    userFuture = Profile.fetchUser(userRef);
     super.initState();
   }
 
