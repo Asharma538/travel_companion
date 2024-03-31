@@ -1,16 +1,14 @@
 # travel_companiion
 
-A project under winter of code devlup labs
+A project under winter of code DevlUp Labs, for finding like minded individuals going on a similar journey for splitting your travel expenses and having a friendly trip :)
 
-## Getting Started
+Made with Flutter, Firebase & ❣️
 
-This project is a starting point for a Flutter application.
+Screenshots of the App
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<img src="https://github.com/Asharma538/travel_companion/assets/102324067/66bc65f2-9eb8-4048-a2f7-7a8d72755c99" width="300">
+<img src="https://github.com/Asharma538/travel_companion/assets/102324067/2da99aee-9dc2-4fed-a12a-914c130281bd" width="300">
+<img src="https://github.com/Asharma538/travel_companion/assets/102324067/34efaed9-17b7-469a-84da-ba5b55c3118c" width="300">
+<img src="https://github.com/Asharma538/travel_companion/assets/102324067/55b3d7d1-95a2-4b3e-89ff-580faccde32c" width="300">
+<img src="https://github.com/Asharma538/travel_companion/assets/102324067/a1a94d8e-00e5-40c6-a7f0-405d3f984c38" width="300">
+<img src="https://github.com/Asharma538/travel_companion/assets/102324067/7e0a11ad-5dd9-4e08-8fa4-73a182a72ae5" width="300">
