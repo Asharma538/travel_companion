@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:travel_companion/pages/authentication/email_verification.dart';
 import 'package:travel_companion/pages/authentication/login.dart';
@@ -39,16 +41,21 @@ class SignupBodyState extends State<SignupPageBody> {
     super.initState();
   }
 
-  sendVerificationLink(String uid) async {
-    await http
-        .get(Uri.parse(
-            'https://travel-companion-dev-jaea.2.sg-1.fl0.io/signup?uid=$uid'))
-        .then((response) async {
+  sendVerificationLink(String email, String password) async {
+    await http.post(Uri.parse('https://travel-companion-dev-jaea.2.sg-1.fl0.io/signup'),headers: {"Content-Type": "application/json"},
+    body: jsonEncode({
+      "email": email,
+      "password" : password
+    })).then((response) async {
       if (response.statusCode == 200) {
-        await FirebaseAuth.instance.currentUser!.sendEmailVerification();
+        FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password)
+          .then((value){
+            print(FirebaseAuth.instance.currentUser);
+            FirebaseAuth.instance.currentUser!.sendEmailVerification();
+          });
       } else {
-        throw Exception(
-            'Something went wrong, please retry signing up after 5-10 minutes');
+        var res = jsonDecode(response.body)['data'] ?? '';
+        throw Exception('Something went wrong ${res}');
       }
     }).catchError((error) {
       throw Exception('Error $error');
@@ -167,7 +174,7 @@ class SignupBodyState extends State<SignupPageBody> {
                     validator: (email) {
                       if (email!.isEmpty) {
                         return "This field is required";
-                      } else if (!email.contains(
+                      } else if (!email.trim().contains(
                           RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
                         return "Enter a Valid Email";
                       } else {
@@ -278,49 +285,33 @@ class SignupBodyState extends State<SignupPageBody> {
                   if (passwordController.text != confirmPasswordController.text ||
                       phoneNumberController.text.toString().length < 10 ||
                       phoneNumberController.text.toString().isEmpty ||
-                      passwordController.text.length < 8) {
+                      passwordController.text.length < 8 ||
+                      !(emailController.text.trim().contains(RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$')))
+                  ) {
                     return;
                   }
-      
-                  await FirebaseAuth.instance
-                      .createUserWithEmailAndPassword(
-                          email: email.text, password: password.text)
-                      .then((credential) async {
-                    try {
-                      await sendVerificationLink(credential.user!.uid);
-                      showNormalSnackBar(
-                          context, 'Verification link sent successfully');
-                    } catch (e) {
-                      showErrorSnackBar(context,
-                          'Error sending link, please recheck the email or try again in some time');
-                    }
-      
-                    try {
-                      createUserDocument(credential.user?.email, username.text,
-                          phoneNumber.text);
-                    } catch (e) {
-                      print(e);
-                      showErrorSnackBar(context,
-                          'Error creating User, please try again in some time');
-                    }
-      
-                    Navigator.pushReplacement(
+
+                  try {
+                    await sendVerificationLink(email.text.trim(),password.text);
+                    showNormalSnackBar(context, 'Verification link sent successfully');
+                  } catch (e) {
+                    showErrorSnackBar(context,'Error sending link, please recheck the email or try again in some time $e');
+                  }
+
+                  try {
+                    createUserDocument(email.text.trim(), username.text.trim() ,phoneNumber.text.trim());
+                  } catch (e) {
+                    print(e);
+                    showErrorSnackBar(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                VerifyPage(email: credential.user?.email)));
-                  }).catchError((e) {
-                    if (e.code == 'user-not-found') {
-                      showNormalSnackBar(context, 'No user found for that Email');
-                    } else if (e.code == 'wrong-password') {
-                      showNormalSnackBar(context, 'Wrong Email or Password!');
-                    } else if (e.code == 'email-already-in-use') {
-                      showNormalSnackBar(
-                          context, 'User already exists! Please try logging in');
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => LoginPage()));
-                    }
-                  });
+                        'Error creating User, please try again in some time'
+                    );
+                  }
+                  // Going to verification page
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => VerifyPage(email: email.text.trim()))
+                  );
                 },
                 style: TextButton.styleFrom(
                     backgroundColor: secondaryColor,

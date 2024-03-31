@@ -1,11 +1,14 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_companion/main.dart';
 import 'package:travel_companion/pages/authentication/signup.dart';
 import 'package:travel_companion/utils/colors.dart';
 import 'package:http/http.dart' as http;
+
+import '../profile.dart';
 
 final formkey = GlobalKey<FormState>();
 
@@ -24,14 +27,17 @@ class _VerifyPageState extends State<VerifyPage> {
   _VerifyPageState(this.email);
 
   showNormalSnackBar(BuildContext context, String snackBarText) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
         dismissDirection: DismissDirection.horizontal,
         margin: const EdgeInsets.all(5),
         behavior: SnackBarBehavior.floating,
-        content: Text(snackBarText)));
+        content: Text(snackBarText)
+      )
+    );
   }
 
-  showErrorSnackBar(BuildContext context, String snackBarText) {
+  showErrorSnackBar(BuildContext context, String snackBarText){
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         dismissDirection: DismissDirection.horizontal,
         margin: const EdgeInsets.all(5),
@@ -128,9 +134,7 @@ class _VerifyPageState extends State<VerifyPage> {
               onPressed: () async {
                 FirebaseAuth.instance.currentUser!.reload();
                 String uid = FirebaseAuth.instance.currentUser!.uid;
-                http
-                    .get(Uri.parse(
-                        'https://travel-companion-dev-jaea.2.sg-1.fl0.io/verify?uid=$uid'))
+                http.get(Uri.parse('https://travel-companion-dev-jaea.2.sg-1.fl0.io/verify?uid=$uid'))
                     .then((value) {
                   Map<String, dynamic> response = jsonDecode(value.body);
                   if (response.containsKey('data') &&
