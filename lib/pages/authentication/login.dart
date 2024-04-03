@@ -117,7 +117,7 @@ class LoginPage extends StatelessWidget {
                   validator: (emailIp) {
                     emailIp = emailIp!.trim();
                     if (emailIp!.contains(
-                        RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
+                        RegExp(r'(?i)^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
                       return null;
                     } else {
                       return "Enter a valid email";

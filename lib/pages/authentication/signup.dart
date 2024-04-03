@@ -42,17 +42,19 @@ class SignupBodyState extends State<SignupPageBody> {
   }
 
   sendVerificationLink(String email, String password) async {
-    await http.post(Uri.parse('https://travel-companion-dev-jaea.2.sg-1.fl0.io/signup'),headers: {"Content-Type": "application/json"},
-    body: jsonEncode({
-      "email": email,
-      "password" : password
-    })).then((response) async {
+    await http
+        .post(
+            Uri.parse('https://travel-companion-dev-jaea.2.sg-1.fl0.io/signup'),
+            headers: {"Content-Type": "application/json"},
+            body: jsonEncode({"email": email, "password": password}))
+        .then((response) async {
       if (response.statusCode == 200) {
-        FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password)
-          .then((value){
-            print(FirebaseAuth.instance.currentUser);
-            FirebaseAuth.instance.currentUser!.sendEmailVerification();
-          });
+        FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password)
+            .then((value) {
+          print(FirebaseAuth.instance.currentUser);
+          FirebaseAuth.instance.currentUser!.sendEmailVerification();
+        });
       } else {
         var res = jsonDecode(response.body)['data'] ?? '';
         throw Exception('Something went wrong ${res}');
@@ -175,8 +177,8 @@ class SignupBodyState extends State<SignupPageBody> {
                       if (email!.isEmpty) {
                         return "This field is required";
                       } else if (!email.trim().contains(
-                          RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
-                        return "Enter a Valid Email";
+                          RegExp(r'(?i)^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
+                        return "Provide an IITJ Email";
                       } else {
                         return null;
                       }
@@ -281,37 +283,41 @@ class SignupBodyState extends State<SignupPageBody> {
               child: ElevatedButton(
                 onPressed: () async {
                   formKey.currentState!.validate();
-      
-                  if (passwordController.text != confirmPasswordController.text ||
+
+                  if (passwordController.text !=
+                          confirmPasswordController.text ||
                       phoneNumberController.text.toString().length < 10 ||
                       phoneNumberController.text.toString().isEmpty ||
                       passwordController.text.length < 8 ||
-                      !(emailController.text.trim().contains(RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$')))
-                  ) {
+                      !(emailController.text.trim().contains(
+                          RegExp(r'^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$')))) {
                     return;
                   }
 
                   try {
-                    await sendVerificationLink(email.text.trim(),password.text);
-                    showNormalSnackBar(context, 'Verification link sent successfully');
+                    await sendVerificationLink(
+                        email.text.trim(), password.text);
+                    showNormalSnackBar(
+                        context, 'Verification link sent successfully');
                   } catch (e) {
-                    showErrorSnackBar(context,'Error sending link, please recheck the email or try again in some time $e');
+                    showErrorSnackBar(context,
+                        'Error sending link, please recheck the email or try again in some time $e');
                   }
 
                   try {
-                    createUserDocument(email.text.trim(), username.text.trim() ,phoneNumber.text.trim());
+                    createUserDocument(email.text.trim(), username.text.trim(),
+                        phoneNumber.text.trim());
                   } catch (e) {
                     print(e);
-                    showErrorSnackBar(
-                        context,
-                        'Error creating User, please try again in some time'
-                    );
+                    showErrorSnackBar(context,
+                        'Error creating User, please try again in some time');
                   }
                   // Going to verification page
                   Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => VerifyPage(email: email.text.trim()))
-                  );
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              VerifyPage(email: email.text.trim())));
                 },
                 style: TextButton.styleFrom(
                     backgroundColor: secondaryColor,
