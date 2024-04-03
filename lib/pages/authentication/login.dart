@@ -13,6 +13,37 @@ class LoginPage extends StatelessWidget {
 
   LoginPage({super.key});
 
+  
+  Future sendPasswordResetEmail(BuildContext context, String email) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email.trim());
+      print("hi");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Reset password link sent successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message.toString()),
+          backgroundColor: Colors.red,
+        ),
+      );
+      showNormalSnackBar(context, (e.message.toString()));
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error ocurred'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   showNormalSnackBar(BuildContext context, String snackBarText) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         dismissDirection: DismissDirection.horizontal,
@@ -101,7 +132,7 @@ class LoginPage extends StatelessWidget {
                 const Text('Password'),
                 TextButton(
                   onPressed: () {
-                    showNormalSnackBar(context, "Contact Devlup Labs");
+                    sendPasswordResetEmail(context, emailController.text);
                   },
                   child: const Text(
                     "Forgot password?",
