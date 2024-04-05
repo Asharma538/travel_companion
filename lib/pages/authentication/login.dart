@@ -13,6 +13,54 @@ class LoginPage extends StatelessWidget {
 
   LoginPage({super.key});
 
+  Future sendPasswordResetEmail(BuildContext context, String email) async {
+  //   RegExp emailRegExp = RegExp(r'(?i)^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$');
+
+  // if (emailRegExp.hasMatch(email.trim())) {
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: Text('Enter a valid email'),
+  //       backgroundColor: Colors.red,
+  //     ),
+  //   );
+  //   return;
+  // }
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email.trim());
+      print("hi");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Reset password link sent successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      print(e.message.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message.toString()),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+    catch (e) {
+      print(e);
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Text(e.toString()),
+            );
+          });
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('An error ocurred'),
+      //     backgroundColor: Colors.red,
+      //   ),
+      // );
+    }
+  }
+
   showNormalSnackBar(BuildContext context, String snackBarText) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         dismissDirection: DismissDirection.horizontal,
@@ -101,7 +149,7 @@ class LoginPage extends StatelessWidget {
                 const Text('Password'),
                 TextButton(
                   onPressed: () {
-                    showNormalSnackBar(context, "Contact Devlup Labs");
+                    sendPasswordResetEmail(context, emailController.text);
                   },
                   child: const Text(
                     "Forgot password?",

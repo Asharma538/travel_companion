@@ -200,8 +200,8 @@ class _SearchPageState extends State<SearchPage> {
                   color: secondaryTextColor,
                 ),
                 isExpanded: true,
-                items: ['Flexible', 'Flight', 'Train', 'Taxi', 'Bus']
-                    .map((item) {
+                items:
+                    ['Flexible', 'Flight', 'Train', 'Taxi', 'Bus'].map((item) {
                   return DropdownMenuItem(
                     value: item,
                     child: Text(
