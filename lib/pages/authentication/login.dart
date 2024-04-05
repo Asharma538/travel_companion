@@ -14,50 +14,17 @@ class LoginPage extends StatelessWidget {
   LoginPage({super.key});
 
   Future sendPasswordResetEmail(BuildContext context, String email) async {
-  //   RegExp emailRegExp = RegExp(r'(?i)^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$');
-
-  // if (emailRegExp.hasMatch(email.trim())) {
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //       content: Text('Enter a valid email'),
-  //       backgroundColor: Colors.red,
-  //     ),
-  //   );
-  //   return;
-  // }
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email.trim());
-      print("hi");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Reset password link sent successfully'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } on FirebaseAuthException catch (e) {
-      print(e.message.toString());
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.message.toString()),
-          backgroundColor: Colors.red,
-        ),
-      );
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email.trim())
+          .then((value){
+            print("Sent the password reset link!");
+      }).catchError((err){
+        showErrorSnackBar(context, err.toString());
+      })
+      ;
     }
     catch (e) {
-      print(e);
-      showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              content: Text(e.toString()),
-            );
-          });
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(
-      //     content: Text('An error ocurred'),
-      //     backgroundColor: Colors.red,
-      //   ),
-      // );
+      showErrorSnackBar(context, e.toString());
     }
   }
 
@@ -133,8 +100,9 @@ class LoginPage extends StatelessWidget {
                   ),
                   validator: (emailIp) {
                     emailIp = emailIp!.trim();
-                    if (emailIp!.contains(
-                        RegExp(r'(?i)^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
+                    emailIp = emailIp.toLowerCase();
+                    if (emailIp.contains(
+                        RegExp(r'[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
                       return null;
                     } else {
                       return "Enter a valid email";

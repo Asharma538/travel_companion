@@ -30,7 +30,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
 
     FirebaseAuth.instance.currentUser?.getIdToken(true);
-
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SplashScreen(),

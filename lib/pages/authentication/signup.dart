@@ -42,6 +42,7 @@ class SignupBodyState extends State<SignupPageBody> {
   }
 
   sendVerificationLink(String email, String password) async {
+    email = email.toLowerCase();
     await http
         .post(
             Uri.parse('https://travel-companion-dev-jaea.2.sg-1.fl0.io/signup'),
@@ -64,20 +65,26 @@ class SignupBodyState extends State<SignupPageBody> {
     });
   }
 
-  createUserDocument(email, username, phoneNumber) {
-    FirebaseFirestore.instance.collection('Users').doc(email).set({
-      'username': username,
-      "email": email,
-      'profilePhotoState': 0,
-      'about': "Not Available"
-    });
-    FirebaseFirestore.instance.collection('PhoneNumbers').doc(email).set({
-      'phoneNumber': phoneNumber,
-    });
-    FirebaseFirestore.instance
-        .collection('Requests')
-        .doc(email)
-        .set({'requests': []});
+  createUserDocument(String email,String username,String phoneNumber) {
+    try{
+      email = email.toLowerCase();
+      print(email);
+      FirebaseFirestore.instance.collection('Users').doc(email).set({
+        'username': username,
+        "email": email,
+        'profilePhotoState': 0,
+        'about': "Not Available"
+      });
+      FirebaseFirestore.instance.collection('PhoneNumbers').doc(email).set({
+        'phoneNumber': phoneNumber,
+      });
+      FirebaseFirestore.instance
+          .collection('Requests')
+          .doc(email)
+          .set({'requests': []});
+    } catch (e){
+      print(e.toString());
+    }
   }
 
   showNormalSnackBar(BuildContext context, String snackBarText) {
@@ -174,10 +181,10 @@ class SignupBodyState extends State<SignupPageBody> {
                       filled: true,
                     ),
                     validator: (email) {
+                      email = email?.toLowerCase();
                       if (email!.isEmpty) {
                         return "This field is required";
-                      } else if (!email.trim().contains(
-                          RegExp(r'(?i)^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
+                      } else if (!email.trim().contains(RegExp(r'[a-zA-Z0-9._$#|@^&]+@iitj\.ac\.in$'))) {
                         return "Provide an IITJ Email";
                       } else {
                         return null;
