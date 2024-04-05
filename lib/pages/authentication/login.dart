@@ -13,8 +13,18 @@ class LoginPage extends StatelessWidget {
 
   LoginPage({super.key});
 
-  
   Future sendPasswordResetEmail(BuildContext context, String email) async {
+  //   RegExp emailRegExp = RegExp(r'(?i)^[a-zA-z0-9._$#|@^&]+@iitj\.ac\.in$');
+
+  // if (emailRegExp.hasMatch(email.trim())) {
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: Text('Enter a valid email'),
+  //       backgroundColor: Colors.red,
+  //     ),
+  //   );
+  //   return;
+  // }
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email.trim());
       print("hi");
@@ -25,22 +35,29 @@ class LoginPage extends StatelessWidget {
         ),
       );
     } on FirebaseAuthException catch (e) {
-      print(e);
+      print(e.message.toString());
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.message.toString()),
           backgroundColor: Colors.red,
         ),
       );
-      showNormalSnackBar(context, (e.message.toString()));
-    } catch (e) {
+    }
+    catch (e) {
       print(e);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('An error ocurred'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Text(e.toString()),
+            );
+          });
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('An error ocurred'),
+      //     backgroundColor: Colors.red,
+      //   ),
+      // );
     }
   }
 
