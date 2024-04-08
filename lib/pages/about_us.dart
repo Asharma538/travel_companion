@@ -3,15 +3,6 @@ import 'package:travel_companion/utils/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class about_us extends StatelessWidget {
-  // void _launchURL() async {
-  //   const url = 'https://forms.gle/JXBwR9KiEk83VwpD6';
-  //   if (await canLaunchUrl(Uri.parse(url))) {
-  //     await launchUrl(Uri.parse(url));
-  //   } else {
-  //     throw 'Could not launch $url';
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,10 +67,6 @@ class about_us extends StatelessWidget {
               'Devlup Labs',
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
             ),
-            // TextButton(
-            //   onPressed: _launchURL,
-            //   child: Text('Contact Form'),
-            // ),
           ],
         ),
       ),
