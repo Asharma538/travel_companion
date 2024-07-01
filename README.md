@@ -1,4 +1,4 @@
-# travel_companiion
+# travel_companion
 
 A project under winter of code DevlUp Labs, for finding like minded individuals going on a similar journey for splitting your travel expenses and having a friendly trip :)
 
