@@ -64,7 +64,7 @@ class about_us extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             Text(
-              'Devlup Labs',
+              'DevlUp Labs',
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
             ),
           ],

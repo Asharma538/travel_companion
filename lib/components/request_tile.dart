@@ -48,7 +48,13 @@ class _RequestTileState extends State<RequestTile> {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
-                      ),
+                        overflow: TextOverflow.ellipsis,
+                      )
+                    ],
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
                         Profile.userData['username'] != widget.request.username
                             ? widget.request.sentTo
@@ -57,12 +63,9 @@ class _RequestTileState extends State<RequestTile> {
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                      SizedBox(height: 5),
                       Row(
                         children: [
                           Text('${widget.request.source} ',
