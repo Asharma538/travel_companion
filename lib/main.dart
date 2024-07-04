@@ -1,10 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:travel_companion/pages/authentication/email_verification.dart';
-import 'package:travel_companion/pages/authentication/signup.dart';
-import 'package:travel_companion/utils/colors.dart';
 import 'pages/profile.dart';
 import 'pages/search.dart';
 import 'pages/requests.dart';

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:travel_companion/pages/authentication/login.dart';
+import 'package:travel_companion/pages/authentication/signin.dart';
 import 'package:travel_companion/pages/home.dart';
 import 'package:travel_companion/pages/view_post.dart';
 import 'package:travel_companion/utils/colors.dart';
@@ -43,7 +43,7 @@ class _AboutTextFieldState extends State<AboutTextField> {
             controller: _textEditingController,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
-              hintText: 'Add your bio here!!',
+              hintText: 'Here it goes...',
             ),
             onEditingComplete: () {
               setState(() {
@@ -82,7 +82,7 @@ class Profile extends StatefulWidget {
       }
       Profile.userData = userData;
       var phoneNumberDocument = await FirebaseFirestore.instance.collection('PhoneNumbers').doc(userData['id']).get();
-      Profile.phoneNumber = phoneNumberDocument.data()?['phoneNumber'] ?? '';
+      Profile.phoneNumber = phoneNumberDocument.data()?['phoneNumber'] ?? 'Add you phone number';
       return userData;
   }
 
@@ -169,7 +169,7 @@ class _ProfileState extends State<Profile> {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => LoginPage()));
+                                  builder: (context) => SignInPage()));
                         } catch (e) {
                           showErrorSnackBar(context,'Error logging out: ${e.toString()}');
                         }
@@ -210,19 +210,38 @@ class _ProfileState extends State<Profile> {
                         title: Center(
                           child: Text(
                             userData?['username'] ?? '',
-                            style: const TextStyle(fontSize: 30),
+                            style: const TextStyle(fontSize: 30,overflow: TextOverflow.ellipsis),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      height: 10,
+                    ListTile(
+                      title: const Text(
+                        "Phone Number",
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                      subtitle: AboutTextField(
+                        initialText: Profile.phoneNumber ?? '',
+                        onSave: (newPhoneNumber) {
+                          if (newPhoneNumber.length!=13 || newPhoneNumber[0]!='+'){
+                            showErrorSnackBar(context, "Give a 10 digit number after country code");
+                            return;
+                          }
+                          FirebaseFirestore.instance
+                            .collection('PhoneNumbers')
+                            .doc(FirebaseAuth.instance.currentUser?.email)
+                            .set({'phoneNumber': newPhoneNumber});
+                        },
+                        userEmail: userEmail!,
+                      ),
                     ),
                     ListTile(
                       title: const Text(
                         "About",
                         style: TextStyle(
-                          fontSize: 25,
+                          fontSize: 16,
                         ),
                       ),
                       subtitle: AboutTextField(

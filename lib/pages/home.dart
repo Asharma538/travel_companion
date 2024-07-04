@@ -9,14 +9,10 @@ import '../main.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
-
   static List<Map<String, dynamic>> posts = [];
-
   static Future<List<Map<String, dynamic>>> fetchPosts() async {
     QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance.collection('Trips').get();
-
     List<Map<String, dynamic>> posts = [];
-
     for (var doc in querySnapshot.docs) {
       var queryDocumentSnapshot = await doc.data()['userRef'].get();
       var userData = queryDocumentSnapshot.data() ?? {};

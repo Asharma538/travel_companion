@@ -12,7 +12,20 @@
           "package_name": "com.devluplabs.travel_companiion"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "332213306586-at2c4ukioss455vpn350fnp2lm6bf24o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.devluplabs.travel_companiion",
+            "certificate_hash": "750f2e854719388673c6157d9e10852565727bb8"
+          }
+        },
+        {
+          "client_id": "332213306586-4ke56pvog97ql8nmlvmqq3lfmv0l4d5q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCPTCmxiqnWnEQC1BUC_X3iPFobOQ0rN6w"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "332213306586-4ke56pvog97ql8nmlvmqq3lfmv0l4d5q.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "332213306586-qdnh43n5n9frc7l0j209ukge7ogfc5fq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.devluplabs.travelCompaniion.RunnerTests"
+              }
+            }
+          ]
         }
       }
     },
@@ -31,7 +56,12 @@
           "package_name": "com.devluplabs.travel_companion"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "332213306586-4ke56pvog97ql8nmlvmqq3lfmv0l4d5q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCPTCmxiqnWnEQC1BUC_X3iPFobOQ0rN6w"
@@ -39,7 +69,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "332213306586-4ke56pvog97ql8nmlvmqq3lfmv0l4d5q.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "332213306586-qdnh43n5n9frc7l0j209ukge7ogfc5fq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.devluplabs.travelCompaniion.RunnerTests"
+              }
+            }
+          ]
         }
       }
     }
